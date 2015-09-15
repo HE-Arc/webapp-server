@@ -55,9 +55,7 @@ RUN rm -f /etc/service/sshd/down
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
 ## Install the SSH keys of your choice.
-ADD keys/yoan.pub /tmp/yoan.pub
-#ADD keys/david.pub /tmp/david.pub
-RUN cat /tmp/yoan.pub >> /root/.ssh/authorized_keys
+ADD files/keys $HOME/keys
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

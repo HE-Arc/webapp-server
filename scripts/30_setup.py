@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """
-Nginx
+Setup
 -----
 
-Sets up the system.
-
-- nginx configuration file.
-- index.php
-
+Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
@@ -22,7 +18,6 @@ import json
 import shutil
 import pymysql
 import os.path
-import requests
 import platform
 import subprocess
 import unicodedata
@@ -34,18 +29,16 @@ env = Environment(loader=FileSystemLoader("/root/templates"))
 wwwdir = "/var/www"
 
 
-def formatUserName(firstname, lastname):
+def formatUserName(firstname):
     """
     Format the real name into a username
 
-    E.g.: Juan Giovanni Di Sousa Santos -> juan.disousa
+    E.g.: Juan Giovanni Di Sousa Santos -> juan
     """
     # Keep only the first firstname
     first = re.match("^(.+?)\\b", firstname, re.U).group(0).lower()
-    # Keep only the first two lastnames
-    last = re.match("^(.+?(?:$|\\s.+?\\b))", lastname, re.U).group(0).lower()
 
-    username = unicodedata.normalize("NFD", "{}.{}".format(first,last))
+    username = unicodedata.normalize("NFD", first)
     username = username.replace(" ", "")
     # http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string/517974#517974
     return "".join([c for c in username if not unicodedata.combining(c)])
@@ -79,7 +72,7 @@ def user(mysql_password, lastname, firstname, classname, groupname, github, comm
     """
     Create a user.
     """
-    username = formatUserName(firstname, lastname)
+    username = formatUserName(firstname)
     homedir = os.path.join("/home", username)
     fullname = "{} {}".format(firstname, lastname)
 
@@ -113,29 +106,17 @@ def user(mysql_password, lastname, firstname, classname, groupname, github, comm
     os.chmod(sshdir, 0o700)
 
     # Create authorized_keys
-    r = requests.get("https://api.github.com/users/{}/keys".format(github),
-                     auth=(os.environ["GITHUB_USER"], os.environ["GITHUB_KEY"]))
-    if r.ok:
-        #sys.stderr.write("{}:{} is {}\n".format(username, groupname, github))
-        keys = r.json()
-        authorized_keys = os.path.join(sshdir, "authorized_keys")
-        with open(authorized_keys, "a+") as fa:
-            for key in keys:
-                fa.write(key["key"])
-                fa.write(" ")
-                fa.write(username)
-                fa.write(" is ")
-                fa.write(github)
-                fa.write("\n")
+    authorized_keys = os.path.join(sshdir, "authorized_keys")
+    key = "/root/keys/{}.key".format(github)
+    if os.path.exists(key):
+        with open(key, "r") as f:
+            with open(authorized_keys, "a+") as t:
+                t.write(f.read())
 
-        os.chown(authorized_keys, uid, gid)
-        os.chmod(authorized_keys, 0o600)
-
+            os.chown(authorized_keys, uid, gid)
+            os.chmod(authorized_keys, 0o600)
     else:
-        sys.stderr.write(r.text)
-        sys.stderr.write("\nCannot grab github key of {}\n".format(github))
-
-    fullname = "{} {}".format(firstname, lastname)
+        sys.stderr.write("No public key for {}!\n".format(github))
 
     # Load global conf
     conf = "/etc/container_environment.json"
@@ -148,6 +129,7 @@ def user(mysql_password, lastname, firstname, classname, groupname, github, comm
     envs["MYSQL_DATABASE"] = groupname
     envs["MYSQL_USERNAME"] = groupname
     envs["MYSQL_PASSWORD"] = mysql_password
+
 
     # Create .bash_profile
     template = env.get_template("bash_profile")
@@ -220,7 +202,7 @@ def phpinfo(group):
         with open(info, "w", encoding="utf-8") as f:
             f.write(template.render(group=group))
 
-        p = pwd.getpwnam(group)
+        p = pwd.getpwnam("yoan")  # FIXME ugly!
 
         os.chown(info, p.pw_uid, p.pw_gid)
         os.chmod(info, 0o0664)
@@ -230,7 +212,7 @@ def rights():
     """
     Fixes the rights on the mounted volume.
     """
-    p = pwd.getpwnam("yoan.blanc")  # FIXME ugly!
+    p = pwd.getpwnam("yoan")  # FIXME ugly!
 
     os.chown(wwwdir, p.pw_uid, p.pw_gid)
     os.chmod(wwwdir, 0o775)
