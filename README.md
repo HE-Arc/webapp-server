@@ -48,6 +48,9 @@ avoid being rate limited by the API.
 
 ### Building the container
 
+This step is no required as this container is [publicly
+available](https://hub.docker.com/r/greut/webapp-server/).
+
 ```
 $ docker build -t greut/webapp-server .
 ```
@@ -73,7 +76,7 @@ $ docker run --name FunkyNinja \
            -v `pwd`/.../www/abba:/var/www \
            -d greut/webapp-server
 
-$ docker inspect --format="{{.NetworkSettings.IPAddress}}" abba.labinfo.he-arc.ch
+$ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
 ```
 
 ### Post-setup
