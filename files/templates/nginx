@@ -1,0 +1,30 @@
+# Nginx configuration
+# -------------------
+# by: {{ groupname }}
+#
+server {
+    listen 80 default_server;
+
+    root /var/www;
+
+    index index.php index.html index.htm;
+
+    server_name {{ hostname }};
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+
+        fastcgi_param MYSQL_HOST mysql;
+        fastcgi_param MYSQL_PORT 3306;
+        fastcgi_param MYSQL_DATABASE {{ groupname }};
+        fastcgi_param MYSQL_USERNAME {{ groupname }};
+        fastcgi_param MYSQL_PASSWORD {{ mysql_password }};
+
+        include snippets/fastcgi-php.conf;
+    }
+}
+{# vim: set ft=jinja enc=utf-8: #}

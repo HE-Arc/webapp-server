@@ -1,0 +1,27 @@
+#/bin/bash
+{# vim: set ft=jinja enc=utf-8: #}
+
+# If not running interactively, don't do anything
+[[ $- != *i*  ]] && return
+
+# So the files your create can be modified by the other members of your group.
+umask 002
+
+alias ls='ls --color=auto'
+alias composer='php ~/composer.phar'
+export EDITOR=vim
+export GREP_OPTIONS='--color=auto'
+{% for k, v in envs.items() -%}
+export {{ k }}='{{ v }}'
+{% endfor -%}
+export PATH+=':~/.composer/vendor/bin'
+
+# max 8 letters
+toilet -f bigascii12 -F metal "{{ groupname }}"
+
+echo " Welcome {{ fullname }} ({{ classname }})!"
+echo ""
+echo " Please checkout the README.txt file for all the details!"
+echo ""
+echo "                                                   Have fun!"
+echo ""

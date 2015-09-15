@@ -1,0 +1,6 @@
+bin
+lib
+include
+pip-*.json
+github.key
+config/students.tsv
