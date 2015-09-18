@@ -73,7 +73,7 @@ $ docker run --name FunkyNinja \
            --env GROUPNAME=FunkyNinja \
            --hostname funkyninja.labinfo.he-arc.ch \
            --link database:mysql \
-           -v `pwd`/.../www/abba:/var/www \
+           -v `pwd`/.../www/FunkyNinja:/var/www \
            -d greut/webapp-server
 
 $ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
