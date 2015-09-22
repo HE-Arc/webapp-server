@@ -1,41 +1,35 @@
 {# vim: set ft=jinja: -#}
-README
-======
+# README
 
 Welcome abroad.
 
-Files
------
+## Files
 
-Your `www` directory is shared with your group, the rest is not.
+The `www` directory is shared with your group, everything else is yours.
 
 
-MySQL
------
+## MySQL
 
 Connect to MySQL (hint: \`echo \$MYSQL_PASSWORD\`):
 
-$ mysql --user $MYSQL_USERNAME --host $MYSQL_HOSTNAME --password $MYSQL_DATABASE
+    $ mysql --user $MYSQL_USERNAME --host $MYSQL_HOST --password $MYSQL_DATABASE
 
 You may also see how it's currently done in `index.php`.
 
 
-PHP
----
+## PHP
 
 Composer and Laravel are installed for your convenience.
 
-$ composer --help
-$ laravel --help
+    $ composer --help
+    $ laravel --help
 
 
-Laravel tutorial
-----------------
+## Laravel tutorial
 
-This is from the Laravel 5.1 documentation.
+This is from the [Laravel 5.1 documentation](http://laravel.com/docs/5.1).
 
-Creating a new project
-^^^^^^^^^^^^^^^^^^^^^^
+### Creating a new project
 
 Here we are creating a project called `blog`
 
@@ -44,12 +38,31 @@ Here we are creating a project called `blog`
     $ chmod -R 0777 blog/storage
     $ chmod 0777 blog/bootstrap/cache
     $ cp blog/.env.example blog/.env
-    $ php artisan key:generate
-    $ setuser www-data php artisan serve --host 0.0.0.0
+    $ php blog/artisan key:generate
 
 
-Configuring the database connection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Nginx
+
+You only have to fix the path into the nginx configuration file to have your
+application showing up on port 80. The file is www/config/nginx.conf
+
+    #root /var/www/public;
+    root /var/www/blog/public;
+
+And restart the servers:
+
+    $ sudo sv restart nginx
+
+
+#### Logs
+
+The server logs are put there in `/var/www/logs`.
+
+The error log will be useful.
+
+    $ tail /var/www/logs/error.log
+
+### Configuring the database connection
 
 Modify the following lines in `blog/.env` (the filename starts with a dot).
 You have to comment out the `DB_*` entries as we don't need them here.
@@ -59,7 +72,7 @@ You have to comment out the `DB_*` entries as we don't need them here.
     #DB_USERNAME=homestead
     #DB_PASSWORD=secret
 
-We are gonna read the database configuration from the environement. See
+We are gonna read the database configuration from the environment. See
 [12factors](http://12factor.net/config).
 
 Modify `blog/config/database.php` as such:
@@ -75,7 +88,7 @@ Modify `blog/config/database.php` as such:
             'password' => env('DB_PASSWORD', $_SERVER['MYSQL_PASSWORD']),
             'charset' => 'utf8', // utf8mb4: if you want emoji
             'collation' => 'utf8_unicode_ci', // utf8mb4_unicode_ci: ditto
-            prefix' => '',
+            'prefix' => '',
             'strict' => false
         ],
         // ...
@@ -83,11 +96,11 @@ Modify `blog/config/database.php` as such:
     // ...
 
 `$_SERVER['MYSQL_HOST']` is the environment variable containing the host for
-the MySQL connection, much more flexible than `.env` files.
+the MySQL connection, much more flexible than `.env` files. Keep the `.env` file
+for you local setup.
 
 
-Initializing the models
-^^^^^^^^^^^^^^^^^^^^^^^
+## Initializing the models
 
 The models are defined through
 [migrations](http://laravel.com/docs/5.1/migrations) which enable rollbacks.
@@ -100,32 +113,20 @@ You should always use them.
 
 This ran the existing migrations.
 
-
-Nginx
-^^^^^
-
-You only have to fix the path into the nginx configuration file to have your
-application showing up on port 80. The file is /etc/nginx/sites-availables/{{ groupname }}
-
-    #root /var/www;
-    root /var/www/blog/public;
-
-And restart your server:
-
-    $ sudo sv restart nginx
-
 Et voilà!
 
 
-Tools
------
+## Tools
 
 Other great tools you might need, one day:
 
-$ ack-grep {{ username }}
-$ npm
-$ vim
-$ screen
-$ tmux
-$ pip
+    $ ack-grep {{ username }}
+    $ npm
+    $ vim
+    $ screen
+    $ tmux
+    $ pip
+    $ grunt
+    $ gulp
+    $ browserify
 

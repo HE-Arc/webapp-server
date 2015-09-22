@@ -1,5 +1,5 @@
 #/bin/bash
-{# vim: set ft=jinja enc=utf-8: #}
+{# vim: set ft=jinja: -#}
 
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
@@ -9,9 +9,10 @@ umask 002
 
 alias ls='ls --color=auto'
 alias composer='php ~/composer.phar'
+alias node='nodejs'
 export EDITOR=vim
 export GREP_OPTIONS='--color=auto'
-{% for k, v in envs.items() -%}
+{% for k, v in environ.items() -%}
 export {{ k }}='{{ v }}'
 {% endfor -%}
 export PATH+=':~/.composer/vendor/bin'
@@ -19,7 +20,7 @@ export PATH+=':~/.composer/vendor/bin'
 # max 8 letters
 toilet -f bigascii12 -F metal "{{ groupname }}"
 
-echo " Welcome {{ fullname }} ({{ classname }})!"
+echo " Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
 echo ""
 echo " Please checkout the README.txt file for all the details!"
 echo ""

@@ -1,4 +1,5 @@
 <?php
+{# vim: set ft=jinja: -#}
 
 // Hello {{ groupname }}!
 //
@@ -11,10 +12,12 @@ todo: fixme;
 $mysql = [
     "host" => $_SERVER["MYSQL_HOST"],
     "port" => $_SERVER["MYSQL_PORT"],
-    "dbname" => $_SERVER["MYSQL_DB"],
-    "username" => $_SERVER["MYSQL_USER"],
-    "password" => $_SERVER["MYSQL_PASS"]
+    "dbname" => $_SERVER["MYSQL_DATABASE"],
+    "username" => $_SERVER["MYSQL_USERNAME"],
+    "password" => $_SERVER["MYSQL_PASSWORD"]
 ];
+// Hide it from phpinfo.
+unset($_SERVER["MYSQL_PASSWORD"]);
 
 $conn = new PDO("mysql:host={$mysql['host']};".
                 "port={$mysql['port']};dbname={$mysql['dbname']}",
@@ -22,10 +25,8 @@ $conn = new PDO("mysql:host={$mysql['host']};".
 
 echo "<!-- All the tables:\n";
 foreach ($conn->query("SHOW TABLES;") as $row) {
-  echo "  " . $row[0] . "\n";
+  echo " -  " . $row[0] . "\n";
 }
 echo "-->\n\n";
 
 phpinfo();
-
-{# vim: set ft=jinja enc=utf-8: #}

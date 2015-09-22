@@ -15,7 +15,7 @@ CMD ["/sbin/my_init"]
 
 RUN apt-get update
 RUN apt-get upgrade -y -q
-RUN apt-get install -y -q \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     ack-grep \
     build-essential \
     curl \
@@ -33,6 +33,7 @@ RUN apt-get install -y -q \
     php5-xdebug \
     pwgen \
     python3-pip \
+    python3-jinja2 \
     python3-software-properties \
     screen \
     sudo \
@@ -42,10 +43,14 @@ RUN apt-get install -y -q \
     vim \
     wget
 
-RUN pip3 install \
-    jinja2 \
-    pymysql \
-    requests
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# JavaScript builders
+RUN npm install -g \
+    browserify \
+    gulp \
+    grunt-cli
 
 # Enable SSHD
 RUN rm -f /etc/service/sshd/down
@@ -53,12 +58,6 @@ RUN rm -f /etc/service/sshd/down
 # have to do that yourself. You may also comment out this instruction; the
 # init system will auto-generate one during boot.
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-
-## Install the SSH keys of your choice.
-ADD files/keys $HOME/keys
-
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## Nginx
 RUN rm /etc/nginx/sites-enabled/default
@@ -94,18 +93,23 @@ RUN chmod 0440 /etc/sudoers.d/users
 # Enable screen
 RUN chmod 0777 /var/run/screen
 
+# Files
+ADD files/keys /tmp/keys
+ADD files/templates /tmp/templates
 # Composer / Laravel
-ADD files/composer.phar $HOME/composer.phar
-ADD files/composer $HOME/.composer
-
-# Init.d
-ADD files/templates $HOME/templates
-ADD config/students.tsv $HOME/students.tsv
-ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
-RUN chmod +x /etc/my_init.d/30_setup.py
+ADD files/composer.phar /tmp/composer.phar
+ADD files/composer /tmp/.composer
 
 # Expose VOLUME
+VOLUME /root/config
 VOLUME /var/www
 
 # Config
 ENV GROUPNAME unknown
+ENV MYSQL_DATABASE test
+ENV MYSQL_USERNAME test
+ENV MYSQL_PASSWORD test
+
+# Init.d
+ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
+RUN chmod +x /etc/my_init.d/30_setup.py

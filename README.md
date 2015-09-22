@@ -40,7 +40,7 @@ $ virtualenv3 .
 $ . bin/activate
 $ pip3 install requests
 
-$ python scripts/github_keys.py config/students.tsv files/keys/ <github_username> <password_or_key>
+$ python scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
 ```
 
 The key is a [personal access token](https://github.com/settings/tokens) to
@@ -66,28 +66,44 @@ $ docker inspect --format="{{.NetworkSettings.IPAddress}}" database
 172.17.0.1
 ```
 
-### Starting the machine!
+#### Post-setup
 
-```shell
-$ docker run --name FunkyNinja \
-           --env GROUPNAME=FunkyNinja \
-           --hostname funkyninja.labinfo.he-arc.ch \
-           --link database:mysql \
-           -v `pwd`/.../www/FunkyNinja:/var/www \
-           -d greut/webapp-server
-
-$ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
-```
-
-### Post-setup
-
-Changing MySQL root password (for obvious security reasons):
+Changing MySQL root password because the above value will be passed to each
+linked containers.
 
 ```shell
 $ mysqladmin -h 172.17.0.1 -u root -p'root' password 's3cur3@P45sw0rd'
 ```
 
+### Create the databases
+
+For each group:
+
+    CREATE USER 'groupname'@'%';"
+    SET PASSWORD FOR 'groupname'@'%' = PASSWORD('password');",
+    CREATE DATABASE `groupname`
+        DEFAULT CHARACTER SET utf8mb4
+        DEFAULT COLLATE utf8mb4_unicode_ci;
+    GRANT ALL PRIVILEGES ON `groupname`.* TO 'groupname'@'%';
+    FLUSH PRIVILEGES;
+
+### Starting the machine!
+
+```shell
+$ docker run --name FunkyNinja \
+           --env GROUPNAME=FunkyNinja \
+           --env MYSQL_DATABASE=FunkyNinja \
+           --env MYSQL_USERNAME=FunkyNinja \
+           --env MYSQL_PASSWORD=root \
+           --hostname funkyninja.labinfo.he-arc.ch \
+           --link database:mysql \
+           -v `pwd`/.../www/FunkyNinja:/var/www \
+           -v `pwd`/config:/root/config:ro \
+           -d greut/webapp-server
+
+$ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
+```
+
 ## TODO
 
- * monitoring: influxdb, cadvisor and grafana
- * git repositories with gogs?
+ * https://github.com/joushou/sshmuxd

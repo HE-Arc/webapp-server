@@ -23,7 +23,8 @@ def github(username, auth):
     if r.ok:
         keys = r.json()
         for key in keys:
-            output.extend((key["key"], " ", username, "\n"))
+            output.extend((key["key"], " ", username, "@", str(key["id"]), "\n"))
+        sys.stdout.write("Key of {}\n".format(username))
 
     else:
         sys.stderr.write("\nCannot grab github key of {}\n".format(username))
