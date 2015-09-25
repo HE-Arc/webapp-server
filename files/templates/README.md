@@ -1,7 +1,7 @@
 {# vim: set ft=jinja: -#}
 # README
 
-Welcome abroad.
+Welcome aboard!
 
 ## Files
 
