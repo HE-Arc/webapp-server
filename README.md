@@ -100,8 +100,8 @@ $ docker run --name FunkyNinja \
            --link database:mysql \
            -v `pwd`/.../www/FunkyNinja:/var/www \
            -v `pwd`/config:/root/config:ro \
-           -p 22:2201 \
-           -p 80:8001 \
+           -p 2201:22 \
+           -p 127.0.0.1:8001:80 \
            -d greut/webapp-server
 
 $ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja

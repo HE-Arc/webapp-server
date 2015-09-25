@@ -129,4 +129,6 @@ Other great tools you might need, one day:
     $ grunt
     $ gulp
     $ browserify
+    $ wkhtmltopdf
+    $ wkhtmltoimage
 

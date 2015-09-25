@@ -19,7 +19,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     ack-grep \
     build-essential \
     curl \
+    fontconfig \
     git \
+    libxrender1 \
     mariadb-client \
     nginx \
     nodejs \
@@ -41,7 +43,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     toilet \
     unzip \
     vim \
-    wget
+    wget \
+    xfonts-base \
+    xfonts-75dpi
+
+# wkhtmltopdf/wkhtmltoimage
+RUN wget http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb -O /tmp/wkhtmltox.deb
+RUN dpkg -i /tmp/wkhtmltox.deb
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

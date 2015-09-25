@@ -86,8 +86,8 @@ def init_user(username, groupname, **kwargs):
     shutil.copytree("/tmp/.composer", ".composer")
 
     # Le symlink
-    os.symlink(".composer/vendor/laravel/installer/laravel",
-               os.path.join(wwwdir, ".composer/vendor/bin/laravel"))
+    os.symlink(os.path.join(homedir, ".composer/vendor/laravel/installer/laravel"),
+               ".composer/vendor/bin/laravel")
     os.chmod(".composer/vendor/laravel/installer/laravel", mode=0o0755)
 
 

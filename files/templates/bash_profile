@@ -15,7 +15,7 @@ export GREP_OPTIONS='--color=auto'
 {% for k, v in environ.items() -%}
 export {{ k }}='{{ v }}'
 {% endfor -%}
-export PATH+=':~/.composer/vendor/bin'
+export PATH+=":$HOME/.composer/vendor/bin"
 
 # max 8 letters
 toilet -f bigascii12 -F metal "{{ groupname }}"
