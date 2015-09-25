@@ -179,6 +179,9 @@ def main(argv):
     environ["MYSQL_HOST"] = environ["MYSQL_PORT_3306_TCP_ADDR"]
     environ["MYSQL_PORT"] = environ["MYSQL_PORT_3306_TCP_PORT"]
 
+    del environ["LC_CTYPE"]
+    del environ["LANG"]
+    del environ["INITRD"]
     del environ["MYSQL_PORT_3306_TCP_ADDR"]
     del environ["MYSQL_PORT_3306_TCP_PORT"]
     del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]

@@ -51,6 +51,15 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 RUN wget http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb -O /tmp/wkhtmltox.deb
 RUN dpkg -i /tmp/wkhtmltox.deb
 
+# Locale
+RUN locale-gen fr_CH
+RUN locale-gen fr_CH.UTF-8
+RUN locale-gen de_CH
+RUN locale-gen de_CH.UTF-8
+RUN locale-gen it_CH
+RUN locale-gen it_CH.UTF-8
+RUN update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
