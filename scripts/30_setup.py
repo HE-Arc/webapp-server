@@ -82,7 +82,6 @@ def init_user(username, groupname, **kwargs):
         sys.stderr.write("No public key for {}!\n".format(username))
 
     # Laravel
-    shutil.copy("/tmp/composer.phar", "composer.phar")
     shutil.copytree("/tmp/.composer", ".composer")
 
     # Le symlink
@@ -238,8 +237,8 @@ def main(argv):
                     p = multiprocessing.Process(target=init_user,
                                                 args=(username,
                                                       groupname),
-                                                kwargs=dict(firstname=row[0],
-                                                            lastname=row[1],
+                                                kwargs=dict(firstname=row[1],
+                                                            lastname=row[0],
                                                             classname=row[2],
                                                             github=row[4],
                                                             environ=environ))

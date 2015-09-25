@@ -14,8 +14,8 @@ ENV HOME /root
 CMD ["/sbin/my_init"]
 
 RUN apt-get update
-RUN apt-get upgrade -y -q
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+RUN apt-get upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ack-grep \
     build-essential \
     curl \
@@ -23,9 +23,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     git \
     libxrender1 \
     mariadb-client \
+    mercurial \
     nginx \
-    nodejs \
-    npm \
     php5-cli \
     php5-curl \
     php5-fpm \
@@ -38,6 +37,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
     python3-jinja2 \
     python3-software-properties \
     screen \
+    subversion \
     sudo \
     tmux \
     toilet \
@@ -60,14 +60,19 @@ RUN locale-gen it_CH
 RUN locale-gen it_CH.UTF-8
 RUN update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
+# Node.js stuff.
+RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y nodejs
+RUN npm install -g \
+    gulp \
+    grunt-cli \
+    yo
+
+# Composer
+RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# JavaScript builders
-RUN npm install -g \
-    browserify \
-    gulp \
-    grunt-cli
 
 # Enable SSHD
 RUN rm -f /etc/service/sshd/down
@@ -92,6 +97,9 @@ RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php5/cli/php.ini
 RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php5/cli/php.ini
 RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php5/cli/php.ini
 RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php5/cli/php.ini
+
+## MYSQL client
+RUN set -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.conf
 
 ## Runit
 ADD scripts/runit/nginx /etc/service/nginx/run

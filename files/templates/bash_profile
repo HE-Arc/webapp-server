@@ -8,7 +8,6 @@
 umask 002
 
 alias ls='ls --color=auto'
-alias composer='php ~/composer.phar'
 alias node='nodejs'
 export EDITOR=vim
 export GREP_OPTIONS='--color=auto'

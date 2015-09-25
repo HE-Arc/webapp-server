@@ -37,14 +37,12 @@ Here we are creating a project called `blog`
     $ laravel new blog
     $ chmod -R 0777 blog/storage
     $ chmod 0777 blog/bootstrap/cache
-    $ cp blog/.env.example blog/.env
-    $ php blog/artisan key:generate
 
 
-### Nginx
+### Nginx (_engine-X_)
 
 You only have to fix the path into the nginx configuration file to have your
-application showing up on port 80. The file is www/config/nginx.conf
+application showing up on port 80. The file is `www/config/nginx.conf`
 
     #root /var/www/public;
     root /var/www/blog/public;
@@ -86,8 +84,8 @@ Modify `blog/config/database.php` as such:
             'database' => env('DB_DATABASE', $_SERVER['MYSQL_DATABASE']),
             'username' => env('DB_USERNAME', $_SERVER['MYSQL_USERNAME']),
             'password' => env('DB_PASSWORD', $_SERVER['MYSQL_PASSWORD']),
-            'charset' => 'utf8', // utf8mb4: if you want emoji
-            'collation' => 'utf8_unicode_ci', // utf8mb4_unicode_ci: ditto
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'strict' => false
         ],
@@ -99,36 +97,54 @@ Modify `blog/config/database.php` as such:
 the MySQL connection, much more flexible than `.env` files. Keep the `.env` file
 for you local setup.
 
+What is `utf8mb4`? See: https://mathiasbynens.be/notes/mysql-utf8mb4
+
 
 ## Initializing the models
 
 The models are defined through
 [migrations](http://laravel.com/docs/5.1/migrations) which enable rollbacks.
-You should always use them.
+You should always use them. We will instantiate the default model which creates
+two tables do deal with users and their password.
+
+The default model was set for utf8 and not utf8mb4, so we have to tweak it a
+little bit. Open `blog/database/migrations/2014_10_12_000000_create_users_table.php`
+
+    //$table->string('email')->unique();
+    $table->string('email', 190)->unique();
+
+Now, we are ready to run the migrations:
 
     $ php blog/artistan migrate
     Migration table created successfully.
     Migrated: 2014_10_12_00000_create_users_table
     Migrated: 2014_10_12_10000_create_password_resets_table
 
-This ran the existing migrations.
-
 Et voilà!
+
+    echo "SHOW TABLES" | mysql -u $MYSQL_USERNAME -h $MYSQL_HOST -p $MYSQL_DATABASE
+    Enter password:
+    Tables_in_<GROUPNAME>
+    migrations
+    password_resets
+    users
 
 
 ## Tools
 
 Other great tools you might need, one day:
 
-    $ ack-grep {{ username }}
-    $ npm
-    $ vim
-    $ screen
-    $ tmux
-    $ pip
-    $ grunt
+    $ ack-grep
     $ gulp
-    $ browserify
-    $ wkhtmltopdf
+    $ grunt
+    $ npm
+    $ pip3
+    $ tmux
+    $ vim
     $ wkhtmltoimage
+    $ wkhtmltopdf
+    $ screen
+    $ yo
 
+Do you need anything? Send us an issue:
+https://github.com/HE-Arc/webapp-server/issues
