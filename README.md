@@ -59,7 +59,8 @@ $ docker build -t greut/webapp-server .
 
 ```shell
 $ docker run --name database -e MYSQL_ROOT_PASSWORD=root \
-           -v `pwd`/../data:/var/lib/mysql
+           -v `pwd`/../data:/var/lib/mysql \
+           -p 3306:3306 \
            -d mariadb:5.5
 
 $ docker inspect --format="{{.NetworkSettings.IPAddress}}" database
@@ -99,9 +100,26 @@ $ docker run --name FunkyNinja \
            --link database:mysql \
            -v `pwd`/.../www/FunkyNinja:/var/www \
            -v `pwd`/config:/root/config:ro \
+           -p 22:2201 \
+           -p 80:8001 \
            -d greut/webapp-server
 
 $ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
+```
+
+## Updating composer and laravel
+
+```shell
+$ export COMPOSER_HOME=`pwd`/files/composer
+$ php files/composer.phar global update
+$ php files/composer.phar global info -iN
+guzzlehttp/guzzle
+guzzlehttp/ringphp
+guzzlehttp/streams
+laravel/installer
+react/promise
+symfony/console
+symfony/process
 ```
 
 ## TODO
