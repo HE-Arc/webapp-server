@@ -122,7 +122,6 @@ RUN chmod 0777 /var/run/screen
 ADD files/keys /tmp/keys
 ADD files/templates /tmp/templates
 # Composer / Laravel
-ADD files/composer.phar /tmp/composer.phar
 ADD files/composer /tmp/.composer
 
 # Expose VOLUME
