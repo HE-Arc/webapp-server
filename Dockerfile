@@ -13,18 +13,24 @@ ENV HOME /root
 # Use baseimage-docker's init process.
 CMD ["/sbin/my_init"]
 
-RUN apt-get update
+# NodeSource special setup (does the apt-get update already, twice)
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
+
 RUN apt-get upgrade -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ack-grep \
     build-essential \
+    cowsay \
     curl \
+    fortunes \
     fontconfig \
     git \
     libxrender1 \
+    man \
     mariadb-client \
     mercurial \
     nginx \
+    nodejs \
     php5-cli \
     php5-curl \
     php5-fpm \
@@ -61,8 +67,6 @@ RUN locale-gen it_CH.UTF-8
 RUN update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 # Node.js stuff.
-RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y nodejs
 RUN npm install -g \
     gulp \
     grunt-cli \
@@ -119,7 +123,6 @@ RUN chmod 0440 /etc/sudoers.d/users
 RUN chmod 0777 /var/run/screen
 
 # Files
-ADD files/keys /tmp/keys
 ADD files/templates /tmp/templates
 # Composer / Laravel
 ADD files/composer /tmp/.composer

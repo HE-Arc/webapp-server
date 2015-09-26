@@ -8,20 +8,23 @@
 umask 002
 
 alias ls='ls --color=auto'
-alias node='nodejs'
 export EDITOR=vim
 export GREP_OPTIONS='--color=auto'
 {% for k, v in environ.items() -%}
 export {{ k }}='{{ v }}'
 {% endfor -%}
-export PATH+=":$HOME/.composer/vendor/bin"
+export PATH+=":/usr/games/:$HOME/.composer/vendor/bin"
+export DEBIAN_FRONTEND=noninteractive
 
 # max 8 letters
-toilet -f bigascii12 -F metal "{{ groupname }}"
+toilet -f bagga -F border "webapp: {{ groupname }}"
+echo ""
 
+fortune | cowsay -f three-eyes
+echo ""
 echo " Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
 echo ""
-echo " Please checkout the README.txt file for all the details!"
+echo " Please checkout the README.md file for all the details!"
 echo ""
 echo "                                                   Have fun!"
 echo ""

@@ -3,6 +3,6 @@ lib
 include
 pip-*.json
 
+config/keys/*.key
 config/students.tsv
 files/composer/cache
-files/keys/*.key

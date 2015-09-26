@@ -17,7 +17,7 @@ format:
 ```csv
 Lastname  Firstname  Classname  Groupname   GitHub    Comment
 Bon       Jean       INF3       FunkyNinja  jeanjean  -
-Blanc     Yoan       -          admin       greut     Teacher
+Blanc     Yoan       Teacher    admin       greut     -
 ...
 ```
 
@@ -40,7 +40,7 @@ $ virtualenv3 .
 $ . bin/activate
 $ pip3 install requests
 
-$ python scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
+$ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
 ```
 
 The key is a [personal access token](https://github.com/settings/tokens) to
@@ -57,14 +57,16 @@ $ docker build -t greut/webapp-server .
 
 ### Starting MySQL
 
-```shell
-$ docker run --name database -e MYSQL_ROOT_PASSWORD=root \
-           -v `pwd`/../data:/var/lib/mysql \
-           -p 3306:3306 \
-           -d mariadb:5.5
+Warning, the `-p` opens it up to the whole world (`0.0.0.0`).
 
-$ docker inspect --format="{{.NetworkSettings.IPAddress}}" database
-172.17.0.1
+```shell
+$ docker run --name database \
+    -e MYSQL_ROOT_PASSWORD=root \
+    -v `pwd`/../data:/var/lib/mysql \
+    -p 3306:3306 \
+    -d mariadb:5.5
+
+$ mysql -u root -p
 ```
 
 #### Post-setup
@@ -92,20 +94,22 @@ For each group:
 
 ```shell
 $ docker run --name FunkyNinja \
-           --env GROUPNAME=FunkyNinja \
-           --env MYSQL_DATABASE=FunkyNinja \
-           --env MYSQL_USERNAME=FunkyNinja \
-           --env MYSQL_PASSWORD=root \
-           --hostname funkyninja.labinfo.he-arc.ch \
-           --link database:mysql \
-           -v `pwd`/.../www/FunkyNinja:/var/www \
-           -v `pwd`/config:/root/config:ro \
-           -p 2201:22 \
-           -p 127.0.0.1:8001:80 \
-           -d greut/webapp-server
+    --env GROUPNAME=FunkyNinja \
+    --env MYSQL_DATABASE=FunkyNinja \
+    --env MYSQL_USERNAME=FunkyNinja \
+    --env MYSQL_PASSWORD=root \
+    --hostname funkyninja.labinfo.he-arc.ch \
+    --link database:mysql \
+    -v `pwd`/.../www/FunkyNinja:/var/www \
+    -v `pwd`/config:/root/config:ro \
+    -p 2201:22 \
+    -p 127.0.0.1:8001:80 \
+    -d greut/webapp-server
 
-$ docker inspect --format="{{.NetworkSettings.IPAddress}}" FunkyNinja
+$ ssh -p 2201 you@localhost
 ```
+
+
 
 ## Updating composer and laravel
 
@@ -121,7 +125,3 @@ react/promise
 symfony/console
 symfony/process
 ```
-
-## TODO
-
- * https://github.com/joushou/sshmuxd

@@ -71,15 +71,6 @@ def init_user(username, groupname, **kwargs):
     # Create .ssh/authorized_keys
     os.mkdir(".ssh")
     os.chmod(".ssh", mode=0o0700)
-    authorized_keys = ".ssh/authorized_keys"
-    key = "/tmp/keys/{}.key".format(kwargs.get("github", "NOKEY"))
-    if os.path.exists(key):
-        with open(key, "r") as f:
-            with open(authorized_keys, "a+") as t:
-                t.write(f.read())
-        os.chmod(".ssh/authorized_keys", mode=0o0600)
-    else:
-        sys.stderr.write("No public key for {}!\n".format(username))
 
     # Laravel
     shutil.copytree("/tmp/.composer", ".composer")
@@ -112,6 +103,23 @@ def create_user(username, groupname, comment):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     proc.communicate("{}:{}".format(username, pwgen()).encode("utf-8"))
+
+
+def authorized_keys(username, github):
+    """Copy the user key into the authorized keys."""
+    p = pwd.getpwnam()
+    homedir, uid, gid = p.pw_dir, p.pw_uid, p.pw_gid
+
+    authorized_keys = os.path.join(homedir, ".ssh/authorized_keys")
+    key = "/root/config/keys/{}.key".format(github)
+    if os.path.exists(key):
+        with open(key, "r") as f:
+            with open(authorized_keys, "a+") as t:
+                t.write(f.read())
+        os.chown(authorized_keys, uid, gid)
+        os.chmod(authorized_keys, mode=0o0600)
+    else:
+        sys.stderr.write("No public key for {}!\n".format(github))
 
 
 def init_group(groupname, **kwargs):
@@ -240,10 +248,10 @@ def main(argv):
                                                 kwargs=dict(firstname=row[1],
                                                             lastname=row[0],
                                                             classname=row[2],
-                                                            github=row[4],
                                                             environ=environ))
                     p.start()
                     p.join()
+                    authorized_keys(username, github=row[4])
                     sys.stderr.write("{} created.\n".format(username))
 
 
