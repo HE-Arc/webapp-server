@@ -11,6 +11,8 @@ The `www` directory is shared with your group, everything else is yours.
 
 The funny message comes from `~/.bash_profile`.
 
+Feel free to adapt the git configuration in `~/.gitconfig`.
+
 ## MySQL
 
 Connect to MySQL (hint: \`echo \$MYSQL_PASSWORD\`):
@@ -149,8 +151,12 @@ Other great tools you might need, one day:
     $ screen
     $ yo
 
-Do you need anything? Send us an issue:
+
+## Troubleshooting
+
+Do you have a problem or need anything? Send us an issue:
 https://github.com/HE-Arc/webapp-server/issues
+
 
 ## More
 
@@ -161,3 +167,10 @@ Vim has been set up with Vundle and some plugins. To install them run:
     $ vim +PluginInstall +qall
 
 Then, fell free to modify `~/.vimrc`.
+
+By default, your editor is `nano`, you can change this by editing the `$EDITOR`
+variable in `~/.bash_profile`.
+
+In case, you wanna learn a bit more about vim, run the `vimtutor` command. Why
+would I learn vim anyway? Because, being able to work on a remote machine with
+only a command-line interface is a skill you want to have.

@@ -15,9 +15,9 @@ The configuration is done via a TSV file (`config/students.tsv`). Here is its
 format:
 
 ```csv
-Lastname  Firstname  Classname  Groupname   GitHub    Comment
-Bon       Jean       INF3       FunkyNinja  jeanjean  -
-Blanc     Yoan       Teacher    admin       greut     -
+Lastname  Firstname  Email                 Classname  Groupname   GitHub    Comment
+Bon       Jean       jean.bon@example.org  INF3       FunkyNinja  jeanjean  -
+Blanc     Yoan       yoan@dosimple.ch      Teacher    admin       greut     -
 ...
 ```
 
@@ -125,3 +125,7 @@ react/promise
 symfony/console
 symfony/process
 ```
+
+## TODO
+
+* monitoring

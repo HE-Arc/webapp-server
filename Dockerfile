@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     cowsay \
     curl \
     fortunes \
+    fortunes-fr \
     fontconfig \
     git \
     libxrender1 \

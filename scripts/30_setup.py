@@ -61,6 +61,7 @@ def init_user(username, groupname, **kwargs):
 
     paths = (("bash_profile", ".bash_profile"),
              ("README.md", "README.md"),
+             ("gitconfig", ".gitconfig"),
              ("vimrc", ".vimrc"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
@@ -247,21 +248,29 @@ def main(argv):
             next(reader)
             for row in reader:
                 # Only pick the users of the given group
-                if row[3] in (groupname, "admin"):
+                group = row[4]
+                if group in (groupname, "admin"):
                     # admin become part of the group
-                    username = formatUserName(row[1])
-                    row[3] = groupname
-                    create_user(username, groupname, row[2])  # classname
+                    lastname = row[0]
+                    firstname = row[1]
+                    email = row[2]
+                    classname = row[3]
+                    # group = row[4] set above
+                    github = row[5]
+                    # comment = row[6] unless
+                    username = formatUserName(firstname)
+                    create_user(username, groupname, classname)
                     p = multiprocessing.Process(target=init_user,
                                                 args=(username,
                                                       groupname),
-                                                kwargs=dict(firstname=row[1],
-                                                            lastname=row[0],
-                                                            classname=row[2],
+                                                kwargs=dict(firstname=firstname,
+                                                            lastname=lastname,
+                                                            email=email,
+                                                            classname=classname,
                                                             environ=environ))
                     p.start()
                     p.join()
-                    authorized_keys(username, github=row[4])
+                    authorized_keys(username, github)
                     sys.stderr.write("{} created.\n".format(username))
 
 

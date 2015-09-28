@@ -8,7 +8,7 @@
 umask 002
 
 alias ls='ls --color=auto'
-export EDITOR=vim
+export EDITOR=nano
 export GREP_OPTIONS='--color=auto'
 {% for k, v in environ.items() -%}
 export {{ k }}='{{ v }}'
@@ -16,14 +16,14 @@ export {{ k }}='{{ v }}'
 export PATH+=":/usr/games/:$HOME/.composer/vendor/bin"
 export DEBIAN_FRONTEND=noninteractive
 
-fortune | cowsay -f three-eyes
-echo ""
-toilet -f pagga -F border "webapp: {{ groupname }}"
+# Be a nerd
+fortune fr | iconv -f iso-8859-1 -t utf-8 | cowsay -f three-eyes
+toilet -f pagga " webapp: {{ groupname }}"
 
 echo ""
-echo " Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
+echo "   Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
 echo ""
-echo " Please checkout the README.md file for all the details!"
+echo "   Please checkout the README.md file for all the details!"
 echo ""
 echo "                                                   Have fun!"
 echo ""
