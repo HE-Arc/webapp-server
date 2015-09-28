@@ -30,6 +30,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     man \
     mariadb-client \
     mercurial \
+    nano \
     nginx \
     nodejs \
     php5-cli \
@@ -121,7 +122,7 @@ RUN echo '%users ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/users
 RUN chmod 0440 /etc/sudoers.d/users
 
 # Enable screen
-RUN chmod 0777 /var/run/screen
+RUN chmod 0775 /var/run/screen
 
 # Files
 ADD files/templates /tmp/templates
