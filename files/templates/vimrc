@@ -1,0 +1,42 @@
+set nocompatible " required
+filetype off     " required
+
+" Set the runtime to include vundle and initialize it
+set rtp+=~/.vim/bundle/Vundle.vim
+vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+
+" Your plugins
+Plugin 'bling/vim-airline'
+Plugin 'tpope/vim-fugitive'
+Plugin 'mv/mv-vim-nginx'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'xsbeats/vim-blade'
+Plugin 'othree/html5.vim'
+Plugin 'sickill/vim-monokai'
+
+" All the plugins must be added before this
+call vundle#end()         " required
+filetype plugin indent on " required
+
+" configuration
+set colorcolumn=80,120
+set undofile
+set undodir=/tmp
+
+" 4 spaces instead of tabs
+set ts=4
+set sts=4
+set sw=4
+set expandtab
+
+" Airline
+set laststatus=2
+let g:airline_powerline_fonts=1
+
+" Theme
+syntax enable
+set background=dark " or light if you prefer
+" colorscheme solarized
+colorscheme monokai
+let g:solarized_termcolor=256 " 16 by default

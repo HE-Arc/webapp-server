@@ -60,7 +60,8 @@ def init_user(username, groupname, **kwargs):
     os.environ["UID"] = str(uid)
 
     paths = (("bash_profile", ".bash_profile"),
-             ("README.md", "README.md"))
+             ("README.md", "README.md"),
+             ("vimrc", ".vimrc"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
@@ -72,7 +73,13 @@ def init_user(username, groupname, **kwargs):
     os.mkdir(".ssh")
     os.chmod(".ssh", mode=0o0700)
 
-    # Laravel
+    # Vim
+    os.mkdir(".vim")
+    os.mkdir(".vim/bundle")
+
+    # Vundle
+    shutil.copytree("/tmp/Vundle.vim", ".vim/bundle/Vundle.vim")
+    # Laravel installer
     shutil.copytree("/tmp/.composer", ".composer")
 
     # Le symlink
@@ -107,7 +114,7 @@ def create_user(username, groupname, comment):
 
 def authorized_keys(username, github):
     """Copy the user key into the authorized keys."""
-    p = pwd.getpwnam()
+    p = pwd.getpwnam(username)
     homedir, uid, gid = p.pw_dir, p.pw_uid, p.pw_gid
 
     authorized_keys = os.path.join(homedir, ".ssh/authorized_keys")
@@ -191,7 +198,10 @@ def main(argv):
     del environ["INITRD"]
     del environ["MYSQL_PORT_3306_TCP_ADDR"]
     del environ["MYSQL_PORT_3306_TCP_PORT"]
-    del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]
+    if "MYSQL_ENV_MYSQL_ROOTPASSWORD" in environ:
+        del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]
+    if "MYSQL_ENV_MYSQL_ROOT_PASSWORD" in environ:
+        del environ["MYSQL_ENV_MYSQL_ROOT_PASSWORD"]
 
     # Create the group
     try:

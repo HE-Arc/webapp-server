@@ -1,6 +1,7 @@
 {# vim: set ft=jinja: -#}
 # Nginx configuration
 # -------------------
+# vim: set ft=nginx:
 # for: {{ groupname }}
 #
 server {

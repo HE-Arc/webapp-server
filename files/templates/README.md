@@ -7,6 +7,9 @@ Welcome aboard!
 
 The `www` directory is shared with your group, everything else is yours.
 
+`README.md` is this file.
+
+The funny message comes from `~/.bash_profile`.
 
 ## MySQL
 
@@ -148,3 +151,13 @@ Other great tools you might need, one day:
 
 Do you need anything? Send us an issue:
 https://github.com/HE-Arc/webapp-server/issues
+
+## More
+
+### ViM
+
+Vim has been set up with Vundle and some plugins. To install them run:
+
+    $ vim +PluginInstall +qall
+
+Then, fell free to modify `~/.vimrc`.

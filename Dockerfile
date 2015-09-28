@@ -126,6 +126,8 @@ RUN chmod 0777 /var/run/screen
 ADD files/templates /tmp/templates
 # Composer / Laravel
 ADD files/composer /tmp/.composer
+# Vundle
+ADD files/vundle /tmp/Vundle.vim
 
 # Expose VOLUME
 VOLUME /root/config

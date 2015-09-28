@@ -16,11 +16,10 @@ export {{ k }}='{{ v }}'
 export PATH+=":/usr/games/:$HOME/.composer/vendor/bin"
 export DEBIAN_FRONTEND=noninteractive
 
-# max 8 letters
-toilet -f bagga -F border "webapp: {{ groupname }}"
-echo ""
-
 fortune | cowsay -f three-eyes
+echo ""
+toilet -f pagga -F border "webapp: {{ groupname }}"
+
 echo ""
 echo " Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
 echo ""
