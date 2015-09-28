@@ -66,7 +66,7 @@ $ docker run --name database \
     -p 3306:3306 \
     -d mariadb:5.5
 
-$ mysql -u root -p
+$ mysql -u root -h 127.0.0.1 -p
 ```
 
 #### Post-setup
@@ -75,7 +75,7 @@ Changing MySQL root password because the above value will be passed to each
 linked containers.
 
 ```shell
-$ mysqladmin -h 172.17.0.1 -u root -p'root' password 's3cur3@P45sw0rd'
+$ mysqladmin -h 127.0.0.1 root -p'root' password 's3cur3@P45sw0rd'
 ```
 
 ### Create the databases
