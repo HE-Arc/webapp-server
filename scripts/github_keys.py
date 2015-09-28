@@ -44,7 +44,7 @@ def main(argv):
         # skip headers
         next(reader)
         for row in reader:
-            username = row[4]
+            username = row[5]
             if not username:
                 continue
 
