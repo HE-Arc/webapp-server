@@ -44,3 +44,9 @@ def install_ssmtp():
     sudo("apt-get install ssmtp -q -y")
     sudo(r"sed -i 's/mailhub=mail/mailhub=srvz-webapp.he-arc.ch:1025/' /etc/ssmtp/ssmtp.conf")
     sudo(r"sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf")
+
+
+def reload():
+    """Restart php5-fpm and nginx."""
+    sudo("sv restart php5-fpm")
+    sudo("sv restart nginx")
