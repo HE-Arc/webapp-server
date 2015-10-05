@@ -2,7 +2,9 @@ bin
 lib
 include
 pip-*.json
+*.pyc
 
 config/keys/*.key
+config/roles.json
 config/students.tsv
 files/composer/cache

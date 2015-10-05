@@ -6,6 +6,7 @@ The setup scripts to create development environments for many groups.
 
  * Docker
  * Python3 (pip, virtualenv or requests)
+ * Python2 for [Fabric](http://docs.fabfile.org/)
 
 ## Setup
 
@@ -38,7 +39,7 @@ To download the public keys, run this python script:
 # setup
 $ virtualenv3 .
 $ . bin/activate
-$ pip3 install requests
+$ pip3 install -r requirements.txt
 
 $ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
 ```
@@ -82,8 +83,8 @@ $ mysqladmin -h 127.0.0.1 root -p'root' password 's3cur3@P45sw0rd'
 
 For each group:
 
-    CREATE USER 'groupname'@'%';"
-    SET PASSWORD FOR 'groupname'@'%' = PASSWORD('password');",
+    CREATE USER 'groupname'@'%';
+    SET PASSWORD FOR 'groupname'@'%' = PASSWORD('password');
     CREATE DATABASE `groupname`
         DEFAULT CHARACTER SET utf8mb4
         DEFAULT COLLATE utf8mb4_unicode_ci;
@@ -125,6 +126,10 @@ react/promise
 symfony/console
 symfony/process
 ```
+
+## Updating the machines
+
+See [fabfile.py](fabfile.py).
 
 ## TODO
 

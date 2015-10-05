@@ -45,6 +45,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
     python3-jinja2 \
     python3-software-properties \
     screen \
+    ssmtp \
     subversion \
     sudo \
     tmux \
