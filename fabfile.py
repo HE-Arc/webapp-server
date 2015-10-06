@@ -19,7 +19,7 @@ Usage with roles:
 import json
 import os.path
 
-from fabric.api import env, run, sudo
+from fabric.api import env, run, sudo, put
 
 
 if os.path.exists("config/roles.json"):
@@ -50,3 +50,10 @@ def reload():
     """Restart php5-fpm and nginx."""
     sudo("sv restart php5-fpm")
     sudo("sv restart nginx")
+
+
+def logrotate():
+    """Configure logrotate"""
+    sudo(r"sed -i 's/^su root syslog/su root adm/' /etc/logrotate.conf")
+    put("files/templates/*.logrotate", "/etc/logrotate.d", use_sudo=True)
+    sudo("chown root:root /etc/logrotate.d/*")
