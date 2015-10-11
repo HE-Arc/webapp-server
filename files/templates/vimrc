@@ -8,6 +8,8 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Your plugins
 "Plugin 'bling/vim-airline'
+Plugin 'tpope/vim-bundler'
+Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-fugitive'
 Plugin 'mv/mv-vim-nginx'
 Plugin 'xsbeats/vim-blade'

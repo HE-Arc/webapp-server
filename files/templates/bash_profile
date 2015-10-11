@@ -13,7 +13,10 @@ export GREP_OPTIONS='--color=auto'
 {% for k, v in environ.items() -%}
 export {{ k }}='{{ v }}'
 {% endfor -%}
-export PATH+=":/usr/games/:$HOME/.composer/vendor/bin"
+export PATH+=":/usr/games/"
+{% if environ.CONFIG is "Laravel" -%}
+export PATH+=":$HOME/.composer/vendor/bin"
+{% endif -%}
 export DEBIAN_FRONTEND=noninteractive
 
 # Be a nerd

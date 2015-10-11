@@ -59,10 +59,11 @@ def init_user(username, groupname, **kwargs):
     os.environ["HOME"] = homedir
     os.environ["UID"] = str(uid)
 
-    paths = (("bash_profile", ".bash_profile"),
-             ("README.md", "README.md"),
+    paths = [("bash_profile", ".bash_profile"),
              ("gitconfig", ".gitconfig"),
-             ("vimrc", ".vimrc"))
+             ("vimrc", ".vimrc")]
+    if kwargs["environ"]["CONFIG"] is "Laravel":
+        paths.append(("README-php.md", "README.md"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
@@ -80,13 +81,15 @@ def init_user(username, groupname, **kwargs):
 
     # Vundle
     shutil.copytree("/tmp/Vundle.vim", ".vim/bundle/Vundle.vim")
-    # Laravel installer
-    shutil.copytree("/tmp/.composer", ".composer")
 
-    # Le symlink
-    os.symlink(os.path.join(homedir, ".composer/vendor/laravel/installer/laravel"),
-               ".composer/vendor/bin/laravel")
-    os.chmod(".composer/vendor/laravel/installer/laravel", mode=0o0755)
+    # Laravel installer
+    if kwargs["environ"]["CONFIG"] is "Laravel":
+        shutil.copytree("/tmp/.composer", ".composer")
+
+        # Le symlink
+        os.symlink(os.path.join(homedir, ".composer/vendor/laravel/installer/laravel"),
+                   ".composer/vendor/bin/laravel")
+        os.chmod(".composer/vendor/laravel/installer/laravel", mode=0o0755)
 
 
 def create_user(username, groupname, comment):
@@ -147,8 +150,12 @@ def init_group(groupname, **kwargs):
         os.mkdir("logs")
         os.mkdir("public")
 
-        paths = (("index.php", "public/index.php"),
-                ("nginx", "config/nginx.conf"))
+        if kwargs["environ"]["CONFIG"] is "Laravel":
+            paths = (("index.php", "public/index.php"),
+                     ("nginx-php", "config/nginx.conf"))
+        else:
+            paths = ()
+
         for tpl, dest in paths:
             if not os.path.exists(dest):
                 render(tpl, dest, groupname=groupname, **kwargs)
