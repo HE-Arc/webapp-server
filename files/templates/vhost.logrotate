@@ -1,0 +1,10 @@
+/var/www/logs/*.log {
+    weekly
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    create 0664 www-data adm
+    sharedscripts
+}
