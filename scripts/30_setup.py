@@ -198,18 +198,19 @@ def main(argv):
         environ = json.load(f)
 
     groupname = environ["GROUPNAME"]
-    environ["MYSQL_HOST"] = environ["MYSQL_PORT_3306_TCP_ADDR"]
-    environ["MYSQL_PORT"] = environ["MYSQL_PORT_3306_TCP_PORT"]
+    if "MYSQL_PORT_3306_TCP_ADDR" in environ:
+        environ["MYSQL_HOST"] = environ["MYSQL_PORT_3306_TCP_ADDR"]
+        environ["MYSQL_PORT"] = environ["MYSQL_PORT_3306_TCP_PORT"]
+        del environ["MYSQL_PORT_3306_TCP_ADDR"]
+        del environ["MYSQL_PORT_3306_TCP_PORT"]
+        if "MYSQL_ENV_MYSQL_ROOTPASSWORD" in environ:
+            del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]
+        if "MYSQL_ENV_MYSQL_ROOT_PASSWORD" in environ:
+            del environ["MYSQL_ENV_MYSQL_ROOT_PASSWORD"]
 
     del environ["LC_CTYPE"]
     del environ["LANG"]
     del environ["INITRD"]
-    del environ["MYSQL_PORT_3306_TCP_ADDR"]
-    del environ["MYSQL_PORT_3306_TCP_PORT"]
-    if "MYSQL_ENV_MYSQL_ROOTPASSWORD" in environ:
-        del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]
-    if "MYSQL_ENV_MYSQL_ROOT_PASSWORD" in environ:
-        del environ["MYSQL_ENV_MYSQL_ROOT_PASSWORD"]
 
     # Create the group
     try:
@@ -279,6 +280,8 @@ def main(argv):
                     p.join()
                     authorized_keys(username, github)
                     sys.stderr.write("{} created.\n".format(username))
+    else:
+        sys.stderr.write("No {} file found.\n".format())
 
 
 if __name__ == "__main__":

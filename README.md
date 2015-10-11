@@ -47,7 +47,7 @@ $ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <pas
 The key is a [personal access token](https://github.com/settings/tokens) to
 avoid being rate limited by the API.
 
-### Building the container
+### Building the containers
 
 This step is no required as this container is [publicly
 available](https://hub.docker.com/r/greut/webapp-server/).
@@ -61,21 +61,24 @@ $ docker build -t greut/webapp-server:laravel -f docker/laravel/Dockerfile .
 $ docker build -t greut/webapp-server:rails -f docker/rails/Dockerfile .
 ```
 
-### Starting MySQL
+### Databases
+
+#### Starting MySQL
 
 Warning, the `-p` opens it up to the whole world (`0.0.0.0`).
 
 ```shell
-$ docker run --name database \
+$ docker run \
+    --name database.mysql \
     -e MYSQL_ROOT_PASSWORD=root \
-    -v `pwd`/../data:/var/lib/mysql \
+    -v `pwd`/../data/mysql:/var/lib/mysql \
     -p 3306:3306 \
     -d mariadb:5.5
 
 $ mysql -u root -h 127.0.0.1 -p
 ```
 
-#### Post-setup
+##### Post-setup
 
 Changing MySQL root password because the above value will be passed to each
 linked containers.
@@ -84,7 +87,7 @@ linked containers.
 $ mysqladmin -h 127.0.0.1 root -p'root' password 's3cur3@P45sw0rd'
 ```
 
-### Create the databases
+#### Create the databases
 
 For each group:
 
@@ -96,7 +99,36 @@ For each group:
     GRANT ALL PRIVILEGES ON `groupname`.* TO 'groupname'@'%';
     FLUSH PRIVILEGES;
 
+#### PostgreSQL
+
+```shell
+$ docker run \
+    --name database.postgres \
+    -e POSTGRES_PASSWORD=mysecretpassword \
+    -v `pwd`/../data/postgresql:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    -d postgres:9.3
+```
+
+##### Post-setup
+
+Changing Postgres password because the above value will be passed to each
+linked containers.
+
+```shell
+$ psql -h 127.0.0.1 \
+    -U postgres \
+    -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"
+```
+
+#### Create the databases
+
+TODO
+
+
 ### Starting the machine!
+
+#### Laravel
 
 ```shell
 $ docker run --name FunkyNinja \
@@ -105,7 +137,8 @@ $ docker run --name FunkyNinja \
     --env MYSQL_USERNAME=FunkyNinja \
     --env MYSQL_PASSWORD=root \
     --hostname funkyninja.labinfo.he-arc.ch \
-    --link database:mysql \
+    --link database.mysql:mysql \
+    --link database.postgresql:postgresql \
     -v `pwd`/.../www/FunkyNinja:/var/www \
     -v `pwd`/config:/root/config:ro \
     -p 2201:22 \
