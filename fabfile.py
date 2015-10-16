@@ -57,3 +57,7 @@ def logrotate():
     sudo(r"sed -i 's/^su root syslog/su root adm/' /etc/logrotate.conf")
     put("files/templates/*.logrotate", "/etc/logrotate.d", use_sudo=True)
     sudo("chown root:root /etc/logrotate.d/*")
+
+def php5mcrypt():
+    """Enable php5-mcrypt."""
+    sudo("php5enmod mcrypt")

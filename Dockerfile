@@ -94,7 +94,9 @@ RUN rm -r /var/www/html
 # only one worker process and no daemonize
 RUN sed -i 's/\(worker_processes\) .;/\1 1;\ndaemon off;/' /etc/nginx/nginx.conf
 
-## PHP ini
+## PHP
+RUN php5enmod mcrypt
+
 RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php5/fpm/php.ini
 RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php5/fpm/php.ini
 RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php5/fpm/php.ini
