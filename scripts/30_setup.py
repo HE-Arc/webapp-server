@@ -7,7 +7,7 @@ Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.1b2"
+__version__ = "0.2"
 
 import re
 import os
@@ -62,7 +62,7 @@ def init_user(username, groupname, **kwargs):
     paths = [("bash_profile", ".bash_profile"),
              ("gitconfig", ".gitconfig"),
              ("vimrc", ".vimrc")]
-    if kwargs["environ"]["CONFIG"] is "Laravel":
+    if kwargs["environ"]["CONFIG"] == "Laravel":
         paths.append(("README-php.md", "README.md"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
@@ -83,13 +83,14 @@ def init_user(username, groupname, **kwargs):
     shutil.copytree("/tmp/Vundle.vim", ".vim/bundle/Vundle.vim")
 
     # Laravel installer
-    if kwargs["environ"]["CONFIG"] is "Laravel":
-        shutil.copytree("/tmp/.composer", ".composer")
-
-        # Le symlink
-        os.symlink(os.path.join(homedir, ".composer/vendor/laravel/installer/laravel"),
-                   ".composer/vendor/bin/laravel")
-        os.chmod(".composer/vendor/laravel/installer/laravel", mode=0o0755)
+    if kwargs["environ"]["CONFIG"] == "Laravel":
+        sys.stderr.write("Running composer global require laravel/installer\n")
+        subprocess.check_call(["composer",
+                               "global",
+                               "require",
+                               "laravel/installer=~1.1"],
+                              stderr=subprocess.PIPE,
+                              stdout=subprocess.PIPE)
 
 
 def create_user(username, groupname, comment):
@@ -150,9 +151,9 @@ def init_group(groupname, **kwargs):
         os.mkdir("logs")
         os.mkdir("public")
 
-        if kwargs["environ"]["CONFIG"] is "Laravel":
+        if kwargs["environ"]["CONFIG"] == "Laravel":
             paths = (("index.php", "public/index.php"),
-                     ("nginx-php", "config/nginx.conf"))
+                     ("nginx-php.conf", "config/nginx.conf"))
         else:
             paths = ()
 
@@ -203,14 +204,41 @@ def main(argv):
         environ["MYSQL_PORT"] = environ["MYSQL_PORT_3306_TCP_PORT"]
         del environ["MYSQL_PORT_3306_TCP_ADDR"]
         del environ["MYSQL_PORT_3306_TCP_PORT"]
-        if "MYSQL_ENV_MYSQL_ROOTPASSWORD" in environ:
-            del environ["MYSQL_ENV_MYSQL_ROOTPASSWORD"]
         if "MYSQL_ENV_MYSQL_ROOT_PASSWORD" in environ:
             del environ["MYSQL_ENV_MYSQL_ROOT_PASSWORD"]
+
+    if "POSTGRES_PORT_5432_TCP_ADDR" in environ:
+        environ["POSTGRES_HOST"] = environ["POSTGRES_PORT_5432_TCP_ADDR"]
+        environ["POSTGRES_PORT"] = environ["POSTGRES_PORT_5432_TCP_PORT"]
+        del environ["POSTGRES_PORT_5432_TCP_ADDR"]
+        del environ["POSTGRES_PORT_5432_TCP_PORT"]
+        if "POSTGRES_ENV_POSTGRES_PASSWORD" in environ:
+            del environ["POSTGRES_ENV_POSTGRES_PASSWORD"]
+
+    if "REDIS_PORT_6379_TCP_ADDR" in environ:
+        environ["REDIS_HOST"] = environ["REDIS_PORT_6379_TCP_ADDR"]
+        environ["REDIS_PORT"] = environ["REDIS_PORT_6379_TCP_PORT"]
+        del environ["REDIS_PORT_6379_TCP_ADDR"]
+        del environ["REDIS_PORT_6379_TCP_PORT"]
+
+    if "MEMCACHED_PORT_11211_TCP_ADDR" in environ:
+        environ["MEMCACHED_HOST"] = environ["MEMCACHED_PORT_11211_TCP_ADDR"]
+        environ["MEMCACHED_PORT"] = environ["MEMCACHED_PORT_11211_TCP_PORT"]
+        del environ["MEMCACHED_PORT_11211_TCP_ADDR"]
 
     del environ["LC_CTYPE"]
     del environ["LANG"]
     del environ["INITRD"]
+
+    # Configure SSMTP
+    subprocess.check_call(["sed",
+                           "-i",
+                           "s/mailhub=mail/mailhub={}:{}/".format(
+                               environ["MAILCATCHER_PORT_1025_TCP_ADDR"],
+                               environ["MAILCATCHER_PORT_1025_TCP_PORT"]),
+                           "/etc/ssmtp/ssmtp.conf"],
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE)
 
     # Create the group
     try:

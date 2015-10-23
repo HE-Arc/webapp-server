@@ -26,7 +26,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     php5-xdebug
 
 # Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
@@ -49,8 +49,11 @@ RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php5/cli/php.ini
 ADD scripts/runit/php5-fpm /etc/service/php5-fpm/run
 RUN chmod +x /etc/service/php5-fpm/run
 
-# Composer / Laravel
-ADD files/composer /tmp/.composer
+# Composer (but no Laravel)
+RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 # Init.d
 ENV CONFIG Laravel
+# So one don't have to rebuild the base everytime ;-)
+ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
+RUN chmod +x /etc/my_init.d/30_setup.py

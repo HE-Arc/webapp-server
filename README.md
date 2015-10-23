@@ -123,8 +123,14 @@ $ psql -h 127.0.0.1 \
 
 #### Create the databases
 
-TODO
-
+```shell
+$ psql -h 127.0.0.1 \
+    -U postgres \
+    -c "CREATE ROLE groupname LOGIN PASSWORD 'password' CREATEDB VALID UNTIL 'infinity'"
+$ psql -h 127.0.0.1 \
+    -U postgres \
+    -c "CREATE DATABASE groupname WITH OWNER=groupname ENCODING='UTF-8'"
+```
 
 ### Starting the machine!
 

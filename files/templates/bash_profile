@@ -7,18 +7,6 @@
 # So the files your create can be modified by the other members of your group.
 umask 002
 
-alias ls='ls --color=auto'
-export EDITOR=nano
-export GREP_OPTIONS='--color=auto'
-{% for k, v in environ.items() -%}
-export {{ k }}='{{ v }}'
-{% endfor -%}
-export PATH+=":/usr/games/"
-{% if environ.CONFIG is "Laravel" -%}
-export PATH+=":$HOME/.composer/vendor/bin"
-{% endif -%}
-export DEBIAN_FRONTEND=noninteractive
-
 # Be a nerd
 fortune fr | iconv -f iso-8859-1 -t utf-8 | cowsay -f three-eyes
 toilet -f pagga " webapp: {{ groupname }}"
@@ -30,3 +18,18 @@ echo "   Please checkout the README.md file for all the details!"
 echo ""
 echo "                                                   Have fun!"
 echo ""
+
+# Dull configuration
+alias ls='ls --color=auto'
+export EDITOR=nano
+export GREP_OPTIONS='--color=auto'
+{% for k, v in environ.items() %}
+  {%- if "." not in k and ":" not in k -%}
+export {{ k }}='{{ v }}'
+  {%- endif %}
+{% endfor -%}
+export PATH+=":/usr/games/"
+{% if environ.CONFIG == "Laravel" -%}
+export PATH+=":$HOME/.composer/vendor/bin"
+{% endif -%}
+export DEBIAN_FRONTEND=noninteractive

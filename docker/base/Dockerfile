@@ -67,8 +67,8 @@ RUN locale-gen it_CH
 RUN locale-gen it_CH.UTF-8
 RUN update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
-# Node.js stuff.
 RUN npm install -g \
+    bower \
     gulp \
     grunt-cli \
     yo
@@ -92,8 +92,11 @@ RUN rm -r /var/www/html
 # only one worker process and no daemonize
 RUN sed -i 's/\(worker_processes\) .;/\1 1;\ndaemon off;/' /etc/nginx/nginx.conf
 
-## MYSQL client
+# MYSQL client
 RUN set -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.conf
+
+# SSMTP
+RUN sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf
 
 #
 # SUDO for any user
@@ -107,20 +110,16 @@ RUN chmod +x /etc/service/nginx/run
 ADD scripts/runit/nginx-log-forwarder /etc/service/nginx-log-forwarder/run
 RUN chmod +x /etc/service/nginx-log-forwarder/run
 
-# Files
-ADD files/templates /tmp/templates
 # Vundle
-ADD files/vundle /tmp/Vundle.vim
+RUN git clone https://github.com/VundleVim/Vundle.vim.git /tmp/Vundle.vim
 
 # Expose VOLUME
+VOLUME /tmp/templates
 VOLUME /root/config
 VOLUME /var/www
 
 # Config
 ENV GROUPNAME unknown
-ENV MYSQL_DATABASE test
-ENV MYSQL_USERNAME test
-ENV MYSQL_PASSWORD test
 ENV CONFIG Base
 
 # Init.d
