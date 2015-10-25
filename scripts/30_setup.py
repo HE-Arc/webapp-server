@@ -146,20 +146,20 @@ def init_group(groupname, **kwargs):
     os.chdir(homedir)
     os.umask(0o002)  # readable by group members
 
-    if not os.path.exists("config"):
-        os.mkdir("config")
-        os.mkdir("logs")
-        os.mkdir("public")
+    for p in ("config", "logs", "public"):
+        if not os.path.exists(p):
+            os.mkdir(p)
 
-        if kwargs["environ"]["CONFIG"] == "Laravel":
-            paths = (("index.php", "public/index.php"),
-                     ("nginx-php.conf", "config/nginx.conf"))
-        else:
-            paths = ()
+    if kwargs["environ"]["CONFIG"] == "Laravel":
+        paths = (("index.php", "public/index.php"),
+                 ("nginx-php.conf", "config/nginx.conf"))
+    else:
+        paths = ()
 
-        for tpl, dest in paths:
-            if not os.path.exists(dest):
-                render(tpl, dest, groupname=groupname, **kwargs)
+    for tpl, dest in paths:
+        if not os.path.exists(dest):
+            render(tpl, dest, groupname=groupname, **kwargs)
+
     return homedir, uid, gid
 
 
@@ -230,6 +230,14 @@ def main(argv):
     del environ["LANG"]
     del environ["INITRD"]
 
+    # Create the group
+    try:
+        p = pwd.getpwnam(groupname)
+        sys.stderr.write("Setup already done!\n")
+        return 0
+    except KeyError:
+        pass
+
     # Configure SSMTP
     subprocess.check_call(["sed",
                            "-i",
@@ -240,13 +248,6 @@ def main(argv):
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE)
 
-    # Create the group
-    try:
-        p = pwd.getpwnam(groupname)
-        sys.stderr.write("Setup already done!\n")
-        return 1
-    except KeyError:
-        pass
 
     # Create the group
     create_group(groupname)

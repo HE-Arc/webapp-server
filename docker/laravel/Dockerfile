@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     php5-imagick \
     php5-mcrypt \
     php5-mysql \
+    php5-pgsql \
     php5-xdebug
 
 # Clean up APT when done.
@@ -52,8 +53,5 @@ RUN chmod +x /etc/service/php5-fpm/run
 # Composer (but no Laravel)
 RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
-# Init.d
+# Conf
 ENV CONFIG Laravel
-# So one don't have to rebuild the base everytime ;-)
-ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
-RUN chmod +x /etc/my_init.d/30_setup.py

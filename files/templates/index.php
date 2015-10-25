@@ -32,6 +32,7 @@ $pgsql = [
 unset($_SERVER["MYSQL_PASSWORD"]);
 unset($_SERVER["POSTGRES_PASSWORD"]);
 
+// MySQL
 $conn = new PDO("mysql:host={$mysql['host']};".
                 "port={$mysql['port']};dbname={$mysql['dbname']}",
                 $mysql["username"], $mysql["password"]);
@@ -40,14 +41,14 @@ foreach ($conn->query("SHOW TABLES;") as $row) {
     echo " -  " . $row[0] . "\n";
 }
 echo "-->\n\n";
-$conn->close();
 
+// Postgres
 $conn = new PDO("pgsql:host={$pgsql['host']};".
-                "port={$pgsql['port']};dbname{$pgsql['dbname']}",
+                "port={$pgsql['port']};dbname={$pgsql['dbname']}",
                 $pgsql["username"], $pgsql["password"]);
 
 echo "<!-- All the PostgreSQL tables:\n";
-foreach ($conn->query("\\dt") as $row) {
+foreach ($conn->query("select tablename from pg_tables") as $row) {
     echo " -  " . $row[0] . "\n";
 }
 echo "-->\n\n";

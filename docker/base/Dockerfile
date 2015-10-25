@@ -34,7 +34,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     mariadb-client \
     mercurial \
     nano \
-    nginx \
+    nginx-extras \
     nodejs \
     postgresql-client \
     pwgen \
@@ -89,11 +89,23 @@ RUN chmod 0775 /var/run/screen
 ## Nginx
 RUN rm /etc/nginx/sites-enabled/default
 RUN rm -r /var/www/html
-# only one worker process and no daemonize
-RUN sed -i 's/\(worker_processes\) .;/\1 1;\ndaemon off;/' /etc/nginx/nginx.conf
+# 4 worker processes and no daemonize
+RUN sed -i 's/\(worker_processes\) .;/\1 4;\ndaemon off;/' /etc/nginx/nginx.conf
+# allow environment variables to be read by nginx confs
+RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env MYSQL_DATABASE;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
+
+RUN sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_PORT;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env POSTGRES_DATABASE;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
 
 # MYSQL client
-RUN set -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.conf
+RUN sed -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.cnf
 
 # SSMTP
 RUN sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf
