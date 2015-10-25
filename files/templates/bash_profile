@@ -27,7 +27,7 @@ export GREP_OPTIONS='--color=auto'
   {%- if "." not in k and ":" not in k %}
 export {{ k }}='{{ v }}'
   {%- endif -%}
-{% endfor -%}
+{% endfor %}
 export PATH+=":/usr/games/"
 {% if environ.CONFIG == "Laravel" -%}
 export PATH+=":$HOME/.composer/vendor/bin"

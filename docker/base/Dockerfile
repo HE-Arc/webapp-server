@@ -104,6 +104,12 @@ RUN sed -i 's/^\(http {\)/env POSTGRES_DATABASE;\n\1/' /etc/nginx/nginx.conf
 RUN sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf
 RUN sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
 
+RUN sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
+
+RUN sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
+RUN sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
+
 # MYSQL client
 RUN sed -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.cnf
 

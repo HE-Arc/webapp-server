@@ -22,8 +22,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     php5-fpm \
     php5-imagick \
     php5-mcrypt \
+    php5-memcache \
+    php5-memcached \
     php5-mysql \
     php5-pgsql \
+    php5-redis \
     php5-xdebug
 
 # Clean up APT when done.

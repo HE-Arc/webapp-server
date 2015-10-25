@@ -218,13 +218,10 @@ def main(argv):
     if "REDIS_PORT_6379_TCP_ADDR" in environ:
         environ["REDIS_HOST"] = environ["REDIS_PORT_6379_TCP_ADDR"]
         environ["REDIS_PORT"] = environ["REDIS_PORT_6379_TCP_PORT"]
-        del environ["REDIS_PORT_6379_TCP_ADDR"]
-        del environ["REDIS_PORT_6379_TCP_PORT"]
 
     if "MEMCACHED_PORT_11211_TCP_ADDR" in environ:
         environ["MEMCACHED_HOST"] = environ["MEMCACHED_PORT_11211_TCP_ADDR"]
         environ["MEMCACHED_PORT"] = environ["MEMCACHED_PORT_11211_TCP_PORT"]
-        del environ["MEMCACHED_PORT_11211_TCP_ADDR"]
 
     del environ["LC_CTYPE"]
     del environ["LANG"]

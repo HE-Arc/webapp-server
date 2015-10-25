@@ -53,6 +53,18 @@ foreach ($conn->query("select tablename from pg_tables") as $row) {
 }
 echo "-->\n\n";
 
+// Memcached
+$memcache = new Memcached()
+$memcache->addServer($_SERVER["MEMCACHED_HOST"], (int) $_SERVER["MEMCACHED_PORT"]);
+$memcache->set("foo", 1);
+$memcache->increment("foo");
+echo "<!-- Memcache: " . $memcache->get("foo") . "-->\n\n";
+
+// Redis
+$redis = new Redis();
+$redis->connect($_SERVER["REDIS_HOST"], (int) $_SERVER["REDIS_PORT"]);
+echo "<!-- Redis: " . $redis->ping() . " -->\n\n";
+
 // Sending emails
 mail("test@test.com", "Test", "Hello World!");
 
