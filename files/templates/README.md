@@ -85,10 +85,10 @@ Modify `blog/config/database.php` as such:
         // ...
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', $_SERVER['MYSQL_HOST']),
-            'database' => env('DB_DATABASE', $_SERVER['MYSQL_DATABASE']),
-            'username' => env('DB_USERNAME', $_SERVER['MYSQL_USERNAME']),
-            'password' => env('DB_PASSWORD', $_SERVER['MYSQL_PASSWORD']),
+            'host' => env('DB_HOST', env('MYSQL_HOST', 'forge')),
+            'database' => env('DB_DATABASE', env('MYSQL_DATABASE', 'forge')),
+            'username' => env('DB_USERNAME', env('MYSQL_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', env('MYSQL_PASSWORD', '')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
