@@ -62,8 +62,11 @@ def init_user(username, groupname, **kwargs):
     paths = [("bash_profile", ".bash_profile"),
              ("gitconfig", ".gitconfig"),
              ("vimrc", ".vimrc")]
-    if kwargs["environ"]["CONFIG"] == "Laravel":
+    config = kwargs["environ"].get("CONFIG", None)
+    if config == "Laravel":
         paths.append(("README-php.md", "README.md"))
+    if config == "Rails":
+        paths.append(("README-ror.md", "README.md"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
@@ -85,24 +88,30 @@ def init_user(username, groupname, **kwargs):
     # Laravel installer
     if kwargs["environ"]["CONFIG"] == "Laravel":
         sys.stderr.write("Running composer global require laravel/installer\n")
+        """ works, so ignore it.
         subprocess.check_call(["composer",
                                "global",
                                "require",
                                "laravel/installer=~1.1"],
                               stderr=subprocess.PIPE,
                               stdout=subprocess.PIPE)
+        """
 
 
-def create_user(username, groupname, comment):
+def create_user(username, groupname, comment, environ=None):
     """
     Create a UNIX user (the group must exist beforehand)
     """
+    groups = ["users"]
+    if environ is not None and environ.get("CONFIG", None) == "Rails":
+        groups.append("rvm")
+
     subprocess.check_call(["useradd", username,
                            "-c", comment,
                            "--create-home",
                            "--no-user-group",
                            "--shell", "/bin/bash",
-                           "--groups", "users"],
+                           "--groups", ",".join(groups)],
                           stderr=subprocess.PIPE,
                           stdout=subprocess.PIPE)
     subprocess.check_call(["usermod", username,
@@ -146,13 +155,23 @@ def init_group(groupname, **kwargs):
     os.chdir(homedir)
     os.umask(0o002)  # readable by group members
 
-    for p in ("config", "logs", "public"):
-        if not os.path.exists(p):
-            os.mkdir(p)
+    config = kwargs["environ"].get("CONFIG", None)
 
-    if kwargs["environ"]["CONFIG"] == "Laravel":
+    dirs = ["config", "logs", "public"]
+    if config == "Rails":
+        dirs.append(".gem/ruby/2.2.0")
+
+    for p in dirs:
+        if not os.path.exists(p):
+            os.makedirs(p)
+
+    if config == "Laravel":
         paths = (("index.php", "public/index.php"),
                  ("nginx-php.conf", "config/nginx.conf"))
+    if config == "Rails":
+        paths = (("nginx-ror.conf", "config/nginx.conf"),
+                 ("Gemfile", "Gemfile"),
+                 ("config.ru", "config.ru"))
     else:
         paths = ()
 
@@ -293,7 +312,7 @@ def main(argv):
                     github = row[5]
                     # comment = row[6] unless
                     username = formatUserName(firstname)
-                    create_user(username, groupname, classname)
+                    create_user(username, groupname, classname, environ)
                     p = multiprocessing.Process(target=init_user,
                                                 args=(username,
                                                       groupname),

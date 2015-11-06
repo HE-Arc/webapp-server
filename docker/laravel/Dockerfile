@@ -56,5 +56,5 @@ RUN chmod +x /etc/service/php5-fpm/run
 # Composer (but no Laravel)
 RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
-# Conf
+# Config
 ENV CONFIG Laravel

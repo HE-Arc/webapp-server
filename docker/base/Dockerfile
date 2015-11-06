@@ -19,7 +19,9 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
 RUN apt-get upgrade -q -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     ack-grep \
+    apt-transport-https \
     build-essential \
+    ca-certificates \
     cowsay \
     curl \
     fortunes \
@@ -30,6 +32,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     libsqlite3-dev \
     libxext6 \
     libxrender1 \
+    lsof \
     man \
     mariadb-client \
     mercurial \
@@ -89,8 +92,8 @@ RUN chmod 0775 /var/run/screen
 ## Nginx
 RUN rm /etc/nginx/sites-enabled/default
 RUN rm -r /var/www/html
-# 4 worker processes and no daemonize
-RUN sed -i 's/\(worker_processes\) .;/\1 4;\ndaemon off;/' /etc/nginx/nginx.conf
+# auto worker processes and no daemonize
+RUN sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' /etc/nginx/nginx.conf
 # allow environment variables to be read by nginx confs
 RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
 RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf

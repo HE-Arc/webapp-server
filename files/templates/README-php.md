@@ -67,14 +67,6 @@ The error log will be useful.
 
 ### Configuring the database connection
 
-Modify the following lines in `blog/.env` (the filename starts with a dot).
-You have to comment out the `DB_*` entries as we don't need them here.
-
-    #DB_HOST=localhost
-    #DB_DATABASE=homestead
-    #DB_USERNAME=homestead
-    #DB_PASSWORD=secret
-
 We are gonna read the database configuration from the environment. See
 [12factors](http://12factor.net/config).
 
@@ -85,10 +77,10 @@ Modify `blog/config/database.php` as such:
         // ...
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', env('MYSQL_HOST', 'forge')),
-            'database' => env('DB_DATABASE', env('MYSQL_DATABASE', 'forge')),
-            'username' => env('DB_USERNAME', env('MYSQL_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', env('MYSQL_PASSWORD', '')),
+            'host' => env('MYSQL_HOST', env('DB_HOST', 'localhost')),
+            'database' => env('MYSQL_DATABASE', env('DB_DATABASE', 'forge')),
+            'username' => env('MYSQL_USERNAME', env('DB_USERNAME', 'forge')),
+            'password' => env('MYSQL_PASSOWRD', env('DB_PASSWORD', '')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
@@ -98,9 +90,9 @@ Modify `blog/config/database.php` as such:
     ],
     // ...
 
-`$_SERVER['MYSQL_HOST']` is the environment variable containing the host for
-the MySQL connection, much more flexible than `.env` files. Keep the `.env` file
-for you local setup.
+`env('MYSQL_HOST') (or `$_SERVER['MYSQL_HOST']`) is the environment variable
+containing the host for the MySQL connection. It's much more flexible than
+`.env` files. Keep the `.env` file for you local setup.
 
 What is `utf8mb4`? See: https://mathiasbynens.be/notes/mysql-utf8mb4
 
@@ -116,7 +108,7 @@ The default model was set for utf8 and not utf8mb4, so we have to tweak it a
 little bit. Open `blog/database/migrations/2014_10_12_000000_create_users_table.php`
 
     //$table->string('email')->unique();
-    $table->string('email', 190)->unique();
+    $table->string('email', 191)->unique();
 
 Now, we are ready to run the migrations:
 
@@ -134,43 +126,4 @@ Et voilà!
     password_resets
     users
 
-
-## Tools
-
-Other great tools you might need, one day:
-
-    $ ack-grep
-    $ gulp
-    $ grunt
-    $ npm
-    $ pip3
-    $ tmux
-    $ vim
-    $ wkhtmltoimage
-    $ wkhtmltopdf
-    $ screen
-    $ yo
-
-
-## Troubleshooting
-
-Do you have a problem or need anything? Send us an issue:
-https://github.com/HE-Arc/webapp-server/issues
-
-
-## More
-
-### ViM
-
-Vim has been set up with Vundle and some plugins. To install them run:
-
-    $ vim +PluginInstall +qall
-
-Then, fell free to modify `~/.vimrc`.
-
-By default, your editor is `nano`, you can change this by editing the `$EDITOR`
-variable in `~/.bash_profile`.
-
-In case, you wanna learn a bit more about vim, run the `vimtutor` command. Why
-would I learn vim anyway? Because, being able to work on a remote machine with
-only a command-line interface is a skill you want to have.
+{% include 'README-footer.md' -%}
