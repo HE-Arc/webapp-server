@@ -13,26 +13,24 @@ ENV HOME /root
 # Use baseimage-docker's init process.
 CMD ["/sbin/my_init"]
 
-# https://www.phusionpassenger.com/library/install/nginx/install/oss/wily/
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys 561F9B9CAC40B2F7
-
-RUN echo deb https://oss-binaries.phusionpassenger.com/apt/passenger wily main \
-    > /etc/apt/sources.list.d/passenger.list
-
 RUN apt-get update -q
 RUN apt-get upgrade -q -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
-    -o Dpkg::Options::="--force-confdef" \
-    -o Dpkg::Options::="--force-confold" \
+    autoconf \
+    automake \
+    bison \
+    gawk \
+    libgdbm-dev \
+    libffi-dev \
+    libncurses5-dev \
     libmagickwand-dev \
     libqt4-webkit \
     libqt4-dev \
+    libreadline6-dev \
+    libyaml-dev \
     libv8-dev \
     libxml2-dev \
     libxslt1-dev \
-    nginx-extras # we must reinstall/upgrade nginx-extras with passenger \
-    passenger \
     xvfb
 
 # Clean up APT when done.
@@ -48,13 +46,13 @@ RUN /bin/bash -l -c "\
     source /etc/profile.d/rvm.sh && \
     rvm install 2.2 && \
     rvm alias create default 2.2 && \
-    gem install bundler rails rack passenger"
+    rvm gem install bundler rails rack uwsgi"
 
 RUN rm rvm-installer*
 
-# Nginx
-RUN sed -i 's/^\(http {\)/\1\npassenger_ruby \/usr\/bin\/passenger_free_ruby;\n/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/\1\npassenger_root \/usr\/lib\/ruby\/vendor_ruby\/phusion_passenger\/locations.ini;/' /etc/nginx/nginx.conf
+## Runit
+ADD scripts/runit/uwsgi /etc/service/php5-fpm/uwsgi
+RUN chmod +x /etc/service/uwsgi/run
 
 # Config
 ENV CONFIG Rails

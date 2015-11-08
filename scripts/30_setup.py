@@ -157,27 +157,35 @@ def init_group(groupname, **kwargs):
 
     config = kwargs["environ"].get("CONFIG", None)
 
-    dirs = ["config", "logs", "public"]
+    paths = []
+    dirs = ["config", "logs"]
+
+    if config == "Laravel":
+        dirs.append("public")
+
+        paths = (("index.php", "public/index.php"),
+                 ("nginx-php.conf", "config/nginx.conf"))
+
     if config == "Rails":
+        dirs.append("app/public")
         dirs.append(".gem/ruby/2.2.0")
+
+        paths = (("nginx-ror.conf", "config/nginx.conf"),
+                 ("uwsgi.ini", "conf/uwsgi.ini"),
+                 ("Gemfile", "app/Gemfile"),
+                 ("Gemfile.lock", "app/Gemfile.lock"),
+                 ("config.ru", "app/config.ru"))
 
     for p in dirs:
         if not os.path.exists(p):
             os.makedirs(p)
 
-    if config == "Laravel":
-        paths = (("index.php", "public/index.php"),
-                 ("nginx-php.conf", "config/nginx.conf"))
-    if config == "Rails":
-        paths = (("nginx-ror.conf", "config/nginx.conf"),
-                 ("Gemfile", "Gemfile"),
-                 ("config.ru", "config.ru"))
-    else:
-        paths = ()
-
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, groupname=groupname, **kwargs)
+
+    if config == "Rails":
+        shutil.copy2("/tmp/templates/uwsgi-nginx.jpg", "app/public")
 
     return homedir, uid, gid
 

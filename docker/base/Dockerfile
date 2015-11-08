@@ -28,6 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     fortunes-fr \
     fontconfig \
     git \
+    libcurl4-gnutls-dev \
     libpq-dev \
     libsqlite3-dev \
     libxext6 \
