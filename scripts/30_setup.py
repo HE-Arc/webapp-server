@@ -171,7 +171,7 @@ def init_group(groupname, **kwargs):
         dirs.append(".gem/ruby/2.2.0")
 
         paths = (("nginx-ror.conf", "config/nginx.conf"),
-                 ("uwsgi.ini", "conf/uwsgi.ini"),
+                 ("uwsgi.ini", "config/uwsgi.ini"),
                  ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))

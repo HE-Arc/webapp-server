@@ -46,12 +46,12 @@ RUN /bin/bash -l -c "\
     source /etc/profile.d/rvm.sh && \
     rvm install 2.2 && \
     rvm alias create default 2.2 && \
-    rvm gem install bundler rails rack uwsgi"
+    gem install bundler rails rack uwsgi"
 
 RUN rm rvm-installer*
 
 ## Runit
-ADD scripts/runit/uwsgi /etc/service/php5-fpm/uwsgi
+ADD scripts/runit/uwsgi /etc/service/uwsgi/run
 RUN chmod +x /etc/service/uwsgi/run
 
 # Config
