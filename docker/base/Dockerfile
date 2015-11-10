@@ -4,8 +4,7 @@ FROM jedisct1/phusion-baseimage-latest:latest
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
 # Ports
-EXPOSE 22
-EXPOSE 80
+EXPOSE 22 80
 
 # Set correct environment variables.
 ENV HOME /root
@@ -63,13 +62,13 @@ RUN wget -nv http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.
 RUN dpkg -i /tmp/wkhtmltox.deb
 
 # Locale
-RUN locale-gen fr_CH
-RUN locale-gen fr_CH.UTF-8
-RUN locale-gen de_CH
-RUN locale-gen de_CH.UTF-8
-RUN locale-gen it_CH
-RUN locale-gen it_CH.UTF-8
-RUN update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
+RUN locale-gen fr_CH && \
+    locale-gen fr_CH.UTF-8 && \
+    locale-gen de_CH && \
+    locale-gen de_CH.UTF-8 && \
+    locale-gen it_CH && \
+    locale-gen it_CH.UTF-8 && \
+    update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 RUN npm install -g \
     bower \
@@ -79,6 +78,9 @@ RUN npm install -g \
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Vundle
+RUN git clone https://github.com/VundleVim/Vundle.vim.git /tmp/Vundle.vim
 
 # Enable SSHD
 RUN rm -f /etc/service/sshd/down
@@ -91,28 +93,29 @@ RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 RUN chmod 0775 /var/run/screen
 
 ## Nginx
-RUN rm /etc/nginx/sites-enabled/default
-RUN rm -r /var/www/html
-# auto worker processes and no daemonize
-RUN sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' /etc/nginx/nginx.conf
-# allow environment variables to be read by nginx confs
-RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env MYSQL_DATABASE;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
-
-RUN sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_PORT;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env POSTGRES_DATABASE;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
-
-RUN sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
-
-RUN sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf
-RUN sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
+RUN rm /etc/nginx/sites-enabled/default && \
+    rm -r /var/www/html && \
+    # auto worker processes and no daemonize (for my_init.d)
+    sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' /etc/nginx/nginx.conf && \
+    # allow environment variables to be read by nginx confs
+    # MySQL
+    sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env MYSQL_DATABASE;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
+    # Postgres
+    sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env POSTGRES_DATABASE;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
+    # Memcached
+    sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf && \
+    # Redis
+    sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
+    sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
 
 # MYSQL client
 RUN sed -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.cnf
@@ -128,22 +131,17 @@ RUN chmod 0440 /etc/sudoers.d/users
 
 ## Runit
 ADD scripts/runit/nginx /etc/service/nginx/run
-RUN chmod +x /etc/service/nginx/run
 ADD scripts/runit/nginx-log-forwarder /etc/service/nginx-log-forwarder/run
-RUN chmod +x /etc/service/nginx-log-forwarder/run
-
-# Vundle
-RUN git clone https://github.com/VundleVim/Vundle.vim.git /tmp/Vundle.vim
+ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
+RUN chmod +x /etc/service/nginx/run && \
+    chmod +x /etc/service/nginx-log-forwarder/run && \
+    chmod +x /etc/my_init.d/30_setup.py
 
 # Expose VOLUME
-VOLUME /tmp/templates
-VOLUME /root/config
-VOLUME /var/www
+VOLUME /tmp/templates \
+    /root/config \
+    /var/www
 
 # Config
 ENV GROUPNAME unknown
 ENV CONFIG Base
-
-# Init.d
-ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
-RUN chmod +x /etc/my_init.d/30_setup.py

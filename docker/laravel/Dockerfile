@@ -1,11 +1,10 @@
 # Superduper dockerfile to manage php application!
 
-FROM greut/webapp-server:latest
+FROM greut/webapp-server:base
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
 # Ports
-EXPOSE 22
-EXPOSE 80
+EXPOSE 22 80
 
 # Set correct environment variables.
 ENV HOME /root
