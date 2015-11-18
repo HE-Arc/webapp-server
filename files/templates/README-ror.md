@@ -15,9 +15,29 @@ Most of the stuff required are installed by default as you can see.
 ### Creation of a Ruby on Rails web application
 
     $ cd www
-    $ rails new blog
+    $ rails new blog --database=postgres|mysql
     $ cd blog
     $ bundle install --deployment
+
+### Configure the database.yml file
+
+    production:
+      <<: *default
+      database: <->
+      adapter: postgresql
+      encoding: unicode
+      pool: 5
+      timeout: 5000
+      database: <%= ENV['POSTGRES_USERNAME'] %>
+      username: <%= ENV['POSTGRES_USERNAME'] %>
+      password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+### Run the migrations.
+
+    $ export RAILS_ENV=production
+    $ rake db:create
+    $ rake db:migrate
+
 
 ### Running the server
 
@@ -29,12 +49,8 @@ Instead of Composer, you’ll use Bundler and Ruby Gems.
 
 ### Installing global gems
 
-If you wished to install extra ruby gems.
+If you wish to install extra ruby gems globally, use rvmsudo:
 
     $ rvmsudo gem install rails
 
 {% include 'README-footer.md' -%}
-
-### Configuring the database
-
-

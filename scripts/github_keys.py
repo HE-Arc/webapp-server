@@ -44,12 +44,12 @@ def main(argv):
         # skip headers
         next(reader)
         for row in reader:
-            username = row[5]
+            username = row[6]
             if not username:
                 continue
 
             key = os.path.join(destination, "{}.key".format(username))
-            if not os.path.exists(key):
+            if not os.path.exists(key) and not username.endswith(".isic"):
                 content = github(username, (github_user, github_key))
                 if (content):
                     with open(key, "w+") as g:
