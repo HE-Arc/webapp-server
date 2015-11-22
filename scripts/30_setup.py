@@ -21,6 +21,7 @@ import subprocess
 import unicodedata
 import multiprocessing
 
+from collections import namedtuple
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -302,36 +303,27 @@ def main(argv):
 
     # Create users
     students = "/root/config/students.tsv"
+    StudentRecord = namedtuple("StudentRecord",
+                               "lastname, firstname, email, classname, room, "
+                               "group, github, comment")
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
             reader = csv.reader(f, delimiter="\t")
             # skip headers
             next(reader)
-            for row in reader:
+            for student in map(StudentRecord._make, reader):
                 # Only pick the users of the given group
-                group = row[4]
-                if group in (groupname, "admin"):
-                    # admin become part of the group
-                    lastname = row[0]
-                    firstname = row[1]
-                    email = row[2]
-                    classname = row[3]
-                    # group = row[4] set above
-                    github = row[5]
-                    # comment = row[6] unless
-                    username = formatUserName(firstname)
-                    create_user(username, groupname, classname, environ)
+                if student.group in (groupname, "admin"):
+                    username = formatUserName(student.firstname)
+                    create_user(username, groupname, student.classname, environ)
                     p = multiprocessing.Process(target=init_user,
                                                 args=(username,
                                                       groupname),
-                                                kwargs=dict(firstname=firstname,
-                                                            lastname=lastname,
-                                                            email=email,
-                                                            classname=classname,
-                                                            environ=environ))
+                                                kwargs=dict(environ=environ,
+                                                            **student._asdict()))
                     p.start()
                     p.join()
-                    authorized_keys(username, github)
+                    authorized_keys(username, student.github)
                     sys.stderr.write("{} created.\n".format(username))
     else:
         sys.stderr.write("No {} file found.\n".format())
