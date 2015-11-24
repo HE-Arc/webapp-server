@@ -86,7 +86,7 @@ or if you prefer MySQL:
 
 ### Running the server
 
-Nothing to see here! I should work as is.
+Nothing to see here! It should work as is.
 
 ### Differences with Laravel
 

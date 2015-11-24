@@ -139,7 +139,7 @@ RUN chmod +x /etc/service/nginx/run && \
     chmod +x /etc/my_init.d/30_setup.py
 
 # Expose VOLUME
-VOLUME /tmp/templates \
+VOLUME /var/templates \
     /root/config \
     /var/www
 

@@ -25,7 +25,7 @@ from collections import namedtuple
 from jinja2 import Environment, FileSystemLoader
 
 
-env = Environment(loader=FileSystemLoader("/tmp/templates"))
+env = Environment(loader=FileSystemLoader("/var/templates"))
 wwwdir = "/var/www"
 
 
@@ -186,7 +186,7 @@ def init_group(groupname, **kwargs):
             render(tpl, dest, groupname=groupname, **kwargs)
 
     if config == "Rails":
-        shutil.copy2("/tmp/templates/uwsgi-nginx.jpg", "app/public")
+        shutil.copy2("/var/templates/uwsgi-nginx.jpg", "app/public")
 
     return homedir, uid, gid
 

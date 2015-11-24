@@ -28,9 +28,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
         libxslt1-dev \
         xvfb
 
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
-
 # RVM
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 && \
     curl -O https://raw.githubusercontent.com/rvm/rvm/master/binscripts/rvm-installer && \
@@ -41,8 +38,11 @@ RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A170311380
         source /etc/profile.d/rvm.sh && \
         rvm install 2.2 && \
         rvm alias create default 2.2 && \
-        gem install bundler rails rack uwsgi" && \
+        gem install --no-ri --no-rdoc bundler rails rack uwsgi" && \
     rm rvm-installer*
+
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## Runit
 ADD scripts/runit/uwsgi /etc/service/uwsgi/run
