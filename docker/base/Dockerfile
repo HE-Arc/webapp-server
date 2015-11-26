@@ -81,7 +81,7 @@ RUN npm install -g \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Vundle
-RUN git clone https://github.com/VundleVim/Vundle.vim.git /tmp/Vundle.vim
+RUN git clone https://github.com/VundleVim/Vundle.vim.git /var/Vundle.vim
 
 # Enable SSHD
 RUN rm -f /etc/service/sshd/down

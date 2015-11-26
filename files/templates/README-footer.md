@@ -25,11 +25,8 @@ https://github.com/HE-Arc/webapp-server/issues
 
 ### ViM
 
-Vim has been set up with Vundle and some plugins. To install them run:
-
-    $ vim +PluginInstall +qall
-
-Then, fell free to modify `~/.vimrc`.
+Vim has been set up with Vundle and some plugins. Fell free to modify your
+`~/.vimrc`.
 
 By default, your editor is `nano`, you can change this by editing the `$EDITOR`
 variable in `~/.bash_profile`.

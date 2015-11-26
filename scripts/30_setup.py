@@ -84,7 +84,10 @@ def init_user(username, groupname, **kwargs):
     os.mkdir(".vim/bundle")
 
     # Vundle
-    shutil.copytree("/tmp/Vundle.vim", ".vim/bundle/Vundle.vim")
+    shutil.copytree("/var/Vundle.vim", ".vim/bundle/Vundle.vim")
+    subprocess.check_call(["vim", "+PluginInstall", "+qall!"],
+                          stderr=subprocess.PIPE,
+                          stdout=subprocess.PIPE)
 
     # Laravel installer
     if kwargs["environ"]["CONFIG"] == "Laravel":
