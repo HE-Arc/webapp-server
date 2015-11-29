@@ -84,8 +84,9 @@ def init_user(username, groupname, **kwargs):
     os.mkdir(".vim/bundle")
 
     # Vundle
+    sys.stderr.write("Running Vundle PluginInstall... be patient.\n")
     shutil.copytree("/var/Vundle.vim", ".vim/bundle/Vundle.vim")
-    subprocess.check_call(["vim", "+PluginInstall", "+qall!"],
+    subprocess.check_call(["vim", "+PluginInstall!", "+qall!"],
                           stderr=subprocess.PIPE,
                           stdout=subprocess.PIPE)
 
