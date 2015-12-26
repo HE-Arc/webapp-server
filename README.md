@@ -206,3 +206,8 @@ $ psql -h 127.0.0.1 \
 ## Updating the machines
 
 See [fabfile.py](fabfile.py).
+
+
+## Troubleshooting with docker-compose
+
+COMPOSE_API_VERSION=1.18
