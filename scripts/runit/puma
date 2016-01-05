@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+cd "/var/www/app"
+exec 2>&1
+
+ENV_FILE=/var/www/config/env
+RUNIT_USER=`stat -c %U $ENV_FILE`
+COMMAND=bin/bundle exec puma --config ../config/puma.rb
+
+exec chpst -u $RUNIT_USER -e $ENV_FILE $CMD

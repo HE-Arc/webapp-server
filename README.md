@@ -54,7 +54,7 @@ containers](https://hub.docker.com/r/greut/webapp-server/).
 
 ```
 # Base container
-$ docker build -t greut/webapp-server:base -f docker/base/Dockerfile .
+$ docker build -t greut/webapp-server:latest -f docker/base/Dockerfile .
 # Laravel container
 $ docker build -t greut/webapp-server:laravel -f docker/laravel/Dockerfile .
 # Rails container

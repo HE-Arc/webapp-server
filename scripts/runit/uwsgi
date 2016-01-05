@@ -1,8 +1,0 @@
-#!/bin/bash
-
-source /etc/profile.d/rvm.sh
-
-uwsgi --uid 999 --gid 999 \
-    --die-on-term \
-    --logto2 /var/www/logs/uwsgi.log \
-    /var/www/config/uwsgi.ini

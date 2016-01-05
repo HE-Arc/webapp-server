@@ -31,10 +31,8 @@ export {{ k }}='{{ v }}'
 export PATH=$PATH:/usr/games/
 export DEBIAN_FRONTEND=noninteractive
 
-{%- if environ.CONFIG == "Laravel" %}
+{% if environ.CONFIG == "Laravel" -%}
 export PATH+=:$HOME/.composer/vendor/bin
-{%- elif environ.CONFIG == "Rails" %}
-source /etc/profile.d/rvm.sh
-export GEM_HOME=/var/www/.gem/ruby/2.2.0
-export rvmsudo_secure_path=1
-{%- endif -%}
+{% elif environ.CONFIG == "Rails" -%}
+export PATH=$PATH:$GEM_HOME/bin
+{% endif -%}

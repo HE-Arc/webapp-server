@@ -16,12 +16,15 @@ Most of the stuff required are installed by default as you can see.
 
     $ cd www/app
     $ cat config.ru
+
     so ruby                      such html!
              amazing
       Wow               Great
+
     $ cat Gemfile
     source 'http://rubygems.org'
 
+    gem 'puma'
     gem 'rack'
 
 This is a minimal Rack application. Rack is a web server interface so
@@ -32,11 +35,12 @@ Let's modify it.
 
     $ sed -i 's/Ruby/HE-ARC/' config.ru
 
-Here we replaced PHP-FPM with uWSGI to serve the Ruby application.
+Here we replaced PHP-FPM with Puma to serve the Ruby application.
 
     $ ls ~/www/config
     nginx.conf                    # the HTTP server configuration
-    uwsgi.ini                     # the Rack server configuration
+    puma.rb                       # the application server configuration
+    env                           # environment variables used by puma
 
 The application will be relaunched every time you modify (or touch) the
 `config.ru` file.
@@ -86,17 +90,23 @@ or if you prefer MySQL:
 
 ### Running the server
 
-Nothing to see here! It should work as is.
+The puma server should be running already, you can restart it this way:
+
+    $ sudo sv restart puma
 
 ### Differences with Laravel
 
 Instead of Composer, you’ll use Bundler and Ruby Gems.
 
-### Installing global gems
+### Ruby on Rail 5.0.0 beta1
 
-If you wish to install extra ruby gems globally, use rvmsudo:
+There is a demonstration video from @dhh on
+[youtube](https://www.youtube.com/watch?v=n0WUjGkDFS0).
 
-    $ rvmsudo gem install devise
+    $ gem install --prerelease rails
+    $ rails --version
+    Rails 5.0.0.beta1
 
+I've tested it and it's neat!
 
-{% include 'README-footer.md' -%}
+{% include 'README-footer.md' %}

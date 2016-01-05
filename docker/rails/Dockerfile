@@ -1,6 +1,6 @@
 # Superduper dockerfile to manage rails application!
 
-FROM greut/webapp-server:base
+FROM greut/webapp-server:latest
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
 # Ports
@@ -26,27 +26,24 @@ RUN DEBIAN_FRONTEND=noninteractive \
         libv8-dev \
         libxml2-dev \
         libxslt1-dev \
-        xvfb
+        ruby2.2 \
+        ruby2.2-dev \
+        xvfb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/tmp/*
 
-# RVM
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 && \
-    curl -O https://raw.githubusercontent.com/rvm/rvm/master/binscripts/rvm-installer && \
-    curl -O https://raw.githubusercontent.com/rvm/rvm/master/binscripts/rvm-installer.asc && \
-    gpg --verify rvm-installer.asc && \
-    bash rvm-installer stable && \
-    /bin/bash -l -c "\
-        source /etc/profile.d/rvm.sh && \
-        rvm install 2.2 && \
-        rvm alias create default 2.2 && \
-        gem install --no-ri --no-rdoc bundler rails rack uwsgi" && \
-    rm rvm-installer*
+RUN echo "gem: --no-document" > /etc/gemrc
+RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.2 1 \
+        --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby2.2.1.gz \
+        --slave /usr/bin/irb irb /usr/bin/irb2.2 \
+        --slave /usr/bin/gem gem /usr/bin/gem2.2 \
+        --slave /usr/bin/ri ri /usr/bin/ri2.2 && \
+    gem install bundler nokogiri puma
 
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## Runit
-ADD scripts/runit/uwsgi /etc/service/uwsgi/run
-RUN chmod +x /etc/service/uwsgi/run
+ADD scripts/runit/puma /etc/service/puma/run
+RUN chmod +x /etc/service/puma/run
 
 # Config
 ENV CONFIG Rails

@@ -15,6 +15,7 @@ import csv
 import sys
 import pwd
 import json
+import random
 import shutil
 import os.path
 import subprocess
@@ -90,17 +91,16 @@ def init_user(username, groupname, **kwargs):
                           stderr=subprocess.PIPE,
                           stdout=subprocess.PIPE)
 
+
     # Laravel installer
     if kwargs["environ"]["CONFIG"] == "Laravel":
         sys.stderr.write("Running composer global require laravel/installer\n")
-        """ works, so ignore it.
         subprocess.check_call(["composer",
                                "global",
                                "require",
                                "laravel/installer=~1.1"],
-                              stderr=subprocess.PIPE,
-                              stdout=subprocess.PIPE)
-        """
+                              stderr=sys.stderr,
+                              stdout=sys.stdout)
 
 
 def create_user(username, groupname, comment, environ=None):
@@ -108,8 +108,6 @@ def create_user(username, groupname, comment, environ=None):
     Create a UNIX user (the group must exist beforehand)
     """
     groups = ["users"]
-    if environ is not None and environ.get("CONFIG", None) == "Rails":
-        groups.append("rvm")
 
     subprocess.check_call(["useradd", username,
                            "-c", comment,
@@ -173,10 +171,13 @@ def init_group(groupname, **kwargs):
 
     if config == "Rails":
         dirs.append("app/public")
-        dirs.append(".gem/ruby/2.2.0")
+        dirs.append(kwargs["environ"]["GEM_HOME"])
+
+        kwargs["environ"]["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
 
         paths = (("nginx-ror.conf", "config/nginx.conf"),
-                 ("uwsgi.ini", "config/uwsgi.ini"),
+                 ("puma.rb", "config/puma.rb"),
+                 ("env", "config/env"),
                  ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))
@@ -190,7 +191,13 @@ def init_group(groupname, **kwargs):
             render(tpl, dest, groupname=groupname, **kwargs)
 
     if config == "Rails":
-        shutil.copy2("/var/templates/uwsgi-nginx.jpg", "app/public")
+        shutil.copy2("/var/templates/nginx-puma.png", "app/public")
+
+        sys.stderr.write("Running rails installation.\n")
+        subprocess.check_call(["gem", "install", "rack", "rails"],
+                              env=kwargs["environ"],
+                              stderr=sys.stderr,
+                              stdout=sys.stderr)
 
     return homedir, uid, gid
 
@@ -258,6 +265,9 @@ def main(argv):
     del environ["LC_CTYPE"]
     del environ["LANG"]
     del environ["INITRD"]
+
+    if environ["CONFIG"] == "Rails":
+        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.2.0"
 
     # Create the group
     try:
