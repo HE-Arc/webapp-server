@@ -124,24 +124,33 @@ memcached:
   image: memcached:latest
 
 postgres:
-  image: postgres:latest
+  image: postgres:9.5
   environment:
     - POSTGRES_PASSWORD=root
-  volumes:
-    - ../data/postgres:/var/lib/postgres/data
+  volumes_from:
+    - data
   ports:
     - "5432:5432"
+
 mysql:
-  image: mariadb:latest
+  image: mariadb:10.1
   environment:
     - MYSQL_ROOT_PASSWORD=root
-  volumes:
-    - ../data/mysql:/var/lib/mysql
+  volumes_from:
+    - data
   ports:
     - "3306:3306"
 
 mailcatcher:
-  image: schickling/mailcatcher
+  image: mailhog/mailhog
+  ports:
+    - "8025:8025"
+
+data:
+  image: busybox
+  volumes:
+    - /var/lib/postgresql
+    - /var/lib/mysql
 ```
 
 ### Databases
@@ -174,17 +183,6 @@ For each group:
     FLUSH PRIVILEGES;
 
 #### PostgreSQL
-
-```shell
-$ docker run \
-    --name database.postgres \
-    -e POSTGRES_PASSWORD=mysecretpassword \
-    -v `pwd`/../data/postgresql:/var/lib/postgresql/data \
-    -p 5432:5432 \
-    -d postgres:9.3
-```
-
-##### Post-setup
 
 Changing Postgres password because the above value will be passed to each
 linked containers.

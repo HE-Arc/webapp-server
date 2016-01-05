@@ -31,9 +31,10 @@ This is a minimal Rack application. Rack is a web server interface so
 application and web servers can communicate easily. Much like CGI but for the
 common times.
 
-Let's modify it.
+Let's modify it and restart the application server:
 
     $ sed -i 's/Ruby/HE-ARC/' config.ru
+    $ sudo sv restart puma
 
 Here we replaced PHP-FPM with Puma to serve the Ruby application.
 
@@ -47,52 +48,64 @@ The application will be relaunched every time you modify (or touch) the
 
 ### Creation of a Ruby on Rails web application
 
-    $ cd www/app
-    $ rm -r .
-    $ rails new . --database=postgres|mysql
-    $ bundle --deployment  # required on the server only.
+    $ cd www
+    $ mv app demo
+    $ rails new app --database=postgres|mysql
+    $ cd app
+
+Add 'puma' the to Gemfile
+
+    # Use Puma as the web server
+    gem 'puma'
+
+Restart the web server:
+
+    $ sudo sv restart puma
+
+And experience the database fail screen. That's good.
+
 
 ### Configure the database.yml file
 
-    development:
-      <<: *default
+The database is the named after the username, use them both.
+
+    default: &default
       adapter: postgresql
       encoding: unicode
       pool: 5
-      timeout: 5000
-      host: <%= ENV['POSTGRES_HOST'] %>
-      port: <%= ENV['POSTGRES_PORT'] %>
+      host: postgres
       database: <%= ENV['POSTGRES_USERNAME'] %>
       username: <%= ENV['POSTGRES_USERNAME'] %>
       password: <%= ENV['POSTGRES_PASSWORD'] %>
 
 or if you prefer MySQL:
 
-    development:
-      <<: *default
+    default: &default
       adapter: mysql2
       encoding: utf8mb4
       pool: 5
       timeout: 5000
-      host: <%= ENV['MYSQL_HOST'] %>
-      port: <%= ENV['MYSQL_PORT'] %>
-      database: <%= ENV['MYSQL_DATABASE'] %>
+      host: mysql
+      database: <%= ENV['MYSQL_USERNAME'] %>
       username: <%= ENV['MYSQL_USERNAME'] %>
       password: <%= ENV['MYSQL_PASSWORD'] %>
 
 
-### Run the migrations.
+### Create the database
 
-    $ export RAILS_ENV=development
-    $ rake db:create  # for Postgresql only
-    $ rake db:migrate
+For users of Postgresql which has a bit more privileges.
 
+    $ rake db:create
 
-### Running the server
+### The server
 
 The puma server should be running already, you can restart it this way:
 
     $ sudo sv restart puma
+
+Idem with nginx.
+
+    $ sudo sv restart nginx
 
 ### Differences with Laravel
 
@@ -107,6 +120,7 @@ There is a demonstration video from @dhh on
     $ rails --version
     Rails 5.0.0.beta1
 
-I've tested it and it's neat!
+I've tested it (locally) and it's neat! The websocket will be hard to set up
+on the srvz-app machine, sadly.
 
 {% include 'README-footer.md' %}

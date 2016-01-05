@@ -173,8 +173,6 @@ def init_group(groupname, **kwargs):
         dirs.append("app/public")
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
-        kwargs["environ"]["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
-
         paths = (("nginx-ror.conf", "config/nginx.conf"),
                  ("puma.rb", "config/puma.rb"),
                  ("env", "config/env"),
@@ -194,7 +192,7 @@ def init_group(groupname, **kwargs):
         shutil.copy2("/var/templates/nginx-puma.png", "app/public")
 
         sys.stderr.write("Running rails installation.\n")
-        subprocess.check_call(["gem", "install", "rack", "rails"],
+        subprocess.check_call(["gem", "install", "rack", "rails", "rake"],
                               env=kwargs["environ"],
                               stderr=sys.stderr,
                               stdout=sys.stderr)
@@ -238,29 +236,6 @@ def main(argv):
         environ = json.load(f)
 
     groupname = environ["GROUPNAME"]
-    if "MYSQL_PORT_3306_TCP_ADDR" in environ:
-        environ["MYSQL_HOST"] = environ["MYSQL_PORT_3306_TCP_ADDR"]
-        environ["MYSQL_PORT"] = environ["MYSQL_PORT_3306_TCP_PORT"]
-        del environ["MYSQL_PORT_3306_TCP_ADDR"]
-        del environ["MYSQL_PORT_3306_TCP_PORT"]
-        if "MYSQL_ENV_MYSQL_ROOT_PASSWORD" in environ:
-            del environ["MYSQL_ENV_MYSQL_ROOT_PASSWORD"]
-
-    if "POSTGRES_PORT_5432_TCP_ADDR" in environ:
-        environ["POSTGRES_HOST"] = environ["POSTGRES_PORT_5432_TCP_ADDR"]
-        environ["POSTGRES_PORT"] = environ["POSTGRES_PORT_5432_TCP_PORT"]
-        del environ["POSTGRES_PORT_5432_TCP_ADDR"]
-        del environ["POSTGRES_PORT_5432_TCP_PORT"]
-        if "POSTGRES_ENV_POSTGRES_PASSWORD" in environ:
-            del environ["POSTGRES_ENV_POSTGRES_PASSWORD"]
-
-    if "REDIS_PORT_6379_TCP_ADDR" in environ:
-        environ["REDIS_HOST"] = environ["REDIS_PORT_6379_TCP_ADDR"]
-        environ["REDIS_PORT"] = environ["REDIS_PORT_6379_TCP_PORT"]
-
-    if "MEMCACHED_PORT_11211_TCP_ADDR" in environ:
-        environ["MEMCACHED_HOST"] = environ["MEMCACHED_PORT_11211_TCP_ADDR"]
-        environ["MEMCACHED_PORT"] = environ["MEMCACHED_PORT_11211_TCP_PORT"]
 
     del environ["LC_CTYPE"]
     del environ["LANG"]
@@ -268,6 +243,9 @@ def main(argv):
 
     if environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.2.0"
+
+        with open("/etc/container_environment/SECRET_KEY_BASE") as f:
+            f.write("{:0128x}".format(random.randrange(16**128)))
 
     # Create the group
     try:
