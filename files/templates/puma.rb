@@ -4,4 +4,4 @@
 environment "development"
 
 directory "/var/www/app"
-bind "unix:///var/www/logs/puma.sock"
+bind "unix:///tmp/puma.sock"

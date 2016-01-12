@@ -5,11 +5,12 @@ set -e
 cd "/var/www/app"
 exec 2>&1
 
-export GEM_HOME=/var/www/.gem/ruby/2.2.0
-export PATH=$PATH:$GEM_HOME/bin
+export GEM_HOME="/var/www/.gem/ruby/2.2.0"
+export PATH="$PATH:$GEM_HOME/bin"
 
-ENV_FILE=/etc/container_environment
-RUNIT_USER=`stat -c %U $ENV_FILE`
-COMMAND=bundle exec puma --config ../config/puma.rb
+ENV_FILE="/etc/container_environment"
+PUMA_ENV="../config/puma.rb"
+RUNIT_USER=`stat -c %U $PUMA_ENV`
+COMMAND="bundle exec puma --config $PUMA_ENV"
 
 exec chpst -u $RUNIT_USER -e $ENV_FILE $COMMAND

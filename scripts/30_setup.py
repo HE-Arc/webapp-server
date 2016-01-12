@@ -55,7 +55,6 @@ def init_user(username, groupname, **kwargs):
     os.setgid(gid)
     os.setuid(uid)
     os.chdir(homedir)
-    os.umask(0o002)  # readable by group members
 
     os.environ["USER"] = username
     os.environ["HOME"] = homedir
@@ -156,7 +155,6 @@ def init_group(groupname, **kwargs):
     os.setgid(gid)
     os.setuid(uid)
     os.chdir(homedir)
-    os.umask(0o002)  # readable by group members
 
     config = kwargs["environ"].get("CONFIG", None)
 
@@ -244,7 +242,7 @@ def main(argv):
     if environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.2.0"
 
-        with open("/etc/container_environment/SECRET_KEY_BASE") as f:
+        with open("/etc/container_environment/SECRET_KEY_BASE", "w+") as f:
             f.write("{:0128x}".format(random.randrange(16**128)))
 
     # Create the group
@@ -270,17 +268,24 @@ def main(argv):
     create_group(groupname)
     p = pwd.getpwnam(groupname)
     uid, gid = p.pw_uid, p.pw_gid
-    # Rights for existing files
+    # Ownership of existing files
     os.chown(wwwdir, uid, gid)
-    os.chmod(wwwdir, mode=0o0775)
     for root, dirs, files in os.walk(wwwdir):
         for d in dirs:
-            os.chmod(os.path.join(root, d), 0o0775)
             os.chown(os.path.join(root, d), uid, gid)
         for f in files:
-            os.chmod(os.path.join(root, f), 0o0664)
             os.chown(os.path.join(root, f), uid, gid)
-
+    # Use ACL to set the rights.
+    subprocess.check_call(["setfacl", "-R", "-m",
+                           "group:{}:rwX".format(groupname),
+                           wwwdir],
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE)
+    subprocess.check_call(["setfacl", "-dR", "-m",
+                           "group:{}:rwX".format(groupname),
+                           wwwdir],
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE)
 
     # Init the group files
     p = multiprocessing.Process(target=init_group,

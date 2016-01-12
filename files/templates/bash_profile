@@ -4,9 +4,6 @@
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
 
-# So the files your create can be modified by the other members of your group.
-umask 002
-
 # Be a nerd
 fortune fr | iconv -f iso-8859-1 -t utf-8 | cowsay -f three-eyes
 toilet -f pagga " webapp: {{ groupname }}"

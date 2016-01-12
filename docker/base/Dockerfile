@@ -18,6 +18,7 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
 RUN apt-get upgrade -q -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     ack-grep \
+    acl \
     apt-transport-https \
     build-essential \
     ca-certificates \
