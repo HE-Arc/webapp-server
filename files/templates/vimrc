@@ -17,6 +17,7 @@ Plugin 'xsbeats/vim-blade'
 Plugin 'othree/html5.vim'
 Plugin 'chriskempson/base16-vim'
 Plugin 'mrk21/yaml-vim'
+Plugin 'kchmck/vim-coffee-script'
 
 " All the plugins must be added before this
 call vundle#end()         " required
