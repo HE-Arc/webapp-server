@@ -1,2 +1,0 @@
-GEM_HOME={{ environ.GEM_HOME }}
-SECRET_KEY_BASE={{ environ.SECRET_KEY_BASE }}

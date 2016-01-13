@@ -173,7 +173,6 @@ def init_group(groupname, **kwargs):
 
         paths = (("nginx-ror.conf", "config/nginx.conf"),
                  ("puma.rb", "config/puma.rb"),
-                 ("env", "config/env"),
                  ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))
