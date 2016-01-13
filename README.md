@@ -193,12 +193,15 @@ $ psql -h 127.0.0.1 \
     -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"
 ```
 
-##### Create the role
+##### Create the role and the database(s).
 
 ```shell
-$ psql -h 127.0.0.1 \
+$ GROUPNAME=groupname psql -h 127.0.0.1 \
     -U postgres \
-    -c "CREATE ROLE groupname LOGIN PASSWORD 'password' CREATEDB VALID UNTIL 'infinity'"
+    -c "CREATE ROLE $GROUPNAME LOGIN PASSWORD 'password' VALID UNTIL 'infinity';
+        CREATE DATABASE $GROUPNAME_development OWNER $GROUPNAME;
+        CREATE DATABASE $GROUPNAME_production OWNER $GROUPNAME;
+        CREATE DATABASE $GROUPNAME_test OWNER $GROUPNAME;"
 ```
 
 ## Updating the machines

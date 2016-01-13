@@ -53,7 +53,7 @@ The application will be relaunched every time you modify (or touch) the
     $ rails new app --database=postgres|mysql
     $ cd app
 
-Add 'puma' the to Gemfile
+Add 'puma' the to Gemfile. This will be the default in Rails 5.
 
     # Use Puma as the web server
     gem 'puma'
@@ -74,9 +74,20 @@ The database is the named after the username, use them both.
       encoding: unicode
       pool: 5
       host: postgres
-      database: <%= ENV['POSTGRES_USERNAME'] %>
       username: <%= ENV['POSTGRES_USERNAME'] %>
       password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+    development:
+      <<: *default
+      database: <%= ENV['POSTGRES_USERNAME'] %>_development
+
+    test:
+      <<: *default
+      database: <%= ENV['POSTGRES_USERNAME'] %>_test
+
+    production:
+      <<: *default
+      database: <%= ENV['POSTGRES_USERNAME'] %>_production
 
 or if you prefer MySQL:
 
@@ -90,12 +101,6 @@ or if you prefer MySQL:
       username: <%= ENV['MYSQL_USERNAME'] %>
       password: <%= ENV['MYSQL_PASSWORD'] %>
 
-
-### Create the database
-
-For users of Postgresql which has a bit more privileges.
-
-    $ rake db:create
 
 ### The server
 
