@@ -303,8 +303,6 @@ def main(argv):
                                "lastname, firstname, email, classname, room, "
                                "laravel, rails, github, comment")
 
-
-
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
             reader = csv.reader(f, delimiter="\t")

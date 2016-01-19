@@ -54,9 +54,9 @@ postgresql_schema = r"""
 """
 
 def main(argv):
-    students = argv[1]
+    groups = argv[1]
 
-    with open(students, "r", encoding="utf-8") as f:
+    with open(groups, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=";")
         # skip headers
         next(reader)
