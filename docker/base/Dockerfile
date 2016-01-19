@@ -36,7 +36,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     libxrender1 \
     lsof \
     man \
-    mariadb-client \
+    mysql-client \
     mercurial \
     nano \
     nginx-extras \
@@ -72,11 +72,14 @@ RUN locale-gen fr_CH && \
     locale-gen it_CH.UTF-8 && \
     update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
-RUN npm install -g \
-    bower \
-    gulp \
-    grunt-cli \
-    yo
+# Update npm
+RUN npm install -g npm && \
+    npm install -g \
+        bower \
+        gulp \
+        grunt-cli \
+        webpack \
+        yo
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -103,13 +106,11 @@ RUN rm /etc/nginx/sites-enabled/default && \
     # MySQL
     sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env MYSQL_DATABASE;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
     # Postgres
     sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env POSTGRES_DATABASE;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
     # Memcached
@@ -118,9 +119,6 @@ RUN rm /etc/nginx/sites-enabled/default && \
     # Redis
     sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
-
-# MYSQL client
-RUN sed -i 's/utf8/utf8mb4/' /etc/mysql/mariadb.conf.d/client.cnf
 
 # SSMTP
 RUN sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf

@@ -301,15 +301,24 @@ def main(argv):
     students = "/root/config/students.tsv"
     StudentRecord = namedtuple("StudentRecord",
                                "lastname, firstname, email, classname, room, "
-                               "group, github, comment")
+                               "laravel, rails, github, comment")
+
+
+
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
             reader = csv.reader(f, delimiter="\t")
             # skip headers
             next(reader)
             for student in map(StudentRecord._make, reader):
+                # By default the group is the laravel one.
+                if environ["CONFIG"] == "Rails":
+                    group = student.rails
+                else:
+                    group = student.laravel
+
                 # Only pick the users of the given group
-                if student.group in (groupname, "admin"):
+                if group in (groupname, "admin"):
                     username = formatUserName(student.firstname)
                     create_user(username, groupname, student.classname, environ)
                     p = multiprocessing.Process(target=init_user,

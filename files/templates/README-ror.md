@@ -49,8 +49,13 @@ The application will be relaunched every time you modify (or touch) the
 ### Creation of a Ruby on Rails web application
 
     $ cd www
+    # Backup the demo application.
     $ mv app demo
-    $ rails new app --database=postgres|mysql
+
+    $ rails new app --database=postgresql
+    # or
+    $ rails new app --database=mysql
+
     $ cd app
 
 Add 'puma' the to Gemfile. This will be the default in Rails 5.
@@ -58,8 +63,9 @@ Add 'puma' the to Gemfile. This will be the default in Rails 5.
     # Use Puma as the web server
     gem 'puma'
 
-Restart the web server:
+Install puma and restart the web server:
 
+    $ bundle
     $ sudo sv restart puma
 
 And experience the database fail screen. That's good.
@@ -67,27 +73,31 @@ And experience the database fail screen. That's good.
 
 ### Configure the database.yml file
 
-The database is the named after the username, use them both.
+The database is the named after the username. And the various environments are
+set in three schemas.
 
     default: &default
       adapter: postgresql
       encoding: unicode
       pool: 5
+      # Add the following.
       host: postgres
+      database: <%= ENV['POSTGRES_USERNAME'] %>
       username: <%= ENV['POSTGRES_USERNAME'] %>
       password: <%= ENV['POSTGRES_PASSWORD'] %>
 
     development:
       <<: *default
-      database: <%= ENV['POSTGRES_USERNAME'] %>_development
+      # Not required, because it's the default value.
+      #schema_search_path: <%= ENV['POSTGRES_USERNAME'] %>
 
     test:
       <<: *default
-      database: <%= ENV['POSTGRES_USERNAME'] %>_test
+      schema_search_path: test
 
     production:
       <<: *default
-      database: <%= ENV['POSTGRES_USERNAME'] %>_production
+      schema_earch_path: production
 
 or if you prefer MySQL:
 
@@ -97,9 +107,17 @@ or if you prefer MySQL:
       pool: 5
       timeout: 5000
       host: mysql
-      database: <%= ENV['MYSQL_USERNAME'] %>
-      username: <%= ENV['MYSQL_USERNAME'] %>
       password: <%= ENV['MYSQL_PASSWORD'] %>
+      username: <%= ENV['MYSQL_USERNAME'] %>
+
+    development:
+      database: <%= ENV['MYSQL_USERNAME'] %>
+
+    test:
+      database: <%= ENV['MYSQL_USERNAME'] %>_test
+
+    production:
+      database: <%= ENV['MYSQL_USERNAME'] %>_production
 
 
 ### The server
@@ -112,6 +130,8 @@ Idem with nginx.
 
     $ sudo sv restart nginx
 
+You should get the "Welcome abroad" screen now.
+
 ### Differences with Laravel
 
 Instead of Composer, you’ll use Bundler and Ruby Gems.
@@ -121,11 +141,31 @@ Instead of Composer, you’ll use Bundler and Ruby Gems.
 There is a demonstration video from @dhh on
 [youtube](https://www.youtube.com/watch?v=n0WUjGkDFS0).
 
+Before installing rails 5, uninstall the previous rails version.
+
     $ gem install --prerelease rails
     $ rails --version
     Rails 5.0.0.beta1
 
 I've tested it (locally) and it's neat! The websocket will be hard to set up
 on the srvz-app machine, sadly.
+
+## Dropping the database
+
+The database cannot be dropped, instead you have to drop the schema and then
+recreate it. Rake doesn't have a task that do that. In case you're stuck with
+a broken beyond repair schema do this:
+
+    $ psql -h postgres -U $POSTGRES_USERNAME $POSTGRES_USERNAME
+    Password for user ...: $POSTGRES_PASSWORD
+
+    => \dn
+      List of schemas
+      ...
+    => DROP SCHEMA schemaname CASCADE;
+    => CREATE SCHEMA schemaname;
+
+That should do it.
+
 
 {% include 'README-footer.md' %}

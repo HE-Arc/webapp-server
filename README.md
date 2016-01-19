@@ -66,7 +66,7 @@ $ docker build -t greut/webapp-server:rails -f docker/rails/Dockerfile .
 A sample YAML file.
 
 ```yaml
-$GROUPNAME-php:
+$GROUPNAME_php:
   image: greut/webapp-server:laravel
   environment:
     - GROUPNAME=$GROUPNAME
@@ -92,11 +92,10 @@ $GROUPNAME-php:
     - "2200:22"
     - "8000:80"
 
-$GROUPNAME-ror:
+$GROUPNAME_ror:
   image: greut/webapp-server:rails
   environment:
     - GROUPNAME=$GROUPNAME
-    - MYSQL_DATABASE=$GROUPNAME
     - MYSQL_USERNAME=$GROUPNAME
     - MYSQL_PASSWORD=$GROUPNAME
     - POSTGRES_USERNAME=$GROUPNAME
@@ -118,10 +117,10 @@ $GROUPNAME-ror:
     - "8001:80"
 
 redis:
-  image: redis:latest
+  image: redis:3.0
 
 memcached:
-  image: memcached:latest
+  image: memcached:1.4
 
 postgres:
   image: postgres:9.5
@@ -133,7 +132,7 @@ postgres:
     - "5432:5432"
 
 mysql:
-  image: mariadb:10.1
+  image: mysql:5.6
   environment:
     - MYSQL_ROOT_PASSWORD=root
   volumes_from:
@@ -142,14 +141,14 @@ mysql:
     - "3306:3306"
 
 mailcatcher:
-  image: mailhog/mailhog
+  image: mailhog/mailhog:latest
   ports:
     - "8025:8025"
 
 data:
-  image: busybox
+  image: busybox:1.24
   volumes:
-    - /var/lib/postgresql
+    - /var/lib/postgresql/data
     - /var/lib/mysql
 ```
 
@@ -170,18 +169,6 @@ linked containers.
 $ mysqladmin -h 127.0.0.1 root -p'root' password 's3cur3@P45sw0rd'
 ```
 
-##### Create the database
-
-For each group:
-
-    CREATE USER 'groupname'@'%';
-    SET PASSWORD FOR 'groupname'@'%' = PASSWORD('password');
-    CREATE DATABASE `groupname`
-        DEFAULT CHARACTER SET utf8mb4
-        DEFAULT COLLATE utf8mb4_unicode_ci;
-    GRANT ALL PRIVILEGES ON `groupname`.* TO 'groupname'@'%';
-    FLUSH PRIVILEGES;
-
 #### PostgreSQL
 
 Changing Postgres password because the above value will be passed to each
@@ -193,16 +180,17 @@ $ psql -h 127.0.0.1 \
     -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"
 ```
 
-##### Create the role and the database(s).
+#### Creating the roles and users
 
-```shell
-$ GROUPNAME=groupname psql -h 127.0.0.1 \
-    -U postgres \
-    -c "CREATE ROLE $GROUPNAME LOGIN PASSWORD 'password' VALID UNTIL 'infinity';
-        CREATE DATABASE $GROUPNAME_development OWNER $GROUPNAME;
-        CREATE DATABASE $GROUPNAME_production OWNER $GROUPNAME;
-        CREATE DATABASE $GROUPNAME_test OWNER $GROUPNAME;"
-```
+Use the script bdd.py to create the proper databases and roles.
+
+    $ python3 scripts/bdd.py config/bdd.csv
+
+Where the csv file contains key values of this type:
+
+    groupname;password
+
+`pwgen` is a great way to build good passwords.
 
 ## Updating the machines
 

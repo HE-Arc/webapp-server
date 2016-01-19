@@ -12,7 +12,7 @@ import sys
 import requests
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.1a2"
+__version__ = "0.1.0"
 
 
 def github(username, auth):
@@ -44,7 +44,7 @@ def main(argv):
         # skip headers
         next(reader)
         for row in reader:
-            username = row[6]
+            username = row[7]
             if not username:
                 continue
 
