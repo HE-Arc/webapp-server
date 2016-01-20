@@ -15,6 +15,7 @@ CMD ["/sbin/my_init"]
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update -q -y && \
     apt-get install -q -y \
+        imagemagick \
         libgdbm-dev \
         libffi-dev \
         libncurses5-dev \
