@@ -13,7 +13,7 @@ ENV HOME /root
 CMD ["/sbin/my_init"]
 
 # NodeSource special setup (does the apt-get update already, twice)
-RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
 
 RUN apt-get upgrade -q -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
