@@ -73,8 +73,7 @@ RUN locale-gen fr_CH && \
     update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 # Update npm
-RUN npm install -g npm && \
-    npm install -g \
+RUN npm install -g \
         bower \
         gulp \
         grunt-cli \

@@ -8,7 +8,7 @@ Here we are again!
 Most of the stuff required are installed by default as you can see.
 
     $ ruby --version
-    ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
+    ruby 2.2.3p173 (2015-08-18) [x86_64-linux]
     $ rails --version
     Rails 4.2.5
 
