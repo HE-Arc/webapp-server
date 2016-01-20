@@ -1,7 +1,8 @@
 {# vim: set ft=jinja: -#}
 #!/usr/bin/env puma
 
-environment "development"
+#environment "staging"
+environment "production"
 
 directory "/var/www/app"
 bind "unix:///tmp/puma.sock"
