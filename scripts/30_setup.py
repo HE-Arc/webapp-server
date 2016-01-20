@@ -189,7 +189,9 @@ def init_group(groupname, **kwargs):
         shutil.copy2("/var/templates/nginx-puma.png", "app/public")
 
         sys.stderr.write("Running rails installation.\n")
-        subprocess.check_call(["gem", "install", "rack", "rails", "rake"],
+        subprocess.check_call(["gem", "install",
+                               "bundler", "rack", "rails", "rake", "puma"
+                              ],
                               env=kwargs["environ"],
                               stderr=sys.stderr,
                               stdout=sys.stderr)

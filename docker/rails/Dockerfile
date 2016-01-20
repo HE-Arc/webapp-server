@@ -37,9 +37,7 @@ RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.2 1 \
         --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby2.2.1.gz \
         --slave /usr/bin/irb irb /usr/bin/irb2.2 \
         --slave /usr/bin/gem gem /usr/bin/gem2.2 \
-        --slave /usr/bin/ri ri /usr/bin/ri2.2 && \
-    gem install bundler nokogiri puma
-
+        --slave /usr/bin/ri ri /usr/bin/ri2.2
 
 ## Runit
 ADD scripts/runit/puma /etc/service/puma/run

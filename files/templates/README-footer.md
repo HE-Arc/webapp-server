@@ -12,6 +12,7 @@ Other great tools you might need, one day:
     $ wkhtmltoimage
     $ wkhtmltopdf
     $ screen
+    $ webpack
     $ yo
 
 
