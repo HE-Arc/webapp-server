@@ -152,6 +152,12 @@ data:
     - /var/lib/mysql
 ```
 
+Run the container(s)
+
+```shell
+docker-compose up -d
+```
+
 ### Databases
 
 The databases are open the external world, hence we must modify the super admin
@@ -166,7 +172,7 @@ Changing MySQL root password because the above value will be passed to each
 linked containers.
 
 ```shell
-$ mysqladmin -h 127.0.0.1 root -p'root' password 's3cur3@P45sw0rd'
+$ mysqladmin -h 127.0.0.1 -u root -p'root' password 's3cur3@P45sw0rd'
 ```
 
 #### PostgreSQL

@@ -8,7 +8,10 @@ run lambda { |env| [
     "<img src=nginx-puma.png alt='Powered by NGinx + Puma'>",
     "<h2>ENV</h2>",
     "<dl>",
-    ENV.collect { |k,v| "<dt>#{k}</dt><dd>#{v}</dd>" }.flatten.join(""),
+    ENV .select { |k,v| k !~ /(_PASSWORD|SECRET_KEY_BASE)$/ }
+        .collect { |k,v| "<dt>#{k}</dt><dd>#{v}</dd>" }
+        .flatten
+        .join(""),
     "</dl>",
     "</html>"
   ]
