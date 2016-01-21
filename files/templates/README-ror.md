@@ -74,7 +74,9 @@ And experience the database fail screen. That's good.
 ### Configure the database.yml file
 
 The database is the named after the username. And the various environments are
-set in three schemas.
+set in three schemas ($user, production and test). As you'll develop locally,
+let the development environment set to your local setup and use only the
+production environment. (See also the staging environment below)
 
     default: &default
       adapter: postgresql
@@ -82,21 +84,23 @@ set in three schemas.
       pool: 5
       # Add the following.
       host: postgres
-      database: <%= ENV['POSTGRES_USERNAME'] %>
-      username: <%= ENV['POSTGRES_USERNAME'] %>
-      password: <%= ENV['POSTGRES_PASSWORD'] %>
+      user: postgres
+      password: <%= ENV['POSTGRES_ENV_POSTGRES_PASSWORD'] %>
 
     development:
       <<: *default
       # Not required, because it's the default value.
-      #schema_search_path: <%= ENV['POSTGRES_USERNAME'] %>
+      database: app_development
 
     test:
       <<: *default
-      schema_search_path: test
+      database: app_test
 
     production:
       <<: *default
+      database: <%= ENV['POSTGRES_USERNAME'] %>
+      username: <%= ENV['POSTGRES_USERNAME'] %>
+      password: <%= ENV['POSTGRES_PASSWORD'] %>
       schema_earch_path: production
 
 or if you prefer MySQL:
@@ -166,6 +170,50 @@ a broken beyond repair schema do this:
     => CREATE SCHEMA schemaname;
 
 That should do it.
+
+## Staging environment
+
+Don't use the development environment on the server because it will mess your
+configuration up.
+
+The solution is to have a second development environment, let's call it staging.
+
+First, create a new file in `config/environments/`:
+
+    # staging.rb
+    require Rails.root.join("config/environments/development")
+
+Give it a `secret_key_base` into `config/secrets.yml`.
+
+And finally, configure its database.
+
+    staging:
+      << *default
+      database: <%= ENV['POSTGRES_USERNAME'] %>
+      user: <%= ENV['POSTGRES_USERNAME'] %>
+      password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+It will use the default `schema_search_path`, which is the one named after the
+owner (`$user`).
+
+Change `www/config/puma.rb` to `staging`, migrate and enjoy.
+
+    $ RAILS_ENV=staging bin/rake db:migrate
+
+### Error messages
+
+If you take a look at the logs when an exception is raised, you'll see an error
+message regarding the console and a non-authorized ip address. Rails, doesn't
+allow external users to look at your exceptions by default. Good security
+practice but maybe not how you prefer to work.
+
+Add your ip address to `staging.rb` this way:
+
+    Rails.application.configure do
+      config.web_console.whitelisted_ips = 'xxx.xxx.xxx.xxx'
+    end
+
+You can also enable a subnet using the CIDR notation.
 
 
 {% include 'README-footer.md' %}
