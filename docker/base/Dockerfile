@@ -122,6 +122,10 @@ RUN rm /etc/nginx/sites-enabled/default && \
 # SSMTP
 RUN sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf
 
+# LOGROTATE
+RUN sed -i 's/^su root syslog/su root adm/' /etc/logrotate.conf
+ADD files/templates/vhost.logrotate /etc/logrotate.d
+
 #
 # SUDO for any user
 #
