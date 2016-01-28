@@ -1,6 +1,20 @@
 #/bin/bash
 {# vim: set ft=jinja: -#}
 
+{% for k, v in environ.items() %}
+  {%- if "." not in k and ":" not in k and k != "PATH" %}
+export {{ k }}='{{ v }}'
+  {%- endif -%}
+{% endfor %}
+export PATH=$PATH:/usr/games/
+export DEBIAN_FRONTEND=noninteractive
+
+{% if environ.CONFIG == "Laravel" -%}
+export PATH+=:$HOME/.composer/vendor/bin
+{% elif environ.CONFIG == "Rails" -%}
+export PATH=$PATH:$GEM_HOME/bin
+{% endif -%}
+
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
 
@@ -20,16 +34,3 @@ echo ""
 alias ls='ls --color=auto'
 export EDITOR=nano
 export GREP_OPTIONS='--color=auto'
-{% for k, v in environ.items() %}
-  {%- if "." not in k and ":" not in k and k != "PATH" %}
-export {{ k }}='{{ v }}'
-  {%- endif -%}
-{% endfor %}
-export PATH=$PATH:/usr/games/
-export DEBIAN_FRONTEND=noninteractive
-
-{% if environ.CONFIG == "Laravel" -%}
-export PATH+=:$HOME/.composer/vendor/bin
-{% elif environ.CONFIG == "Rails" -%}
-export PATH=$PATH:$GEM_HOME/bin
-{% endif -%}
