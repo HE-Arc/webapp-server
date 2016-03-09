@@ -1,6 +1,6 @@
 # Superduper dockerfile to manage php application!
 
-FROM greut/webapp-server:base
+FROM greut/webapp-server:latest
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
 # Ports

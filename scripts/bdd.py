@@ -61,7 +61,7 @@ def main(argv):
         # skip headers
         next(reader)
         for row in reader:
-            groupname, password = row
+            groupname, password, port = row
 
             print(groupname)
             print("=" * len(groupname))

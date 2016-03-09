@@ -12,17 +12,17 @@ todo: fixme;
 // The configuration comes from the environment.
 // See: http://12factor.net/
 $mysql = [
-    "host" => $_SERVER["MYSQL_HOST"],
-    "port" => $_SERVER["MYSQL_PORT"],
-    "dbname" => $_SERVER["MYSQL_DATABASE"],
+    "host" => "mysql",
+    "port" => 3306,
+    "dbname" => $_SERVER["MYSQL_USERNAME"],
     "username" => $_SERVER["MYSQL_USERNAME"],
     "password" => $_SERVER["MYSQL_PASSWORD"]
 ];
 
 $pgsql = [
-    "host" => $_SERVER["POSTGRES_HOST"],
-    "port" => $_SERVER["POSTGRES_PORT"],
-    "dbname" => $_SERVER["POSTGRES_DATABASE"],
+    "host" => "postgres",
+    "port" => 5432,
+    "dbname" => $_SERVER["POSTGRES_USERNAME"],
     "username" => $_SERVER["POSTGRES_USERNAME"],
     "password" => $_SERVER["POSTGRES_PASSWORD"]
 ];
@@ -46,6 +46,7 @@ echo "-->\n\n";
 $conn = new PDO("pgsql:host={$pgsql['host']};".
                 "port={$pgsql['port']};dbname={$pgsql['dbname']}",
                 $pgsql["username"], $pgsql["password"]);
+$conn->exec("SET search_path TO production;");
 
 echo "<!-- All the PostgreSQL tables:\n";
 foreach ($conn->query("select tablename from pg_tables") as $row) {
@@ -54,7 +55,7 @@ foreach ($conn->query("select tablename from pg_tables") as $row) {
 echo "-->\n\n";
 
 // Memcached
-$memcache = new Memcached()
+$memcache = new Memcached();
 $memcache->addServer($_SERVER["MEMCACHED_HOST"], (int) $_SERVER["MEMCACHED_PORT"]);
 $memcache->set("foo", 1);
 $memcache->increment("foo");
