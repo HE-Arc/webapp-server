@@ -12,45 +12,55 @@ ENV HOME /root
 # Use baseimage-docker's init process.
 CMD ["/sbin/my_init"]
 
-RUN apt-get update -q
-RUN apt-get upgrade -q -y
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
-    php5-cli \
-    php5-curl \
-    php5-intl \
-    php5-fpm \
-    php5-imagick \
-    php5-mcrypt \
-    php5-memcache \
-    php5-memcached \
-    php5-mysql \
-    php5-pgsql \
-    php5-redis \
-    php5-xdebug
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C && \
+    add-apt-repository ppa:ondrej/php -y && \
+    apt-get update -q && \
+    apt-get update -q && \
+    apt-get upgrade -q -y --allow-unauthenticated && \
+    apt-get install -q -y --allow-unauthenticated \
+        php-apcu \
+        php7.0-cli \
+        php7.0-curl \
+        php7.0-intl \
+        php7.0-fpm \
+        php-imagick \
+        php7.0-mcrypt \
+        php-memcache \
+        php-memcached \
+        php7.0-mysql \
+        php7.0-pgsql \
+        php-redis \
+        php-xdebug && \
+    apt-get autoremove
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
+
+# PHP 7.0 FPM (fix)
+RUN mkdir -p /run/php
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 # Enable mcrypt
-RUN php5enmod mcrypt
+RUN phpenmod mcrypt
 
 ## PHP ini
-RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php5/fpm/php.ini
-RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php5/fpm/php.ini
-RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php5/fpm/php.ini
-RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php5/fpm/php.ini
+RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php/7.0/fpm/php.ini
+RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php/7.0/fpm/php.ini
+RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php/7.0/fpm/php.ini
+RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/7.0/fpm/php.ini
 
-RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php5/cli/php.ini
-RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php5/cli/php.ini
-RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php5/cli/php.ini
-RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php5/cli/php.ini
+RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php/7.0/cli/php.ini
+RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php/7.0/cli/php.ini
+RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php/7.0/cli/php.ini
+RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/7.0/cli/php.ini
 
 ## Runit
-ADD scripts/runit/php5-fpm /etc/service/php5-fpm/run
-RUN chmod +x /etc/service/php5-fpm/run
+ADD scripts/runit/php7.0-fpm /etc/service/php7.0-fpm/run
+RUN chmod +x /etc/service/php7.0-fpm/run
 
 # Composer (but no Laravel)
 RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer

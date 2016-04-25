@@ -45,9 +45,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
     pwgen \
     python3-pip \
     python3-jinja2 \
-    python3-software-properties \
     screen \
     sqlite3 \
+    software-properties-common \
     ssmtp \
     subversion \
     sudo \
@@ -120,7 +120,8 @@ RUN rm /etc/nginx/sites-enabled/default && \
     sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
 
 # SSMTP
-RUN sed -i 's/#FromLineOverride=Yes/FromLineOverride=Yes/' /etc/ssmtp/ssmtp.conf
+RUN sed -i 's/mailhub=mail/mailhub=mail:1025/' /etc/ssmtp/ssmtp.conf
+RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
 
 # LOGROTATE
 RUN sed -i 's/^su root syslog/su root adm/' /etc/logrotate.conf

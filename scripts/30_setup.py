@@ -97,7 +97,7 @@ def init_user(username, groupname, **kwargs):
         subprocess.check_call(["composer",
                                "global",
                                "require",
-                               "laravel/installer=~1.1"],
+                               "laravel/installer=~1.3"],
                               stderr=sys.stderr,
                               stdout=sys.stdout)
 
