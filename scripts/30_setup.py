@@ -258,8 +258,8 @@ def main(argv):
     subprocess.check_call(["sed",
                            "-i",
                            "s/mailhub=mail/mailhub={}:{}/".format(
-                               environ["MAILCATCHER_PORT_1025_TCP_ADDR"],
-                               environ["MAILCATCHER_PORT_1025_TCP_PORT"]),
+                               environ["SMTP_PORT_1025_TCP_ADDR"],
+                               environ["SMTP_PORT_1025_TCP_PORT"]),
                            "/etc/ssmtp/ssmtp.conf"],
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE)

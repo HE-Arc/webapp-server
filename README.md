@@ -87,7 +87,7 @@ $GROUPNAME_php:
     - mysql:mysql
     - redis:redis
     - memcached:memcached
-    - mailcatcher:mailcatcher
+    - stmp:smtp
   ports:
     - "2200:22"
     - "8000:80"
@@ -111,7 +111,7 @@ $GROUPNAME_ror:
     - mysql:mysql
     - redis:redis
     - memcached:memcached
-    - mailcatcher:mailcatcher
+    - smtp:smtp
   ports:
     - "2001:22"
     - "8001:80"
@@ -140,7 +140,7 @@ mysql:
   ports:
     - "3306:3306"
 
-mailcatcher:
+stmp:
   image: mailhog/mailhog:latest
   ports:
     - "8025:8025"

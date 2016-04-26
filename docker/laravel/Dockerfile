@@ -41,9 +41,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
 # PHP 7.0 FPM (fix)
 RUN mkdir -p /run/php
 
-# Composer
-RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-
 # Enable mcrypt
 RUN phpenmod mcrypt
 
