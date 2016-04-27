@@ -172,7 +172,12 @@ Changing MySQL root password because the above value will be passed to each
 linked containers.
 
 ```shell
+# 5.6
 $ mysqladmin -h 127.0.0.1 -u root -p'root' password 's3cur3@P45sw0rd'
+
+# 5.7
+$ mysql -h 127.0.0.1 -u root -proot
+> SET PASSWORD FOR 'root'@'%' = PASSWORD('s3cur3@P45sw0rd');
 ```
 
 #### PostgreSQL
