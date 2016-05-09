@@ -118,6 +118,10 @@ $GROUPNAME_ror:
 
 redis:
   image: redis:3.0
+  volumes_from:
+    - data
+  ports:
+    - 6379:6379
 
 memcached:
   image: memcached:1.4
@@ -132,7 +136,7 @@ postgres:
     - "5432:5432"
 
 mysql:
-  image: mysql:5.6
+  image: mysql:5.7
   environment:
     - MYSQL_ROOT_PASSWORD=root
   volumes_from:
@@ -150,6 +154,7 @@ data:
   volumes:
     - /var/lib/postgresql/data
     - /var/lib/mysql
+    - /data  # redis
 ```
 
 Run the container(s)
