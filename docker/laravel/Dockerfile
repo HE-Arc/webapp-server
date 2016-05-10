@@ -26,6 +26,7 @@ RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C && \
         php7.0-intl \
         php7.0-fpm \
         php-imagick \
+        php7.0-mbstring \
         php7.0-mcrypt \
         php-memcache \
         php-memcached \

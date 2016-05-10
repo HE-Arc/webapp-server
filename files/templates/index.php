@@ -9,6 +9,8 @@
 // Xdebug is on.
 todo: fixme;
 
+mb_internal_encoding("utf-8");
+
 // The configuration comes from the environment.
 // See: http://12factor.net/
 $mysql = [
