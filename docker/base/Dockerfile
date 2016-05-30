@@ -15,7 +15,7 @@ CMD ["/sbin/my_init"]
 ENV DEBIAN_FRONTEND=noninteractive
 
 # NodeSource special setup does the apt-get update already, even twice.
-RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 
 RUN apt-get upgrade -q -y && \
     apt-get install -q -y \

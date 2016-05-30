@@ -102,7 +102,7 @@ def init_user(username, groupname, **kwargs):
                               stdout=sys.stdout)
 
 
-def create_user(username, groupname, comment, environ=None):
+def create_user(username, groupname, comment):
     """
     Create a UNIX user (the group must exist beforehand)
     """
@@ -241,10 +241,10 @@ def main(argv):
     del environ["INITRD"]
 
     if environ["CONFIG"] == "Rails":
-        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.2.0"
-
+        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
+        environ["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
         with open("/etc/container_environment/SECRET_KEY_BASE", "w+") as f:
-            f.write("{:0128x}".format(random.randrange(16**128)))
+            f.write(environ["SECRET_KEY_BASE"])
 
     # Create the group
     try:
@@ -320,7 +320,7 @@ def main(argv):
                 # Only pick the users of the given group
                 if group in (groupname, "admin"):
                     username = formatUserName(student.firstname)
-                    create_user(username, groupname, student.classname, environ)
+                    create_user(username, groupname, student.classname)
                     p = multiprocessing.Process(target=init_user,
                                                 args=(username,
                                                       groupname),
@@ -331,7 +331,7 @@ def main(argv):
                     authorized_keys(username, student.github)
                     sys.stderr.write("{} created.\n".format(username))
     else:
-        sys.stderr.write("No {} file found.\n".format())
+        sys.stderr.write("No {} file found.\n".format(students))
 
 
 if __name__ == "__main__":

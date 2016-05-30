@@ -32,5 +32,5 @@ echo ""
 
 # Dull configuration
 alias ls='ls --color=auto'
+alias grep='grep --color=auto'
 export EDITOR=nano
-export GREP_OPTIONS='--color=auto'
