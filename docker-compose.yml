@@ -1,0 +1,90 @@
+version: '2'
+
+services:
+
+  # PHP project.
+
+  avedis:
+    image: greut/webapp-server:laravel
+    environment:
+      - GROUPNAME=avedis
+      - MYSQL_USERNAME=avedis
+      - MYSQL_PASSWORD=avedis  # CHANGE ME
+      - POSTGRES_USERNAME=avedis
+      - POSTGRES_PASSWORD=avedis  # ME TOO
+    hostname: avedis
+    domainname: srvz-webapp.he-arc.ch
+    volumes:
+      - avedis:/var/www
+      - ./config:/root/config:ro
+    ports:
+      - "2222:22"
+      - "8888:80"
+    mem_limit: 1000000000
+    memswap_limit: 2000000000
+
+  # Ruby on Rails project.
+
+  trip:
+    image: greut/webapp-server:rails
+    environment:
+      - GROUPNAME=trip
+      - MYSQL_USERNAME=trip
+      - MYSQL_PASSWORD=trip  # CHANGE ME
+      - POSTGRES_USERNAME=trip
+      - POSTGRES_PASSWORD=trip  # ME TOO
+    hostname: trip
+    domainname: srvz-webapp.he-arc.ch
+    volumes:
+      - trip:/var/www
+      - ./config:/root/config:ro
+    ports:
+      - "2020:22"
+      - "8080:80"
+    mem_limit: 1000000000
+    memswap_limit: 2000000000
+
+  # Shared services
+
+  redis:
+    image: redis:3.0
+    volumes:
+      - redis:/data
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:1.4
+    ports:
+      - "11211:11211"
+
+  postgres:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+     - postgres:/var/lib/postgresql/data
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+
+  smtp:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+
+volumes:
+  trip:
+  avedis:
+  mysql:
+  postgres:
+  redis:

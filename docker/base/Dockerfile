@@ -12,12 +12,11 @@ ENV HOME /root
 # Use baseimage-docker's init process.
 CMD ["/sbin/my_init"]
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 # NodeSource special setup does the apt-get update already, even twice.
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 
-RUN apt-get upgrade -q -y && \
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get upgrade -q -y && \
     apt-get install -q -y \
         ack-grep \
         acl \
@@ -45,6 +44,7 @@ RUN apt-get upgrade -q -y && \
         nodejs \
         postgresql-client \
         python3-pip \
+        python3-virtualenv \
         pwgen \
         screen \
         sqlite3 \
@@ -59,7 +59,9 @@ RUN apt-get upgrade -q -y && \
         wget \
         xfonts-base \
         xfonts-75dpi && \
-    apt-get autoremove
+    apt-get autoremove && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # wkhtmltopdf/wkhtmltoimage
 RUN wget -nv http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb -O /tmp/wkhtmltox.deb
@@ -79,14 +81,15 @@ RUN locale-gen fr_CH && \
 # Python
 RUN python3 -m pip install jinja2
 
-# Update npm
+# Install some npm global packages.
 RUN npm install -g \
         bower \
         gulp \
-        grunt-cli
+        grunt-cli \
+        webpack
 
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Clean up tmp when done.
+RUN rm -rf /tmp/* /var/tmp/*
 
 # Vundle
 RUN git clone https://github.com/VundleVim/Vundle.vim.git /var/Vundle.vim
@@ -108,24 +111,11 @@ RUN rm /etc/nginx/sites-enabled/default && \
     sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' /etc/nginx/nginx.conf && \
     # allow environment variables to be read by nginx confs
     # MySQL
-    sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env MYSQL_PORT_3306_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
     # Postgres
-    sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env POSTGRES_PORT_5432_TCP_PORT;\n\1/' /etc/nginx/nginx.conf && \
     sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf && \
-    # Memcached
-    sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env MEMCACHED_PORT_11211_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf && \
-    # Redis
-    sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env REDIS_PORT_6379_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf && \
-    # SMTP
-    sed -i 's/^\(http {\)/env SMTP_PORT_1025_TCP_ADDR;\n\1/' /etc/nginx/nginx.conf && \
-    sed -i 's/^\(http {\)/env SMTP_PORT_1025_TCP_PORT;\n\n\1/' /etc/nginx/nginx.conf
+    sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' /etc/nginx/nginx.conf
 
 # SSMTP
 # mailhub configuration is done by 30_setup.py
@@ -133,7 +123,7 @@ RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
 
 # LOGROTATE
 RUN sed -i 's/^su root syslog/su root adm/' /etc/logrotate.conf
-ADD files/templates/vhost.logrotate /etc/logrotate.d
+COPY files/templates/vhost.logrotate /etc/logrotate.d
 
 #
 # SUDO for any user
@@ -142,9 +132,10 @@ RUN echo '%users ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/users
 RUN chmod 0440 /etc/sudoers.d/users
 
 ## Runit
-ADD scripts/runit/nginx /etc/service/nginx/run
-ADD scripts/runit/nginx-log-forwarder /etc/service/nginx-log-forwarder/run
-ADD scripts/30_setup.py /etc/my_init.d/30_setup.py
+COPY scripts/runit/nginx /etc/service/nginx/run
+COPY scripts/runit/nginx-log-forwarder /etc/service/nginx-log-forwarder/run
+COPY files/templates /var/templates
+COPY scripts/30_setup.py /etc/my_init.d/30_setup.py
 RUN chmod +x /etc/service/nginx/run && \
     chmod +x /etc/service/nginx-log-forwarder/run && \
     chmod +x /etc/my_init.d/30_setup.py
