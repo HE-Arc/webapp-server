@@ -13,16 +13,17 @@ import subprocess
 import tempfile
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 # Database host
 hostname = "127.0.0.1"
+#hostname = "srvz-webapp.he-arc.ch"
 # Root password
 root = "root"
+#root = "phao9Nai4ash"
 
 mysql = r"""
-    GRANT USAGE ON *.* TO '{username}'@'%';
-    DROP USER '{username}'; -- IF EXISTS is a 5.7 feature.
+    DROP USER IF EXISTS `{username}`;
     DROP DATABASE IF EXISTS `{database}`;
     DROP DATABASE IF EXISTS `{database}_production`;
     DROP DATABASE IF EXISTS `{database}_test`;
@@ -61,7 +62,7 @@ def main(argv):
         # skip headers
         next(reader)
         for row in reader:
-            groupname, password, port = row
+            groupname, password, *_ = row
 
             print(groupname)
             print("=" * len(groupname))

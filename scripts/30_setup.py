@@ -103,9 +103,7 @@ def init_user(username, groupname, **kwargs):
 
 
 def create_user(username, groupname, comment):
-    """
-    Create a UNIX user (the group must exist beforehand)
-    """
+    """Create a UNIX user (the group must exist beforehand)."""
     groups = ["users"]
 
     subprocess.check_call(["useradd", username,
@@ -146,7 +144,7 @@ def authorized_keys(username, github):
 
 
 def init_group(groupname, **kwargs):
-    """As the user representing the group."""
+    """Init the group as the user representing it."""
     p = pwd.getpwnam(groupname)
     uid, gid = p.pw_uid, p.pw_gid
     homedir = p.pw_dir
@@ -215,6 +213,7 @@ def create_group(groupname):
 
 
 def render(template, path, **kwargs):
+    """Render a Jinja2 template into the given file."""
     if not os.path.exists(path):
         template = env.get_template(template)
         with open(path, "w", encoding="utf-8") as f:
@@ -222,7 +221,7 @@ def render(template, path, **kwargs):
 
 
 def pwgen(length=128):
-    """Generates a secure password."""
+    """Generate a secure password."""
     proc = subprocess.Popen(["pwgen", "--secure", "{}".format(length), "1"],
                             stdout=subprocess.PIPE)
     return proc.communicate()[0].decode().strip()
@@ -257,9 +256,7 @@ def main(argv):
     # Configure SSMTP
     subprocess.check_call(["sed",
                            "-i",
-                           "s/mailhub=mail/mailhub={}:{}/".format(
-                               environ["SMTP_PORT_1025_TCP_ADDR"],
-                               environ["SMTP_PORT_1025_TCP_PORT"]),
+                           "s/mailhub=mail/mailhub=smtp:1025/",
                            "/etc/ssmtp/ssmtp.conf"],
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE)

@@ -50,7 +50,8 @@ avoid being rate limited by the API.
 ## Containers
 
 If you don't want to use the [publicly available
-containers](https://hub.docker.com/r/greut/webapp-server/).
+containers](https://hub.docker.com/r/greut/webapp-server/), you can build
+them yourself.
 
 ```
 # Base container
@@ -63,99 +64,7 @@ $ docker build -t greut/webapp-server:rails -f docker/rails/Dockerfile .
 
 ## Run via docker-compose
 
-A sample YAML file.
-
-```yaml
-$GROUPNAME_php:
-  image: greut/webapp-server:laravel
-  environment:
-    - GROUPNAME=$GROUPNAME
-    - MYSQL_DATABASE=$GROUPNAME
-    - MYSQL_USERNAME=$GROUPNAME
-    - MYSQL_PASSWORD=$GROUPNAME
-    - POSTGRES_DATABASE=$GROUPNAME
-    - POSTGRES_USERNAME=$GROUPNAME
-    - POSTGRES_PASSWORD=$GROUPNAME
-  hostname: $GROUPNAME-php
-  domainname: srvz-webapp.he-arc.ch
-  volumes:
-    - ../www/$GROUPNAME:/var/www
-    - ./config:/root/config:ro
-    - ./files/templates:/tmp/templates:ro
-  links:
-    - postgres:postgres
-    - mysql:mysql
-    - redis:redis
-    - memcached:memcached
-    - stmp:smtp
-  ports:
-    - "2200:22"
-    - "8000:80"
-
-$GROUPNAME_ror:
-  image: greut/webapp-server:rails
-  environment:
-    - GROUPNAME=$GROUPNAME
-    - MYSQL_USERNAME=$GROUPNAME
-    - MYSQL_PASSWORD=$GROUPNAME
-    - POSTGRES_USERNAME=$GROUPNAME
-    - POSTGRES_PASSWORD=$GROUPNAME
-  hostname: $GROUPNAME-ror
-  domainname: srvz-webapp.he-arc.ch
-  volumes:
-    - ../www/$GROUPNAME:/var/www
-    - ./config:/root/config:ro
-    - ./files/templates:/var/templates:ro
-  links:
-    - postgres:postgres
-    - mysql:mysql
-    - redis:redis
-    - memcached:memcached
-    - smtp:smtp
-  ports:
-    - "2001:22"
-    - "8001:80"
-
-redis:
-  image: redis:3.0
-  volumes_from:
-    - data
-  ports:
-    - 6379:6379
-
-memcached:
-  image: memcached:1.4
-
-postgres:
-  image: postgres:9.5
-  environment:
-    - POSTGRES_PASSWORD=root
-  volumes_from:
-    - data
-  ports:
-    - "5432:5432"
-
-mysql:
-  image: mysql:5.7
-  environment:
-    - MYSQL_ROOT_PASSWORD=root
-  volumes_from:
-    - data
-  ports:
-    - "3306:3306"
-
-stmp:
-  image: mailhog/mailhog:latest
-  ports:
-    - "8025:8025"
-
-data:
-  image: busybox:1.24
-  volumes:
-    - /var/lib/postgresql/data
-    - /var/lib/mysql
-    - /data  # redis
-```
+Create a `docker-compose.yml` file base on the sample one.
 
 Run the container(s)
 
@@ -207,10 +116,6 @@ Where the csv file contains key values of this type:
     groupname;password
 
 `pwgen` is a great way to build good passwords.
-
-## Updating the machines
-
-See [fabfile.py](fabfile.py).
 
 
 ## Troubleshooting with docker-compose
