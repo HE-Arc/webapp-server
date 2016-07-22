@@ -12,7 +12,7 @@ services:
   laravel:
     image: greut/webapp-server:laravel
     build:
-      dockerfile: docker/laravel/Dockerfile
+      dockerfile: docker/laravel
       context: .
 
   rails:
