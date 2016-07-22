@@ -1,4 +1,0 @@
-#!/bin/bash
-set -e
-exec 2>&1
-exec /usr/sbin/php5-fpm --nodaemonize

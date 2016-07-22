@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-if [[ ! -e /var/log/nginx/error.log ]]; then
-    (sleep 1 && sv restart /etc/service/nginx-log-forwarder)
-fi
-exec /usr/sbin/nginx
