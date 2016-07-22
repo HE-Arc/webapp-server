@@ -7,17 +7,15 @@ Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.2"
+__version__ = "0.3"
 
 import re
 import os
 import csv
 import sys
 import pwd
-import json
 import random
 import shutil
-import os.path
 import subprocess
 import unicodedata
 import multiprocessing
@@ -61,8 +59,7 @@ def init_user(username, groupname, **kwargs):
     os.environ["UID"] = str(uid)
 
     paths = [("bash_profile", ".bash_profile"),
-             ("gitconfig", ".gitconfig"),
-             ("vimrc", ".vimrc")]
+             ("gitconfig", ".gitconfig")]
     config = kwargs["environ"].get("CONFIG", None)
     if config == "Laravel":
         paths.append(("README-php.md", "README.md"))
@@ -78,18 +75,6 @@ def init_user(username, groupname, **kwargs):
     # Create .ssh/authorized_keys
     os.mkdir(".ssh")
     os.chmod(".ssh", mode=0o0700)
-
-    # Vim
-    os.mkdir(".vim")
-    os.mkdir(".vim/bundle")
-
-    # Vundle
-    sys.stderr.write("Running Vundle PluginInstall... be patient.\n")
-    shutil.copytree("/var/Vundle.vim", ".vim/bundle/Vundle.vim")
-    subprocess.check_call(["vim", "+PluginInstall!", "+qall!"],
-                          stderr=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
-
 
     # Laravel installer
     if kwargs["environ"]["CONFIG"] == "Laravel":
@@ -165,7 +150,7 @@ def init_group(groupname, **kwargs):
         paths = (("index.php", "public/index.php"),
                  ("nginx-php.conf", "config/nginx.conf"))
 
-    if config == "Rails":
+    elif config == "Rails":
         dirs.append("app/public")
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
@@ -174,6 +159,12 @@ def init_group(groupname, **kwargs):
                  ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))
+
+    else:
+        dirs.append("public")
+
+        paths = (("nginx-base.conf", "config/nginx.conf"),
+                 ("hello.html", "public/index.html"))
 
     for p in dirs:
         if not os.path.exists(p):
@@ -229,15 +220,9 @@ def pwgen(length=128):
 
 def main(argv):
     # Load global conf
-    conf = "/etc/container_environment.json"
-    with open(conf, "r", encoding="utf-8") as f:
-        environ = json.load(f)
+    environ = os.environ
 
     groupname = environ["GROUPNAME"]
-
-    del environ["LC_CTYPE"]
-    del environ["LANG"]
-    del environ["INITRD"]
 
     if environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
@@ -330,6 +315,8 @@ def main(argv):
     else:
         sys.stderr.write("No {} file found.\n".format(students))
 
+    sys.stderr.write("Setup is done.\n")
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

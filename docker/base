@@ -1,0 +1,158 @@
+FROM ubuntu:xenial
+MAINTAINER Yoan Blanc <yoan@dosimple.ch>
+
+# Add Tini (reaping problem)
+ENV TINI_VERSION v0.9.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
+# All the packages.
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update -q \
+    && apt-get upgrade -q -y \
+    && apt-get install -q -y \
+        acl \
+        apt-transport-https \
+        build-essential \
+        ca-certificates \
+        cron \
+        curl \
+        fontconfig \
+        git \
+        libcurl4-gnutls-dev \
+        libmysqlclient-dev \
+        libpq-dev \
+        libsqlite3-dev \
+        lsof \
+        man \
+        mysql-client \
+        mercurial \
+        nano \
+        nginx-extras \
+        openssh-server \
+        postgresql-client \
+        python3-pip \
+        python3-virtualenv \
+        pwgen \
+        runit \
+        sqlite3 \
+        software-properties-common \
+        ssmtp \
+        subversion \
+        sudo \
+        syslog-ng \
+        unzip \
+        wget \
+    # NodeSource special setup..
+    && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+    && apt-get install -q -y nodejs \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Locale
+RUN locale-gen fr_CH && \
+    locale-gen fr_CH.UTF-8 && \
+    locale-gen de_CH && \
+    locale-gen de_CH.UTF-8 && \
+    locale-gen it_CH && \
+    locale-gen it_CH.UTF-8 && \
+    locale-gen en_US && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
+
+# Python
+RUN python3 -m pip install -U pip \
+    && python3 -m pip install jinja2
+
+# Install some npm global packages.
+RUN npm install -g \
+        bower \
+        browserify \
+        gulp \
+        grunt-cli \
+        webpack
+
+# Clean up tmp when done.
+RUN rm -rf /tmp/* /var/tmp/*
+
+## Nginx
+RUN export f=/etc/nginx/nginx.conf \
+    && rm /etc/nginx/sites-enabled/default \
+    && rm -r /var/www/html \
+    # auto worker processes and no daemonize (for my_init.d)
+    && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
+    # logs to stdout
+    && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
+    && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f \
+    # allow environment variables to be read by nginx confs
+    # MySQL
+    && sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' $f \
+    && sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' $f \
+    # Postgres
+    && sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' $f \
+    && sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' $f
+
+# SSMTP
+# mailhub configuration is done by 30_setup.py
+RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
+
+# Cron
+RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
+
+#  OpenSSH Server
+RUN export f=/etc/ssh/sshd_config \
+    && mkdir /var/run/sshd \
+    && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
+    && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f
+
+# Syslog
+RUN export f=/etc/syslog-ng/syslog-ng.conf \
+    && sed -i 's/system()/#system()/' $f \
+    && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
+    && sed -i 's/^\(# The root\)/destination d_stdout { file("\/dev\/stdout"); };\n\1/' $f \
+    && sed -i 's/^\(# The root\)/destination d_stderr { file("\/dev\/stderr"); };\n\n\1/' $f \
+    && sed -i 's/\(destination\)(d_[^)]*)/\1(d_stdout)/g' $f \
+    && sed -i 's/\(filter(f_console);\)\s*destination(d_stdout);/\1/g' $f
+
+#
+# SUDO for any user
+#
+RUN echo '%users ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/users
+RUN chmod 0440 /etc/sudoers.d/users
+
+# Templates
+COPY files/templates /var/templates
+
+## Runit
+COPY scripts/runit/cron.sh /etc/service/cron/run
+COPY scripts/runit/nginx.sh /etc/service/nginx/run
+COPY scripts/runit/sshd.sh /etc/service/sshd/run
+COPY scripts/runit/syslog.sh /etc/service/syslog/run
+COPY scripts/boot.sh /usr/local/bin/boot.sh
+COPY scripts/setup.py /usr/local/bin/setup.py
+RUN chmod +x /etc/service/cron/run \
+    && chmod +x /etc/service/nginx/run \
+    && chmod +x /etc/service/sshd/run \
+    && chmod +x /etc/service/syslog/run \
+    && chmod o+x /usr/local/bin/boot.sh \
+    && chmod o+x /usr/local/bin/setup.py
+
+# Expose VOLUME
+VOLUME /root/config \
+    /var/www
+
+# Ports
+EXPOSE 22 80
+
+# Set correct environment variables.
+ENV HOME /root
+
+# Config
+ENV GROUPNAME unknown
+ENV CONFIG Base
+
+CMD [ "/usr/local/bin/boot.sh" ]
+
+# vim: ft=dockerfile:

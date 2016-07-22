@@ -57,11 +57,20 @@ them yourself.
 
 ```
 # Base container
-$ docker build -t greut/webapp-server:latest -f docker/base/Dockerfile .
+$ docker build -t greut/webapp-server:latest -f docker/base .
 # Laravel container
 $ docker build -t greut/webapp-server:laravel -f docker/laravel/Dockerfile .
 # Rails container
 $ docker build -t greut/webapp-server:rails -f docker/rails/Dockerfile .
+```
+
+## Run the base
+
+```
+$ docker run -d \
+             -v `pwd`/config \
+             -p 80 \
+             greut/webapp-server
 ```
 
 ## Run via docker-compose
