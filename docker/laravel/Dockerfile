@@ -26,7 +26,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
         php7.0-gd \
         php-imagick \
         php7.0-mbstring \
-        php7.0-mcrypt \
         php-memcache \
         php-memcached \
         php-mongo \
@@ -47,8 +46,6 @@ RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/
 RUN mkdir -p /run/php
 RUN sed -i 's/^\(error_log = \).*$/\1syslog/' /etc/php/7.0/fpm/php-fpm.conf
 
-# Enable mcrypt
-RUN phpenmod mcrypt
 # Disable xdebug for CLI (composer doesn't like it)
 RUN phpdismod -s cli xdebug
 
