@@ -101,18 +101,27 @@ RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
 # Cron
 RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
 
-#  OpenSSH Server
+# OpenSSH Server
+#
+# * Disable password authentication
+# * Disallow TCP forwarding
+# * Delete any configured host keys (boot.sh)
+#
 RUN export f=/etc/ssh/sshd_config \
     && mkdir /var/run/sshd \
     && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
-    && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f
+    && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f \
+    && rm -v /etc/ssh/ssh_host_*
 
 # Syslog
+#
+# * Output all the things to stdout!
+#
 RUN export f=/etc/syslog-ng/syslog-ng.conf \
     && sed -i 's/system()/#system()/' $f \
     && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
-    && sed -i 's/^\(# The root\)/destination d_stdout { file("\/dev\/stdout"); };\n\1/' $f \
-    && sed -i 's/^\(# The root\)/destination d_stderr { file("\/dev\/stderr"); };\n\n\1/' $f \
+    && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/dev\/stdout"); };\n\1/' $f \
+    && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/dev\/stderr"); };\n\n\1/' $f \
     && sed -i 's/\(destination\)(d_[^)]*)/\1(d_stdout)/g' $f \
     && sed -i 's/\(filter(f_console);\)\s*destination(d_stdout);/\1/g' $f
 
