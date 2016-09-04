@@ -1,5 +1,7 @@
 # WebApp Server
 
+[![Join the chat at https://gitter.im/HE-Arc/webapp-server](https://badges.gitter.im/HE-Arc/webapp-server.svg)](https://gitter.im/HE-Arc/webapp-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The setup scripts to create development environments for many groups.
 
 ## Requirements
