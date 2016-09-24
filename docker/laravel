@@ -59,6 +59,7 @@ RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/7.0/cli/php.ini
 ## Runit
 COPY scripts/runit/php7.0-fpm.sh /etc/service/php7.0-fpm/run
 RUN chmod +x /etc/service/php7.0-fpm/run
+
 # temp
 COPY files/templates /var/templates
 COPY scripts/boot.sh /usr/local/bin/boot.sh

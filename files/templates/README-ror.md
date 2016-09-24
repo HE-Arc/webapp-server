@@ -8,9 +8,9 @@ Here we are again!
 Most of the stuff required are installed by default as you can see.
 
     $ ruby --version
-    ruby 2.3.0p0 (2015-12-25) [x86_64-linux-gnu]
+    ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
     $ rails --version
-    Rails 4.2.6
+    Rails 5.0.0.1
 
 ### The current application
 
@@ -85,7 +85,7 @@ production environment. (See also the staging environment below)
       # Add the following.
       host: postgres
       user: postgres
-      password: <%= ENV['POSTGRES_ENV_POSTGRES_PASSWORD'] %>
+      password: <%= ENV['POSTGRES_PASSWORD'] %>
 
     development:
       <<: *default
@@ -139,20 +139,6 @@ You should get the "Welcome abroad" screen now.
 ### Differences with Laravel
 
 Instead of Composer, you’ll use Bundler and Ruby Gems.
-
-### Ruby on Rail 5.0.0 beta1
-
-There is a demonstration video from @dhh on
-[youtube](https://www.youtube.com/watch?v=n0WUjGkDFS0).
-
-Before installing rails 5, uninstall the previous rails version.
-
-    $ gem install --prerelease rails
-    $ rails --version
-    Rails 5.0.0.beta1
-
-I've tested it (locally) and it's neat! The websocket will be hard to set up
-on the srvz-app machine, sadly.
 
 ## Dropping the database
 

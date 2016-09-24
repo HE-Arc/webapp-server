@@ -18,7 +18,7 @@ services:
   rails:
     image: greut/webapp-server:rails
     build:
-      dockerfile: docker/rails/Dockerfile
+      dockerfile: docker/rails
       context: .
 
   # PHP project.
@@ -58,26 +58,41 @@ services:
     volumes:
       - eatapp_redis:/data
 
-  # Ruby on Rails project (TODO)
+  # Ruby on Rails project
 
-  trip:
+  capistrano:
     image: greut/webapp-server:rails
     environment:
-      - GROUPNAME=trip
-      - MYSQL_USERNAME=trip
-      - MYSQL_PASSWORD=trip  # CHANGE ME
-      - POSTGRES_USERNAME=trip
-      - POSTGRES_PASSWORD=trip  # ME TOO
-    hostname: trip
+      - GROUPNAME=capistrano
+      - MYSQL_USERNAME=capistrano
+      - MYSQL_PASSWORD=capistrano  # CHANGE ME
+      - POSTGRES_USERNAME=capistrano
+      - POSTGRES_PASSWORD=capistrano  # ME TOO
+    hostname: capistrano
     domainname: srvz-webapp.he-arc.ch
     volumes:
-      - trip:/var/www
+      - capistrano:/var/www
       - ./config:/root/config:ro
     ports:
       - "2020:22"
       - "8080:80"
+    depends_on:
+      - postgres
+      - mysql
+      - smtp
+    links:
+      - capistrano_redis:redis
+    networks:
+      - capistrano
     mem_limit: 1000000000
     memswap_limit: 2000000000
+
+  capistrano_redis:
+    image: redis:3.2-alpine
+    networks:
+      - capistrano
+    volumes:
+      - capistrano_redis:/data
 
   # Shared services
   postgres:
@@ -89,6 +104,7 @@ services:
       - "5432:5432"
     networks:
       - eatapp
+      - capistrano
     volumes:
      - postgres:/var/lib/postgresql/data
 
@@ -100,6 +116,7 @@ services:
       - "3306:3306"
     networks:
       - eatapp
+      - capistrano
     volumes:
       - mysql:/var/lib/mysql
 
@@ -109,14 +126,20 @@ services:
       - "8025:8025"
     networks:
       - eatapp
+      - capistrano
 
 networks:
+  # laravel
   eatapp:
+  # rails
+  capistrano:
 
 volumes:
-  trip:
   mysql:
   postgres:
-
+  # laravel
   eatapp:
   eatapp_redis:
+  # rails
+  capistrano:
+  capistrano_redis:

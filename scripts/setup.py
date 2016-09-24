@@ -7,7 +7,7 @@ Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.3"
+__version__ = "0.4"
 
 import re
 import os
@@ -179,7 +179,8 @@ def init_group(groupname, **kwargs):
 
         sys.stderr.write("Running rails installation.\n")
         subprocess.check_call(["gem", "install",
-                               "bundler", "rack", "rails", "rake", "puma"
+                               "bundler:1.13.1", "rack:2.0.1", "rails", "rake",
+                               "puma:3.6.0"
                               ],
                               env=kwargs["environ"],
                               stderr=sys.stderr,
@@ -227,8 +228,10 @@ def main(argv):
     if environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
-        with open("/etc/container_environment/SECRET_KEY_BASE", "w+") as f:
-            f.write(environ["SECRET_KEY_BASE"])
+        os.mkdir("/etc/container_environment")
+        for k, v in environ.items():
+            with open("/etc/container_environment/{0}".format(k), "w+") as f:
+                f.write(v)
 
     # Create the group
     try:

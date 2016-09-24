@@ -1,16 +1,6 @@
-# Superduper dockerfile to manage rails application!
-
 FROM greut/webapp-server:latest
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
-# Ports
-EXPOSE 22 80
-
-# Set correct environment variables.
-ENV HOME /root
-
-# Use baseimage-docker's init process.
-CMD ["/sbin/my_init"]
 
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update -q -y && \
@@ -46,9 +36,8 @@ RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.3 1 \
 ## Runit
 COPY scripts/runit/puma /etc/service/puma/run
 RUN chmod +x /etc/service/puma/run
-#COPY files/templates /var/templates
-#COPY scripts/30_setup.py /etc/my_init.d/30_setup.py
-#RUN chmod +x /etc/my_init.d/30_setup.py
 
 # Config
 ENV CONFIG Rails
+
+# vim: ft=dockerfile:
