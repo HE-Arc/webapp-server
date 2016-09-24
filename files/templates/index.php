@@ -45,7 +45,7 @@ try {
   }
   echo "-->\n\n";
 } catch(PDOException $e) {
-  echo "<!-- " . $e->getMessage() . " -->\n\n";
+  echo "<pre><code>MySQL: " . $e->getMessage() . " </code></pre>\n\n";
 }
 
 // Postgres
@@ -61,7 +61,7 @@ try {
   }
   echo "-->\n\n";
 } catch(PDOException $e) {
-  echo "<!-- " . $e->getMessage() . " -->\n\n";
+  echo "<pre><code>Postgres: " . $e->getMessage() . " </code></pre>\n\n";
 }
 
 // Redis
@@ -70,11 +70,15 @@ try {
   $redis->connect($_SERVER["REDIS_HOST"], (int) $_SERVER["REDIS_PORT"]);
   echo "<!-- Redis: " . $redis->ping() . " -->\n\n";
 } catch(RedisException $e) {
-  echo "<!-- " . $e->getMessage() . " -->\n\n";
+  echo "<pre><code>Redis: " . $e->getMessage() . " </code></pre>\n\n";
 }
 
 // Sending emails
-mail("test@test.com", "Test", "Hello World!");
+mail(
+  "{{ groupname }}@example.org",
+  "{{ groupname }}",
+  "Hello World!"
+);
 
 // Le PHP info.
 phpinfo();

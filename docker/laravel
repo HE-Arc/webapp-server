@@ -9,16 +9,25 @@ RUN DEBIAN_FRONTEND=noninteractive \
     apt-get upgrade -q -y --allow-unauthenticated && \
     apt-get install -q -y --allow-unauthenticated \
         php-apcu \
+        php7.0-bz2 \
         php7.0-cli \
         php7.0-curl \
         php7.0-intl \
         php7.0-fpm \
         php7.0-gd \
         php-imagick \
+        php7.0-imap \
         php7.0-mbstring \
+        php7.0-mcrypt \
         php7.0-mysql \
         php7.0-pgsql \
+        php7.0-soap \
         php7.0-sqlite3 \
+        php7.0-tidy \
+        php7.0-xml \
+        php7.0-xmlrpc \
+        php7.0-xsl \
+        php7.0-zip \
         php-redis \
         php-xdebug && \
     apt-get autoremove && \
@@ -50,6 +59,12 @@ RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/7.0/cli/php.ini
 ## Runit
 COPY scripts/runit/php7.0-fpm.sh /etc/service/php7.0-fpm/run
 RUN chmod +x /etc/service/php7.0-fpm/run
+# temp
+COPY files/templates /var/templates
+COPY scripts/boot.sh /usr/local/bin/boot.sh
+COPY scripts/setup.py /usr/local/bin/setup.py
+RUN chmod +x /usr/local/bin/boot.sh \
+ && chmod +x /usr/local/bin/setup.py
 
 # Config
 ENV CONFIG Laravel

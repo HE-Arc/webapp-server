@@ -17,7 +17,7 @@ Feel free to adapt the git configuration in `~/.gitconfig`.
 
 Connect to MySQL (hint: \`echo \$MYSQL_PASSWORD\`):
 
-    $ mysql --user $MYSQL_USERNAME --host $MYSQL_HOST --password $MYSQL_DATABASE
+    $ mysql --user $MYSQL_USERNAME --host mysql --password $MYSQL_DATABASE
 
 You may also see how it's currently done in `index.php`.
 
@@ -40,8 +40,9 @@ Here we are creating a project called `blog`
 
     $ cd www
     $ laravel new blog
-    $ chmod -R 0777 blog/storage
-    $ chmod 0777 blog/bootstrap/cache
+    $ cd blog
+    $ sudo setfacl -R -m u:www-data:rwx blog/storage blog/bootstrap/cache
+    $ sudo setfacl -dR -m g:{{groupname}}:rwx blog/storage blog/bootstrap/cache
 
 
 ### Nginx (_engine-X_)
@@ -55,6 +56,8 @@ application showing up on port 80. The file is `www/config/nginx.conf`
 And restart the servers:
 
     $ sudo sv restart nginx
+
+Your website should display the laravel default homepage.
 
 
 #### Logs
@@ -78,6 +81,7 @@ Modify `blog/config/database.php` as such:
         'mysql' => [
             'driver' => 'mysql',
             'host' => env('MYSQL_HOST', env('DB_HOST', 'localhost')),
+            'port' => env('DB_PORT', '3306'),
             'database' => env('MYSQL_DATABASE', env('DB_DATABASE', 'forge')),
             'username' => env('MYSQL_USERNAME', env('DB_USERNAME', 'forge')),
             'password' => env('MYSQL_PASSOWRD', env('DB_PASSWORD', '')),
@@ -95,6 +99,13 @@ containing the host for the MySQL connection. It's much more flexible than
 `.env` files. Keep the `.env` file for you local setup.
 
 What is `utf8mb4`? See: https://mathiasbynens.be/notes/mysql-utf8mb4
+
+### Using Postgresql instead of MySQL
+
+You may also want to use Postgresql. The configuration is alike but you'all have
+to change the default key to this one.
+
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
 
 ## Initializing the models
@@ -119,7 +130,7 @@ Now, we are ready to run the migrations:
 
 Et voilà!
 
-    echo "SHOW TABLES" | mysql -u $MYSQL_USERNAME -h $MYSQL_HOST -p $MYSQL_DATABASE
+    echo "SHOW TABLES" | mysql -u $MYSQL_USERNAME -h mysql -p $MYSQL_DATABASE
     Enter password:
     Tables_in_<GROUPNAME>
     migrations

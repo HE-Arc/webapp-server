@@ -284,8 +284,8 @@ def main(argv):
     # Create users
     students = "/root/config/students.tsv"
     StudentRecord = namedtuple("StudentRecord",
-                               "lastname, firstname, email, classname, room, "
-                               "laravel, rails, github, comment")
+                               "lastname, firstname, email, classname, github, "
+                               "laravel, rails, comment")
 
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:

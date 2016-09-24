@@ -23,26 +23,42 @@ services:
 
   # PHP project.
 
-  avedis:
+  eatapp:
     image: greut/webapp-server:laravel
     environment:
-      - GROUPNAME=avedis
-      - MYSQL_USERNAME=avedis
-      - MYSQL_PASSWORD=avedis  # CHANGE ME
-      - POSTGRES_USERNAME=avedis
-      - POSTGRES_PASSWORD=avedis  # ME TOO
-    hostname: avedis
+      - GROUPNAME=eatapp
+      - MYSQL_USERNAME=eatapp
+      - MYSQL_PASSWORD=eatapp  # CHANGE ME
+      - POSTGRES_USERNAME=eatapp
+      - POSTGRES_PASSWORD=eatapp  # ME TOO
+      - REPOSITORY=https://github.com/HE-Arc/EatApp
+    hostname: eatapp
     domainname: srvz-webapp.he-arc.ch
     volumes:
-      - avedis:/var/www
+      - eatapp:/var/www
       - ./config:/root/config:ro
     ports:
       - "2222:22"
       - "8888:80"
+    depends_on:
+      - postgres
+      - mysql
+      - smtp
+    links:
+      - eatapp_redis:redis
+    networks:
+      - eatapp
     mem_limit: 1000000000
     memswap_limit: 2000000000
 
-  # Ruby on Rails project.
+  eatapp_redis:
+    image: redis:3.2-alpine
+    networks:
+      - eatapp
+    volumes:
+      - eatapp_redis:/data
+
+  # Ruby on Rails project (TODO)
 
   trip:
     image: greut/webapp-server:rails
@@ -64,19 +80,6 @@ services:
     memswap_limit: 2000000000
 
   # Shared services
-
-  redis:
-    image: redis:3.0
-    volumes:
-      - redis:/data
-    ports:
-      - "6379:6379"
-
-  memcached:
-    image: memcached:1.4
-    ports:
-      - "11211:11211"
-
   postgres:
     image: postgres:9.5
     environment:
@@ -84,6 +87,8 @@ services:
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
+    networks:
+      - eatapp
     volumes:
      - postgres:/var/lib/postgresql/data
 
@@ -93,6 +98,8 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     ports:
       - "3306:3306"
+    networks:
+      - eatapp
     volumes:
       - mysql:/var/lib/mysql
 
@@ -100,10 +107,16 @@ services:
     image: mailhog/mailhog:latest
     ports:
       - "8025:8025"
+    networks:
+      - eatapp
+
+networks:
+  eatapp:
 
 volumes:
   trip:
-  avedis:
   mysql:
   postgres:
-  redis:
+
+  eatapp:
+  eatapp_redis:
