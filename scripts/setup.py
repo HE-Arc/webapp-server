@@ -76,17 +76,6 @@ def init_user(username, groupname, **kwargs):
     os.mkdir(".ssh")
     os.chmod(".ssh", mode=0o0700)
 
-    # Laravel installer
-    if kwargs["environ"]["CONFIG"] == "Laravel":
-        sys.stderr.write("Running composer global require laravel/installer\n")
-        subprocess.check_call(["composer",
-                               "global",
-                               "require",
-                               "laravel/installer=~1.3"],
-                              stderr=sys.stderr,
-                              stdout=sys.stdout)
-
-
 def create_user(username, groupname, comment):
     """Create a UNIX user (the group must exist beforehand)."""
     groups = ["users"]
@@ -174,7 +163,17 @@ def init_group(groupname, **kwargs):
         if not os.path.exists(dest):
             render(tpl, dest, groupname=groupname, **kwargs)
 
-    if config == "Rails":
+    if config == "Laravel":
+        sys.stderr.write("Running composer global require laravel/installer\n")
+        subprocess.check_call(["composer",
+                               "global",
+                               "require",
+                               "laravel/installer=~1.3"],
+                              env=kwargs["environ"],
+                              stderr=sys.stderr,
+                              stdout=sys.stdout)
+
+    elif config == "Rails":
         shutil.copy2("/var/templates/nginx-puma.png", "app/public")
 
         sys.stderr.write("Running rails installation.\n")
@@ -225,7 +224,19 @@ def main(argv):
 
     groupname = environ["GROUPNAME"]
 
-    if environ["CONFIG"] == "Rails":
+    # Global environment "variables"
+    environ["MYSQL_HOST"] = "mysql"
+    environ["MYSQL_PORT"] = "3306"
+    environ["POSTGRES_HOST"] = "postgres"
+    environ["POSTGRES_PORT"] = "5432"
+    environ["REDIS_HOST"] = "redis"
+    environ["REDIS_PORT"] = "6379"
+    environ["SMTP_HOST"] = "smtp"
+    environ["SMTP_PORT"] = "1025"
+
+    if environ["CONFIG"] == "Laravel":
+        environ["COMPOSER_HOME"] = "/var/www/.composer"
+    elif environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
         os.mkdir("/etc/container_environment")
@@ -233,7 +244,7 @@ def main(argv):
             with open("/etc/container_environment/{0}".format(k), "w+") as f:
                 f.write(v)
 
-    # Create the group
+    # Test if the group exists already
     try:
         p = pwd.getpwnam(groupname)
         sys.stderr.write("Setup already done!\n")
@@ -248,7 +259,6 @@ def main(argv):
                            "/etc/ssmtp/ssmtp.conf"],
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE)
-
 
     # Create the group
     create_group(groupname)

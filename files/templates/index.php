@@ -14,16 +14,16 @@ mb_internal_encoding("utf-8");
 // The configuration comes from the environment.
 // See: http://12factor.net/
 $mysql = [
-    "host" => "mysql",
-    "port" => 3306,
+    "host" => $_SERVER["MYSQL_HOST"],
+    "port" => $_SERVER["MYSQL_PORT"],
     "dbname" => $_SERVER["MYSQL_USERNAME"],
     "username" => $_SERVER["MYSQL_USERNAME"],
     "password" => $_SERVER["MYSQL_PASSWORD"]
 ];
 
 $pgsql = [
-    "host" => "postgres",
-    "port" => 5432,
+    "host" => $_SERVER["POSTGRES_HOST"],
+    "port" => $_SERVER["POSTGRES_PORT"],
     "dbname" => $_SERVER["POSTGRES_USERNAME"],
     "username" => $_SERVER["POSTGRES_USERNAME"],
     "password" => $_SERVER["POSTGRES_PASSWORD"]

@@ -10,9 +10,9 @@ export PATH=$PATH:/usr/games/
 export DEBIAN_FRONTEND=noninteractive
 
 {% if environ.CONFIG == "Laravel" -%}
-export PATH+=:$HOME/.composer/vendor/bin
+export PATH+=:$COMPOSER_HOME/vendor/bin
 {% elif environ.CONFIG == "Rails" -%}
-export PATH=$PATH:$GEM_HOME/bin
+export PATH+=$GEM_HOME/bin
 {% endif -%}
 
 # If not running interactively, don't do anything

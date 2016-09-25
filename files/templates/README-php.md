@@ -41,8 +41,8 @@ Here we are creating a project called `blog`
     $ cd www
     $ laravel new blog
     $ cd blog
-    $ sudo setfacl -R -m u:www-data:rwx blog/storage blog/bootstrap/cache
-    $ sudo setfacl -dR -m g:{{groupname}}:rwx blog/storage blog/bootstrap/cache
+    $ sudo setfacl -R -m u:www-data:rwx storage bootstrap/cache
+    $ sudo setfacl -dR -m g:{{groupname}}:rwx storage bootstrap/cache
 
 
 ### Nginx (_engine-X_)
@@ -81,7 +81,7 @@ Modify `blog/config/database.php` as such:
         'mysql' => [
             'driver' => 'mysql',
             'host' => env('MYSQL_HOST', env('DB_HOST', 'localhost')),
-            'port' => env('DB_PORT', '3306'),
+            'port' => env('MYSQL_PORT', env('DB_PORT', '3306')),
             'database' => env('MYSQL_DATABASE', env('DB_DATABASE', 'forge')),
             'username' => env('MYSQL_USERNAME', env('DB_USERNAME', 'forge')),
             'password' => env('MYSQL_PASSOWRD', env('DB_PASSWORD', '')),
@@ -136,5 +136,53 @@ Et voilà!
     migrations
     password_resets
     users
+
+## JavaScript and CSS
+
+Laravel comes with some default libraries like Bootstrap. To rebuild them, do
+the following commands:
+
+    $ npm install
+    $ gulp
+    $ gulp --production
+
+## Queue
+
+Create the following script: /etc/service/laravel-queue-worker/run
+
+    #!/bin/sh
+    set -xe
+    cd /var/www/<app>
+    exec 2>&1
+    exec chpst -uwww-data php artisan queue:work
+
+
+## WebSocket
+
+It's doable to set up Laravel Echo and Laravel Echo Server but it can be quite
+tricky.
+
+    $ npm install --save-dev laravel-echo pusher.js
+    $ npm install --save laravel-echo-server
+
+Configuration for the Laravel Echo Server:
+
+    "databaseConfig": {"redis": {"host": "redis"}}
+
+Some scripts I've used with success so far.
+
+    #!/bin/sh
+    set -xe
+    cd /var/www/<app>
+    exec 2>&1
+    exec chpst -uwww-data node_modules/.bin/laravel-echo-server start
+
+### Hard part
+
+The hard part is that we only have ports 80 and 443 available to us. Hence, we
+must tweak the nginx configuration to forward any calls made to `/socket.io` to
+the node.js backend.
+
+If you want to go this route, ping me first.
 
 {% include 'README-footer.md' -%}
