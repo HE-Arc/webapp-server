@@ -68,10 +68,13 @@ RUN python3 -m pip install -U pip \
 
 # Install some npm global packages.
 RUN npm install -g \
+        babel-cli \
+        babel-preset-es2015 \
         bower \
         browserify \
         gulp \
         grunt-cli \
+        node-sass \
         webpack
 
 # Clean up tmp when done.
