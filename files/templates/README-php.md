@@ -154,7 +154,11 @@ the following commands:
     $ gulp
     $ gulp --production
 
-## Queue
+## Advanced topics
+
+Run them at your own risks!
+
+### Queue
 
 Create the following script: /etc/service/laravel-queue-worker/run
 
@@ -165,19 +169,19 @@ Create the following script: /etc/service/laravel-queue-worker/run
     exec chpst -uwww-data php artisan queue:work
 
 
-## WebSocket
+### WebSocket
 
 It's doable to set up Laravel Echo and Laravel Echo Server but it can be quite
 tricky.
 
-    $ npm install --save-dev laravel-echo pusher.js
+    $ npm install --save-dev laravel-echo pusher-js
     $ npm install --save laravel-echo-server
 
 Configuration for the Laravel Echo Server:
 
     "databaseConfig": {"redis": {"host": "redis"}}
 
-Some scripts I've used with success so far.
+Some scripts I've used successfully with runit so far.
 
     #!/bin/sh
     set -xe
@@ -185,7 +189,7 @@ Some scripts I've used with success so far.
     exec 2>&1
     exec chpst -uwww-data node_modules/.bin/laravel-echo-server start
 
-### Hard part
+#### Hard part
 
 The hard part is that we only have ports 80 and 443 available to us. Hence, we
 must tweak the nginx configuration to forward any calls made to `/socket.io` to
