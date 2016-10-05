@@ -17,7 +17,7 @@ Feel free to adapt the git configuration in `~/.gitconfig`.
 
 Connect to MySQL (hint: \`echo \$MYSQL_PASSWORD\`):
 
-    $ mysql --user $MYSQL_USERNAME --host mysql --password $MYSQL_DATABASE
+    $ mysql --user $MYSQL_USERNAME --host mysql --password $MYSQL_USERNAME
 
 You may also see how it's currently done in `index.php`.
 
@@ -82,7 +82,7 @@ Modify `blog/config/database.php` as such:
             'driver' => 'mysql',
             'host' => env('MYSQL_HOST', env('DB_HOST', 'localhost')),
             'port' => env('MYSQL_PORT', env('DB_PORT', '3306')),
-            'database' => env('MYSQL_DATABASE', env('DB_DATABASE', 'forge')),
+            'database' => env('MYSQL_USERNAME', env('DB_DATABASE', 'forge')),
             'username' => env('MYSQL_USERNAME', env('DB_USERNAME', 'forge')),
             'password' => env('MYSQL_PASSOWRD', env('DB_PASSWORD', '')),
             'charset' => 'utf8mb4',
@@ -107,6 +107,14 @@ to change the default key to this one.
 
     'default' => env('DB_CONNECTION', 'pgsql'),
 
+### Environments
+
+In MySQL, you've got three databases named after your groupname. One could be
+used for running your tests and the other one for production.
+
+In Postgres, it's similar expect that this is done with three schemas within
+one database.
+
 
 ## Initializing the models
 
@@ -130,7 +138,7 @@ Now, we are ready to run the migrations:
 
 Et voilà!
 
-    echo "SHOW TABLES" | mysql -u $MYSQL_USERNAME -h mysql -p $MYSQL_DATABASE
+    echo "SHOW TABLES" | mysql -u $MYSQL_USERNAME -h mysql -p $MYSQL_USERNAME
     Enter password:
     Tables_in_<GROUPNAME>
     migrations
