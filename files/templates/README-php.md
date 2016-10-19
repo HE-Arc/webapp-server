@@ -84,7 +84,7 @@ Modify `blog/config/database.php` as such:
             'port' => env('MYSQL_PORT', env('DB_PORT', '3306')),
             'database' => env('MYSQL_USERNAME', env('DB_DATABASE', 'forge')),
             'username' => env('MYSQL_USERNAME', env('DB_USERNAME', 'forge')),
-            'password' => env('MYSQL_PASSOWRD', env('DB_PASSWORD', '')),
+            'password' => env('MYSQL_PASSWORD', env('DB_PASSWORD', '')),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
