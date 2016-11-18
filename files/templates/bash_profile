@@ -12,7 +12,7 @@ export DEBIAN_FRONTEND=noninteractive
 {% if environ.CONFIG == "Laravel" -%}
 export PATH+=:$COMPOSER_HOME/vendor/bin
 {% elif environ.CONFIG == "Rails" -%}
-export PATH+=$GEM_HOME/bin
+export PATH+=:$GEM_HOME/bin
 {% endif -%}
 
 # If not running interactively, don't do anything

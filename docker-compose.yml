@@ -9,7 +9,7 @@ services:
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: free
-    domainname: free.srvz-webapp.he-arc.ch
+    domainname: srvz-webapp.he-arc.ch
     volumes:
       - free:/var/www
       - ./config:/root/config:ro
@@ -22,6 +22,8 @@ services:
       - smtp
     networks:
       - free
+    mem_limit: 1000000000
+    memswap_limit: 2000000000
 
   # PHP project.
 
@@ -38,7 +40,7 @@ services:
       - ./config:/root/config:ro
     ports:
       - "2222:22"
-      - "8888:80"
+      - "8080:80"
     depends_on:
       - postgres
       - mysql

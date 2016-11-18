@@ -1,5 +1,7 @@
 {# vim: set ft=jinja: -#} {% extends "README.md" -%}
 
+{% block body %} {{ super() }}
+
 # Ruby on Rails
 
 Most of the stuff required are installed by default as you can see.
@@ -213,6 +215,4 @@ Rails.application.configure do
 end
 ```
 
-You can also enable a subnet using the CIDR notation.
-
-{% include 'README-footer.md' %}
+You can also enable a subnet using the CIDR notation. {% endblock -%}

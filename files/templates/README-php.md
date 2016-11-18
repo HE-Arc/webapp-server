@@ -1,6 +1,6 @@
 {# vim: set ft=jinja: -#} {% extends "README.md" -%}
 
-You may also see how it's currently done in `index.php`.
+{% block body %} {{ super() }} You may also see how it's currently done in `index.php`.
 
 # PHP
 
@@ -187,4 +187,4 @@ The hard part is that we only have ports 80 and 443 available to us. Hence, we m
 
 If you want to go this route, ping me first.
 
-{% include 'README-footer.md' -%}
+{% endblock -%}
