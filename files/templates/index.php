@@ -16,23 +16,22 @@ mb_internal_encoding("utf-8");
 $mysql = [
     "host" => $_SERVER["MYSQL_HOST"],
     "port" => $_SERVER["MYSQL_PORT"],
-    "dbname" => $_SERVER["MYSQL_USERNAME"],
-    "username" => $_SERVER["MYSQL_USERNAME"],
-    "password" => $_SERVER["MYSQL_PASSWORD"]
+    "dbname" => $_SERVER["GROUPNAME"],
+    "username" => $_SERVER["GROUPNAME"],
+    "password" => $_SERVER["PASSWORD"]
 ];
 
 $pgsql = [
     "host" => $_SERVER["POSTGRES_HOST"],
     "port" => $_SERVER["POSTGRES_PORT"],
-    "dbname" => $_SERVER["POSTGRES_USERNAME"],
-    "username" => $_SERVER["POSTGRES_USERNAME"],
-    "password" => $_SERVER["POSTGRES_PASSWORD"]
+    "dbname" => $_SERVER["GROUPNAME"],
+    "username" => $_SERVER["GROUPNAME"],
+    "password" => $_SERVER["PASSWORD"]
 ];
 
 
 // Hide the passwords from phpinfo.
-unset($_SERVER["MYSQL_PASSWORD"]);
-unset($_SERVER["POSTGRES_PASSWORD"]);
+unset($_SERVER["PASSWORD"]);
 
 // MySQL
 try {

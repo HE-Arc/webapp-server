@@ -6,32 +6,28 @@ The setup scripts to create development environments for many groups.
 
 ## Requirements
 
- * Docker
- * Python3 (pip, virtualenv or requests)
- * Python2 for [Fabric](http://docs.fabfile.org/)
+- Docker >1.10
+- Python 3 (pip, virtualenv or requests)
 
 ## Setup
 
 ### Students
 
-The configuration is done via a TSV file (`config/students.tsv`). Here is its
-format:
+The configuration is done via a TSV file (`config/students.tsv`). Here is its format:
 
-```csv
-Lastname  Firstname  Email                 Classname  Groupname   GitHub    Comment
-Bon       Jean       jean.bon@example.org  INF3       FunkyNinja  jeanjean  -
-Blanc     Yoan       yoan@dosimple.ch      Teacher    admin       greut     -
-...
-```
+Lastname | Firstname | Email                | Group   | Github   | Team1  | Team2 | Comment
+-------- | --------- | -------------------- | ------- | -------- | ------ | ----- | -------
+Bon      | Jean      | jean.bon@example.org | INF3    | jeanjean | ninjas | funky | -
+Blanc    | Yoan      | yoan.blanc@he-arc.ch | Teacher | greut    | admin  | admin | -
 
 This is how this file is used:
 
-* *Lastname* no particular usage
-* *Firstname* becomes the username
-* *Classname* no particular usage
-* *Groupname* will be the name of the vm and identify a container
-* *GitHub* to download the SSH public keys
-* *Comment* no particular usage
+- _Lastname_ no particular usage
+- _Firstname_ becomes the username
+- _Group_ no particular usage
+- _GitHub_ identifier to download the SSH public keys
+- _TeamX_ will be the name of the virtual host and identify a container
+- _Comment_ no particular usage
 
 ### Public keys
 
@@ -46,22 +42,19 @@ $ pip3 install -r requirements.txt
 $ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
 ```
 
-The key is a [personal access token](https://github.com/settings/tokens) to
-avoid being rate limited by the API.
+The key is a [personal access token](https://github.com/settings/tokens) to avoid being rate limited by the API.
 
 ## Containers
 
-If you don't want to use the [publicly available
-containers](https://hub.docker.com/r/greut/webapp-server/), you can build
-them yourself.
+If you don't want to use the [publicly available containers](https://hub.docker.com/r/greut/webapp-server/), you can build them yourself.
 
 ```
 # Base container
-$ docker-compose build base
+$ docker-compose -f build.yml build base
 # Laravel container
-$ docker-compose build laravel
+$ docker-compose -f build.yml build laravel
 # Rails container
-$ docker-compose build rails
+$ docker-compose -f build.yml build rails
 ```
 
 ## Run the base
@@ -85,16 +78,13 @@ docker-compose up -d
 
 ### Databases
 
-The databases are open the external world, hence we must modify the super admin
-password. Setting up a good one during the startup won't be as effective as it
-will be visible from within the containers anyway.
+The databases are open the external world, hence we must modify the super admin password. Setting up a good one during the startup won't be as effective as it will be visible from within the containers anyway.
 
 #### MySQL
 
 ##### Post-setup
 
-Changing MySQL root password because the above value will be passed to each
-linked containers.
+Changing MySQL root password because the above value will be passed to each linked containers.
 
 ```shell
 # 5.6
@@ -107,8 +97,7 @@ $ mysql -h 127.0.0.1 -u root -proot
 
 #### PostgreSQL
 
-Changing Postgres password because the above value will be passed to each
-linked containers.
+Changing Postgres password because the above value will be passed to each linked containers.
 
 ```shell
 $ psql -h 127.0.0.1 \
@@ -120,14 +109,17 @@ $ psql -h 127.0.0.1 \
 
 Use the script bdd.py to create the proper databases and roles.
 
-    $ python3 scripts/bdd.py config/bdd.csv
+```
+$ python3 scripts/bdd.py config/bdd.csv
+```
 
 Where the csv file contains key values of this type:
 
-    groupname;password
+```
+groupname;password
+```
 
 `pwgen` is a great way to build good passwords.
-
 
 ## Troubleshooting with docker-compose
 

@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+
+  base:
+    image: greut/webapp-server:latest
+    build:
+      dockerfile: docker/base
+      context: .
+
+  laravel:
+    image: greut/webapp-server:laravel
+    build:
+      dockerfile: docker/laravel
+      context: .
+
+  rails:
+    image: greut/webapp-server:rails
+    build:
+      dockerfile: docker/rails
+      context: .

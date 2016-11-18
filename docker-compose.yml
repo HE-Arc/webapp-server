@@ -1,25 +1,27 @@
 version: '2'
 
 services:
-
-  # Build only!
-  base:
+   # Free project
+  free:
     image: greut/webapp-server:latest
-    build:
-      dockerfile: docker/base
-      context: .
-
-  laravel:
-    image: greut/webapp-server:laravel
-    build:
-      dockerfile: docker/laravel
-      context: .
-
-  rails:
-    image: greut/webapp-server:rails
-    build:
-      dockerfile: docker/rails
-      context: .
+    environment:
+      - GROUPNAME=free
+      - PASSWORD=root
+      - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
+    hostname: free
+    domainname: free.srvz-webapp.he-arc.ch
+    volumes:
+      - free:/var/www
+      - ./config:/root/config:ro
+    ports:
+      - "2222:22"
+      - "8080:80"
+    depends_on:
+      - postgres
+      - mysql
+      - smtp
+    networks:
+      - free
 
   # PHP project.
 
@@ -27,10 +29,7 @@ services:
     image: greut/webapp-server:laravel
     environment:
       - GROUPNAME=eatapp
-      - MYSQL_USERNAME=eatapp
-      - MYSQL_PASSWORD=eatapp  # CHANGE ME
-      - POSTGRES_USERNAME=eatapp
-      - POSTGRES_PASSWORD=eatapp  # ME TOO
+      - PASSWORD=eatapp  # CHANGE ME
       - REPOSITORY=https://github.com/HE-Arc/EatApp
     hostname: eatapp
     domainname: srvz-webapp.he-arc.ch
@@ -64,10 +63,7 @@ services:
     image: greut/webapp-server:rails
     environment:
       - GROUPNAME=capistrano
-      - MYSQL_USERNAME=capistrano
-      - MYSQL_PASSWORD=capistrano  # CHANGE ME
-      - POSTGRES_USERNAME=capistrano
-      - POSTGRES_PASSWORD=capistrano  # ME TOO
+      - PASSWORD=capistrano  # CHANGE ME
     hostname: capistrano
     domainname: srvz-webapp.he-arc.ch
     volumes:
@@ -103,6 +99,7 @@ services:
     ports:
       - "5432:5432"
     networks:
+      - free
       - eatapp
       - capistrano
     volumes:
@@ -115,6 +112,7 @@ services:
     ports:
       - "3306:3306"
     networks:
+      - free
       - eatapp
       - capistrano
     volumes:
@@ -125,10 +123,13 @@ services:
     ports:
       - "8025:8025"
     networks:
+      - free
       - eatapp
       - capistrano
 
 networks:
+  # base
+  free:
   # laravel
   eatapp:
   # rails
@@ -137,6 +138,8 @@ networks:
 volumes:
   mysql:
   postgres:
+  # base
+  free:
   # laravel
   eatapp:
   eatapp_redis:

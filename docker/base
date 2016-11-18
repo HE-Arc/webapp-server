@@ -1,9 +1,9 @@
-FROM ubuntu:xenial
+FROM ubuntu:yakkety
 MAINTAINER Yoan Blanc <yoan@dosimple.ch>
 
 # Add Tini (reaping problem)
-ENV TINI_VERSION v0.10.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+ARG TINI_VERSION=0.13.0
+ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
@@ -52,31 +52,16 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # Locale
-RUN locale-gen fr_CH && \
-    locale-gen fr_CH.UTF-8 && \
-    locale-gen de_CH && \
-    locale-gen de_CH.UTF-8 && \
-    locale-gen it_CH && \
-    locale-gen it_CH.UTF-8 && \
-    locale-gen en_US && \
-    locale-gen en_US.UTF-8 && \
+RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; do \
+        locale-gen $l && \
+        locale-gen $l.UTF-8; \
+    done && \
     update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 # Python
 RUN python3 -m pip install -U pip \
     && python3 -m pip install jinja2 \
     && rm -rf ~/.cache/pip
-
-# Install some npm global packages.
-RUN npm install -g \
-        babel-cli \
-        babel-preset-es2015 \
-        bower \
-        browserify \
-        gulp \
-        grunt-cli \
-        node-sass \
-        webpack
 
 # Clean up tmp when done.
 RUN rm -rf /tmp/* /var/tmp/*
@@ -91,12 +76,8 @@ RUN export f=/etc/nginx/nginx.conf \
     && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
     && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f \
     # allow environment variables to be read by nginx confs
-    # MySQL
-    && sed -i 's/^\(http {\)/env MYSQL_USERNAME;\n\1/' $f \
-    && sed -i 's/^\(http {\)/env MYSQL_PASSWORD;\n\n\1/' $f \
-    # Postgres
-    && sed -i 's/^\(http {\)/env POSTGRES_USERNAME;\n\1/' $f \
-    && sed -i 's/^\(http {\)/env POSTGRES_PASSWORD;\n\n\1/' $f
+    && sed -i 's/^\(http {\)/env GROUPNAME;\n\1/' $f \
+    && sed -i 's/^\(http {\)/env PASSWORD;\n\n\1/' $f
 
 # SSMTP
 # mailhub configuration is done by 30_setup.py

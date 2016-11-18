@@ -23,7 +23,6 @@ import multiprocessing
 from collections import namedtuple
 from jinja2 import Environment, FileSystemLoader
 
-
 env = Environment(loader=FileSystemLoader("/var/templates"))
 wwwdir = "/var/www"
 
@@ -58,13 +57,14 @@ def init_user(username, groupname, **kwargs):
     os.environ["HOME"] = homedir
     os.environ["UID"] = str(uid)
 
-    paths = [("bash_profile", ".bash_profile"),
-             ("gitconfig", ".gitconfig")]
+    paths = [("bash_profile", ".bash_profile"), ("gitconfig", ".gitconfig")]
     config = kwargs["environ"].get("CONFIG", None)
     if config == "Laravel":
         paths.append(("README-php.md", "README.md"))
-    if config == "Rails":
+    elif config == "Rails":
         paths.append(("README-ror.md", "README.md"))
+    else:
+        paths.append(("README.md", "README.md"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
@@ -76,27 +76,31 @@ def init_user(username, groupname, **kwargs):
     os.mkdir(".ssh")
     os.chmod(".ssh", mode=0o0700)
 
+
 def create_user(username, groupname, comment):
     """Create a UNIX user (the group must exist beforehand)."""
     groups = ["users"]
 
-    subprocess.check_call(["useradd", username,
-                           "-c", comment,
-                           "--create-home",
-                           "--no-user-group",
-                           "--shell", "/bin/bash",
-                           "--groups", ",".join(groups)],
-                          stderr=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
-    subprocess.check_call(["usermod", username,
-                           "--gid", groupname,
-                           "--groups", "{},users".format(groupname)],
-                          stderr=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
-    proc = subprocess.Popen(["chpasswd"],
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    subprocess.check_call(
+        [
+            "useradd", username, "-c", comment, "--create-home",
+            "--no-user-group", "--shell", "/bin/bash", "--groups",
+            ",".join(groups)
+        ],
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE)
+    subprocess.check_call(
+        [
+            "usermod", username, "--gid", groupname, "--groups",
+            "{},users".format(groupname)
+        ],
+        stderr=subprocess.PIPE,
+        stdout=subprocess.PIPE)
+    proc = subprocess.Popen(
+        ["chpasswd"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
     proc.communicate("{}:{}".format(username, pwgen()).encode("utf-8"))
 
 
@@ -144,8 +148,7 @@ def init_group(groupname, **kwargs):
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
         paths = (("nginx-ror.conf", "config/nginx.conf"),
-                 ("puma.rb", "config/puma.rb"),
-                 ("Gemfile", "app/Gemfile"),
+                 ("puma.rb", "config/puma.rb"), ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))
 
@@ -165,42 +168,41 @@ def init_group(groupname, **kwargs):
 
     if config == "Laravel":
         sys.stderr.write("Running composer global require laravel/installer\n")
-        subprocess.check_call(["composer",
-                               "global",
-                               "require",
-                               "laravel/installer=~1.3"],
-                              env=kwargs["environ"],
-                              stderr=sys.stderr,
-                              stdout=sys.stdout)
+        subprocess.check_call(
+            ["composer", "global", "require", "laravel/installer=~1.3"],
+            env=kwargs["environ"],
+            stderr=sys.stderr,
+            stdout=sys.stdout)
 
     elif config == "Rails":
         shutil.copy2("/var/templates/nginx-puma.png", "app/public")
 
         sys.stderr.write("Running rails installation.\n")
-        subprocess.check_call(["gem", "install",
-                               "bundler:1.13.1", "rack:2.0.1", "rails", "rake",
-                               "puma:3.6.0"
-                              ],
-                              env=kwargs["environ"],
-                              stderr=sys.stderr,
-                              stdout=sys.stderr)
+        subprocess.check_call(
+            [
+                "gem", "install", "bundler:1.13.1", "rack:2.0.1", "rails",
+                "rake", "puma:3.6.0"
+            ],
+            env=kwargs["environ"],
+            stderr=sys.stderr,
+            stdout=sys.stderr)
 
     return homedir, uid, gid
 
 
 def create_group(groupname):
     """Create the system user named after the group."""
-    subprocess.check_call(["useradd", groupname,
-                           "-c", "GROUP",
-                           "--no-create-home",
-                           "--home-dir", wwwdir,
-                           "--user-group",
-                           "--system"],
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
-    subprocess.check_call(["usermod", "--lock", groupname],
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
+    subprocess.check_call(
+        [
+            "useradd", groupname, "-c", "GROUP", "--no-create-home",
+            "--home-dir", wwwdir, "--user-group", "--system"
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
+    subprocess.check_call(
+        ["usermod", "--lock", groupname],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
 
 
 def render(template, path, **kwargs):
@@ -213,8 +215,9 @@ def render(template, path, **kwargs):
 
 def pwgen(length=128):
     """Generate a secure password."""
-    proc = subprocess.Popen(["pwgen", "--secure", "{}".format(length), "1"],
-                            stdout=subprocess.PIPE)
+    proc = subprocess.Popen(
+        ["pwgen", "--secure", "{}".format(length), "1"],
+        stdout=subprocess.PIPE)
     return proc.communicate()[0].decode().strip()
 
 
@@ -238,7 +241,8 @@ def main(argv):
         environ["COMPOSER_HOME"] = "/var/www/.composer"
     elif environ["CONFIG"] == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
-        environ["SECRET_KEY_BASE"] = "{:0128x}".format(random.randrange(16**128))
+        environ["SECRET_KEY_BASE"] = "{:0128x}".format(
+            random.randrange(16**128))
         os.mkdir("/etc/container_environment")
         for k, v in environ.items():
             with open("/etc/container_environment/{0}".format(k), "w+") as f:
@@ -253,12 +257,13 @@ def main(argv):
         pass
 
     # Configure SSMTP
-    subprocess.check_call(["sed",
-                           "-i",
-                           "s/mailhub=mail/mailhub=smtp:1025/",
-                           "/etc/ssmtp/ssmtp.conf"],
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
+    subprocess.check_call(
+        [
+            "sed", "-i", "s/mailhub=mail/mailhub=smtp:1025/",
+            "/etc/ssmtp/ssmtp.conf"
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
 
     # Create the group
     create_group(groupname)
@@ -272,21 +277,18 @@ def main(argv):
         for f in files:
             os.chown(os.path.join(root, f), uid, gid)
     # Use ACL to set the rights.
-    subprocess.check_call(["setfacl", "-R", "-m",
-                           "group:{}:rwX".format(groupname),
-                           wwwdir],
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
-    subprocess.check_call(["setfacl", "-dR", "-m",
-                           "group:{}:rwX".format(groupname),
-                           wwwdir],
-                          stdin=subprocess.PIPE,
-                          stdout=subprocess.PIPE)
+    subprocess.check_call(
+        ["setfacl", "-R", "-m", "group:{}:rwX".format(groupname), wwwdir],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
+    subprocess.check_call(
+        ["setfacl", "-dR", "-m", "group:{}:rwX".format(groupname), wwwdir],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
 
     # Init the group files
-    p = multiprocessing.Process(target=init_group,
-                                args=(groupname,),
-                                kwargs=dict(environ=environ))
+    p = multiprocessing.Process(
+        target=init_group, args=(groupname, ), kwargs=dict(environ=environ))
     p.start()
     p.join()
 
@@ -296,9 +298,9 @@ def main(argv):
 
     # Create users
     students = "/root/config/students.tsv"
-    StudentRecord = namedtuple("StudentRecord",
-                               "lastname, firstname, email, classname, github, "
-                               "laravel, rails, comment")
+    StudentRecord = namedtuple(
+        "StudentRecord", "lastname, firstname, email, classname, github, "
+        "laravel, rails, comment")
 
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
@@ -316,11 +318,11 @@ def main(argv):
                 if group in (groupname, "admin"):
                     username = formatUserName(student.firstname)
                     create_user(username, groupname, student.classname)
-                    p = multiprocessing.Process(target=init_user,
-                                                args=(username,
-                                                      groupname),
-                                                kwargs=dict(environ=environ,
-                                                            **student._asdict()))
+                    p = multiprocessing.Process(
+                        target=init_user,
+                        args=(username, groupname),
+                        kwargs=dict(
+                            environ=environ, **student._asdict()))
                     p.start()
                     p.join()
                     authorized_keys(username, student.github)
@@ -330,6 +332,7 @@ def main(argv):
 
     sys.stderr.write("Setup is done.\n")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
