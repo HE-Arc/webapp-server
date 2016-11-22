@@ -123,7 +123,3 @@ groupname;password
 ```
 
 `pwgen` is a great way to build good passwords.
-
-## Troubleshooting with docker-compose
-
-COMPOSE_API_VERSION=1.18
