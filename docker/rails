@@ -1,5 +1,5 @@
 FROM greut/webapp-server:latest
-MAINTAINER Yoan Blanc <yoan@dosimple.ch>
+LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 
 RUN DEBIAN_FRONTEND=noninteractive \

@@ -1,5 +1,6 @@
 FROM ubuntu:yakkety
-MAINTAINER Yoan Blanc <yoan@dosimple.ch>
+LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
+
 
 # Add Tini (reaping problem)
 ARG TINI_VERSION=0.13.0
