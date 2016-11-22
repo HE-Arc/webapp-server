@@ -15,10 +15,10 @@ The setup scripts to create development environments for many groups.
 
 The configuration is done via a TSV file (`config/students.tsv`). Here is its format:
 
-Lastname | Firstname | Email                | Group   | Github   | Team1  | Team2 | Comment
--------- | --------- | -------------------- | ------- | -------- | ------ | ----- | -------
-Bon      | Jean      | jean.bon@example.org | INF3    | jeanjean | ninjas | funky | -
-Blanc    | Yoan      | yoan.blanc@he-arc.ch | Teacher | greut    | admin  | admin | -
+Lastname | Firstname | Email                | Group   | Github   | Image1  | Team1  | Image2 | Team2 | Comment
+-------- | --------- | -------------------- | ------- | -------- | ------- | ------ | ------ | ----- | -------
+Bon      | Jean      | jean.bon@example.org | INF3    | jeanjean | Laravel | ninjas | Rails  | funky | -
+Blanc    | Yoan      | yoan.blanc@he-arc.ch | Teacher | greut    | Laravel | admin  | Python | admin | -
 
 This is how this file is used:
 

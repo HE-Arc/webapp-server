@@ -25,6 +25,32 @@ services:
     mem_limit: 1000000000
     memswap_limit: 2000000000
 
+  # Python
+
+  python:
+    image: greut/webapp-server:python
+    environment:
+      - GROUPNAME=free
+      - PASSWORD=root
+      - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
+    hostname: python
+    domainname: srvz-webapp.he-arc.ch
+    volumes:
+      - python:/var/www
+      - ./config:/root/config:ro
+    ports:
+      - "2222:22"
+      - "8080:80"
+    depends_on:
+      - postgres
+      - mysql
+      - smtp
+    networks:
+      - python
+    mem_limit: 1000000000
+    memswap_limit: 2000000000
+
+
   # PHP project.
 
   eatapp:
@@ -101,9 +127,10 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - free
-      - eatapp
       - capistrano
+      - eatapp
+      - free
+      - python
     volumes:
      - postgres:/var/lib/postgresql/data
 
@@ -114,9 +141,10 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - free
-      - eatapp
       - capistrano
+      - eatapp
+      - free
+      - python
     volumes:
       - mysql:/var/lib/mysql
 
@@ -134,6 +162,8 @@ networks:
   free:
   # laravel
   eatapp:
+  # python
+  python:
   # rails
   capistrano:
 
@@ -145,6 +175,8 @@ volumes:
   # laravel
   eatapp:
   eatapp_redis:
+  # python
+  python:
   # rails
   capistrano:
   capistrano_redis:

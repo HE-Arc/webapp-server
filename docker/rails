@@ -34,8 +34,15 @@ RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.3 1 \
         --slave /usr/bin/ri ri /usr/bin/ri2.3
 
 ## Runit
-COPY scripts/runit/puma /etc/service/puma/run
+COPY scripts/runit/puma.sh /etc/service/puma/run
 RUN chmod +x /etc/service/puma/run
+
+# Develop
+#COPY files/templates /var/templates
+#COPY scripts/boot.sh /usr/local/bin/boot.sh
+#COPY scripts/setup.py /usr/local/bin/setup.py
+#RUN chmod +x /usr/local/bin/boot.sh \
+# && chmod +x /usr/local/bin/setup.py
 
 # Config
 ENV CONFIG Rails

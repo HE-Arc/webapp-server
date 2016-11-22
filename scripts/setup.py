@@ -7,7 +7,7 @@ Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.4"
+__version__ = "0.5"
 
 import re
 import os
@@ -63,6 +63,8 @@ def init_user(username, groupname, **kwargs):
         paths.append(("README-php.md", "README.md"))
     elif config == "Rails":
         paths.append(("README-ror.md", "README.md"))
+    elif config == "Python":
+        paths.append(("README-py.md", "README.md"))
     else:
         paths.append(("README.md", "README.md"))
     for tpl, dest in paths:
@@ -133,6 +135,8 @@ def init_group(groupname, **kwargs):
     os.chdir(homedir)
 
     config = kwargs["environ"].get("CONFIG", None)
+    environ = kwargs["environ"].copy()
+    environ["HOME"] = homedir
 
     paths = []
     dirs = ["config", "logs"]
@@ -151,6 +155,14 @@ def init_group(groupname, **kwargs):
                  ("puma.rb", "config/puma.rb"), ("Gemfile", "app/Gemfile"),
                  ("Gemfile.lock", "app/Gemfile.lock"),
                  ("config.ru", "app/config.ru"))
+
+    elif config == "Python":
+        dirs.append("app/public")
+        dirs.append("app/venv")
+        dirs.append(kwargs["environ"]["PYTHONUSERBASE"])
+
+        paths = (("nginx-py.conf", "config/nginx.conf"),
+                 ("wsgi.py", "app/wsgi.py"), ("uwsgi.ini", "config/uwsgi.ini"))
 
     else:
         dirs.append("public")
@@ -180,9 +192,24 @@ def init_group(groupname, **kwargs):
         sys.stderr.write("Running rails installation.\n")
         subprocess.check_call(
             [
-                "gem", "install", "bundler:1.13.1", "rack:2.0.1", "rails",
-                "rake", "puma:3.6.0"
+                "gem", "install", "bundler:1.13.6", "rack:2.0.1", "rails",
+                "rake", "puma:3.6.1"
             ],
+            env=kwargs["environ"],
+            stderr=sys.stderr,
+            stdout=sys.stderr)
+
+    elif config == "Python":
+        shutil.copy2("/var/templates/nginx-uwsgi.png", "app/public")
+
+        sys.stderr.write("Running uwsgi installation.\n")
+        subprocess.check_call(
+            ["python3", "-m", "virtualenv", "-p", "python3", "app/venv"],
+            env=kwargs["environ"],
+            stderr=sys.stderr,
+            stdout=sys.stderr)
+        subprocess.check_call(
+            ["app/venv/bin/pip", "--no-cache-dir", "install", "-U", "pip"],
             env=kwargs["environ"],
             stderr=sys.stderr,
             stdout=sys.stderr)
@@ -226,6 +253,7 @@ def main(argv):
     environ = os.environ
 
     groupname = environ["GROUPNAME"]
+    config = environ["CONFIG"]
 
     # Global environment "variables"
     environ["MYSQL_HOST"] = "mysql"
@@ -237,16 +265,19 @@ def main(argv):
     environ["SMTP_HOST"] = "smtp"
     environ["SMTP_PORT"] = "1025"
 
-    if environ["CONFIG"] == "Laravel":
+    if config == "Laravel":
         environ["COMPOSER_HOME"] = "/var/www/.composer"
-    elif environ["CONFIG"] == "Rails":
+    elif config == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(
             random.randrange(16**128))
-        os.mkdir("/etc/container_environment")
-        for k, v in environ.items():
-            with open("/etc/container_environment/{0}".format(k), "w+") as f:
-                f.write(v)
+    elif config == "Python":
+        environ["PYTHONUSERBASE"] = "/var/www/.local"
+
+    os.mkdir("/etc/container_environment")
+    for k, v in environ.items():
+        with open("/etc/container_environment/{0}".format(k), "w+") as f:
+            f.write(v)
 
     # Test if the group exists already
     try:
@@ -300,7 +331,7 @@ def main(argv):
     students = "/root/config/students.tsv"
     StudentRecord = namedtuple(
         "StudentRecord", "lastname, firstname, email, classname, github, "
-        "laravel, rails, comment")
+        "image1, team1, image2, team2, comment")
 
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
@@ -308,14 +339,11 @@ def main(argv):
             # skip headers
             next(reader)
             for student in map(StudentRecord._make, reader):
-                # By default the group is the laravel one.
-                if environ["CONFIG"] == "Rails":
-                    group = student.rails
-                else:
-                    group = student.laravel
 
-                # Only pick the users of the given group
-                if group in (groupname, "admin"):
+                groups = {student.team1, student.team2}
+
+                # Only pick the users of the given group (or admin)
+                if not groups.isdisjoint((groupname, "admin")):
                     username = formatUserName(student.firstname)
                     create_user(username, groupname, student.classname)
                     p = multiprocessing.Process(

@@ -1,6 +1,8 @@
 {# vim: set ft=jinja: -#} {% extends "README.md" -%}
 
-{% block body %} {{ super() }} You may also see how it's currently done in `index.php`.
+{% block body %} {{ super() }}
+
+You may also see how it's currently done in `index.php`.
 
 # PHP
 

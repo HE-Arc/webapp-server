@@ -13,6 +13,8 @@ export DEBIAN_FRONTEND=noninteractive
 export PATH+=:$COMPOSER_HOME/vendor/bin
 {% elif environ.CONFIG == "Rails" -%}
 export PATH+=:$GEM_HOME/bin
+{% elif environ.CONFIG == "Python" -%}
+export PATH+=:$PYTHONUSERBASE/bin
 {% endif -%}
 
 # If not running interactively, don't do anything

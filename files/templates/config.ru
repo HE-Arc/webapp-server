@@ -12,7 +12,6 @@ run lambda { |env| [
         .collect { |k,v| "<dt>#{k}<dd>#{v}" }
         .flatten
         .join(""),
-    "</dl>",
-    "</html>"
+    "</dl>"
   ]
 ] }

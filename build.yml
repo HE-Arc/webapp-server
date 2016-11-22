@@ -19,3 +19,9 @@ services:
     build:
       dockerfile: docker/rails
       context: .
+
+  python:
+    image: greut/webapp-server:python
+    build:
+      dockerfile: docker/python
+      context: .
