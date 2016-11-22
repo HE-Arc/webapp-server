@@ -273,6 +273,7 @@ def main(argv):
             random.randrange(16**128))
     elif config == "Python":
         environ["PYTHONUSERBASE"] = "/var/www/.local"
+        environ["SECRET_KEY"] = "{:0128x}".format(random.randrange(16**128))
 
     os.mkdir("/etc/container_environment")
     for k, v in environ.items():

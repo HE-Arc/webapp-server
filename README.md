@@ -26,6 +26,7 @@ This is how this file is used:
 - _Firstname_ becomes the username
 - _Group_ no particular usage
 - _GitHub_ identifier to download the SSH public keys
+- _ImageX_ stores the information of which container to use
 - _TeamX_ will be the name of the virtual host and identify a container
 - _Comment_ no particular usage
 
@@ -53,6 +54,8 @@ If you don't want to use the [publicly available containers](https://hub.docker.
 $ docker-compose -f build.yml build base
 # Laravel container
 $ docker-compose -f build.yml build laravel
+# Python container
+$ docker-compose -f build.yml build python
 # Rails container
 $ docker-compose -f build.yml build rails
 ```
