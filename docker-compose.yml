@@ -22,8 +22,6 @@ services:
       - smtp
     networks:
       - free
-    mem_limit: 1000000000
-    memswap_limit: 2000000000
 
   # Python
 
@@ -47,9 +45,6 @@ services:
       - smtp
     networks:
       - python
-    mem_limit: 1000000000
-    memswap_limit: 2000000000
-
 
   # PHP project.
 
@@ -75,8 +70,6 @@ services:
       - eatapp_redis:redis
     networks:
       - eatapp
-    mem_limit: 1000000000
-    memswap_limit: 2000000000
 
   eatapp_redis:
     image: redis:3.2-alpine
@@ -108,8 +101,6 @@ services:
       - capistrano_redis:redis
     networks:
       - capistrano
-    mem_limit: 1000000000
-    memswap_limit: 2000000000
 
   capistrano_redis:
     image: redis:3.2-alpine
@@ -120,7 +111,7 @@ services:
 
   # Shared services
   postgres:
-    image: postgres:9.5
+    image: postgres:9.6-alpine
     environment:
       - POSTGRES_PASSWORD=root
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata

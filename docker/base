@@ -3,7 +3,7 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 
 # Add Tini (reaping problem)
-ARG TINI_VERSION=0.13.0
+ARG TINI_VERSION=0.13.1
 ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
@@ -24,6 +24,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
         libpq-dev \
+        libsass-dev \
         libsqlite3-dev \
         lsof \
         man \
@@ -34,7 +35,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         openssh-server \
         postgresql-client \
         python3-pip \
-        python3-virtualenv \
+        python3-venv \
         pwgen \
         runit \
         sqlite3 \
@@ -45,8 +46,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
         syslog-ng \
         unzip \
         wget \
-    # NodeSource special setup..
-    && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+    # NodeSource specific setup for up to date Node.js
+    && curl -sL https://deb.nodesource.com/setup_7.x | bash - \
     && apt-get install -q -y nodejs \
     && apt-get autoremove -y \
     && apt-get clean \
@@ -81,7 +82,7 @@ RUN export f=/etc/nginx/nginx.conf \
     && sed -i 's/^\(http {\)/env PASSWORD;\n\n\1/' $f
 
 # SSMTP
-# mailhub configuration is done by 30_setup.py
+# mailhub configuration is done by setup.py
 RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
 
 # Cron
@@ -118,7 +119,7 @@ RUN echo '%users ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/users
 RUN chmod 0440 /etc/sudoers.d/users
 
 # Templates
-COPY files/templates /var/templates
+COPY files/base /var/templates/base
 
 ## Runit
 COPY scripts/runit/cron.sh /etc/service/cron/run
@@ -133,6 +134,9 @@ RUN chmod +x /etc/service/cron/run \
     && chmod +x /etc/service/syslog/run \
     && chmod o+x /usr/local/bin/boot.sh \
     && chmod o+x /usr/local/bin/setup.py
+
+# Logrotate
+COPY files/base/vhost.logrotate /etc/logrotate.d/
 
 # Expose VOLUME
 VOLUME /root/config \

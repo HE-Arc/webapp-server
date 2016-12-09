@@ -7,7 +7,7 @@ Create the environment, users with all the required files.
 """
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.5"
+__version__ = "0.6.0"
 
 import re
 import os
@@ -16,6 +16,7 @@ import sys
 import pwd
 import random
 import shutil
+import hashlib
 import subprocess
 import unicodedata
 import multiprocessing
@@ -25,6 +26,18 @@ from jinja2 import Environment, FileSystemLoader
 
 env = Environment(loader=FileSystemLoader("/var/templates"))
 wwwdir = "/var/www"
+
+
+def passwd(passphrase, algorithm='sha1'):
+    """Code borrowed from notebook.auth.security"""
+    salt_len = 32
+    h = hashlib.new(algorithm)
+    salt = ("{0:0%dx}" % salt_len).format(random.getrandbits(4 * salt_len))
+    h.update(passphrase.encode("utf-8") + bytearray.fromhex(salt))
+    return ':'.join(algorithm, salt, h.hexdigest())
+
+
+env.filters['passwd'] = passwd
 
 
 def formatUserName(firstname):
@@ -57,16 +70,17 @@ def init_user(username, groupname, **kwargs):
     os.environ["HOME"] = homedir
     os.environ["UID"] = str(uid)
 
-    paths = [("bash_profile", ".bash_profile"), ("gitconfig", ".gitconfig")]
+    paths = [("base/bash_profile", ".bash_profile"), ("base/gitconfig",
+                                                      ".gitconfig")]
     config = kwargs["environ"].get("CONFIG", None)
     if config == "Laravel":
-        paths.append(("README-php.md", "README.md"))
+        paths.append(("laravel/README-php.md", "README.md"))
     elif config == "Rails":
-        paths.append(("README-ror.md", "README.md"))
+        paths.append(("rails/README.md", "README.md"))
     elif config == "Python":
-        paths.append(("README-py.md", "README.md"))
+        paths.append(("py/README.md", "README.md"))
     else:
-        paths.append(("README.md", "README.md"))
+        paths.append(("base/README.md", "README.md"))
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
@@ -144,31 +158,37 @@ def init_group(groupname, **kwargs):
     if config == "Laravel":
         dirs.append("public")
 
-        paths = (("index.php", "public/index.php"),
-                 ("nginx-php.conf", "config/nginx.conf"))
+        paths = (("laravel/public/index.php", "public/index.php"),
+                 ("laravel/config/nginx.conf", "config/nginx.conf"))
 
     elif config == "Rails":
         dirs.append("app/public")
+        dirs.append("iruby")
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
-        paths = (("nginx-ror.conf", "config/nginx.conf"),
-                 ("puma.rb", "config/puma.rb"), ("Gemfile", "app/Gemfile"),
-                 ("Gemfile.lock", "app/Gemfile.lock"),
-                 ("config.ru", "app/config.ru"))
+        paths = (("rails/config/nginx.conf", "config/nginx.conf"),
+                 ("rails/config/puma.rb", "config/puma.rb"),
+                 ("rails/app/Gemfile", "app/Gemfile"),
+                 ("rails/iruby/Gemfile", "iruby/Gemfile"),
+                 ("rails/iruby/hello-ruby.ipynb", "iruby/hello-ruby.ipynb"),
+                 ("rails/iruby/run.sh", "iruby/.run.sh"),
+                 ("rails/iruby/jupyter-config.py", "iruby/.jupyter-config.py"),
+                 ("rails/app/config.ru", "app/config.ru"))
 
     elif config == "Python":
         dirs.append("app/public")
         dirs.append("app/venv")
         dirs.append(kwargs["environ"]["PYTHONUSERBASE"])
 
-        paths = (("nginx-py.conf", "config/nginx.conf"),
-                 ("wsgi.py", "app/wsgi.py"), ("uwsgi.ini", "config/uwsgi.ini"))
+        paths = (("py/config/nginx.conf", "config/nginx.conf"),
+                 ("py/config/uwsgi.ini", "config/uwsgi.ini"),
+                 ("py/app/wsgi.py", "app/wsgi.py"))
 
     else:
         dirs.append("public")
 
-        paths = (("nginx-base.conf", "config/nginx.conf"),
-                 ("hello.html", "public/index.html"))
+        paths = (("base/config/nginx.conf", "config/nginx.conf"),
+                 ("base/public/index.html", "public/index.html"))
 
     for p in dirs:
         if not os.path.exists(p):
@@ -178,41 +198,55 @@ def init_group(groupname, **kwargs):
         if not os.path.exists(dest):
             render(tpl, dest, groupname=groupname, **kwargs)
 
+    def check_call(command, env, stderr=sys.stderr, stdout=sys.stderr):
+        subprocess.check_call(command, env=env, stderr=stderr, stdout=stdout)
+
     if config == "Laravel":
         sys.stderr.write("Running composer global require laravel/installer\n")
-        subprocess.check_call(
+        check_call(
             ["composer", "global", "require", "laravel/installer=~1.3"],
-            env=kwargs["environ"],
-            stderr=sys.stderr,
-            stdout=sys.stdout)
+            env=kwargs["environ"])
 
     elif config == "Rails":
-        shutil.copy2("/var/templates/nginx-puma.png", "app/public")
+        shutil.copy2("/var/templates/rails/app/public/nginx-puma.png",
+                     "app/public")
 
         sys.stderr.write("Running rails installation.\n")
-        subprocess.check_call(
+        check_call(
+            ["gem", "install", "bundler", "rack", "rails", "rake", "puma"],
+            env=kwargs["environ"])
+        os.chdir('app')
+        check_call(
+            ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
+            env=kwargs["environ"])
+        os.chdir(homedir)
+
+        os.chdir('iruby')
+        os.chmod('.run.sh', mode=0o0775)
+        sys.stderr.write("Running jupyter/iruby installation.\n")
+        check_call(["python3", "-m", "venv", ".venv"], env=kwargs["environ"])
+        check_call(
             [
-                "gem", "install", "bundler:1.13.6", "rack:2.0.1", "rails",
-                "rake", "puma:3.6.1"
+                ".venv/bin/pip", "--no-cache-dir", "install", "-U", "pip",
+                "jupyter[notebook]"
             ],
-            env=kwargs["environ"],
-            stderr=sys.stderr,
-            stdout=sys.stderr)
+            env=kwargs["environ"])
+        check_call(
+            ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
+            env=kwargs["environ"])
+        os.chdir(homedir)
 
     elif config == "Python":
-        shutil.copy2("/var/templates/nginx-uwsgi.png", "app/public")
+        shutil.copy2("/var/templates/py/app/public/nginx-uwsgi.png",
+                     "app/public")
 
         sys.stderr.write("Running uwsgi installation.\n")
-        subprocess.check_call(
+        check_call(
             ["python3", "-m", "virtualenv", "-p", "python3", "app/venv"],
-            env=kwargs["environ"],
-            stderr=sys.stderr,
-            stdout=sys.stderr)
-        subprocess.check_call(
+            env=kwargs["environ"])
+        check_call(
             ["app/venv/bin/pip", "--no-cache-dir", "install", "-U", "pip"],
-            env=kwargs["environ"],
-            stderr=sys.stderr,
-            stdout=sys.stderr)
+            env=kwargs["environ"])
 
     return homedir, uid, gid
 
@@ -275,8 +309,14 @@ def main(argv):
         environ["PYTHONUSERBASE"] = "/var/www/.local"
         environ["SECRET_KEY"] = "{:0128x}".format(random.randrange(16**128))
 
+    if os.path.exists('/etc/container_environment'):
+        sys.stderr.write("Setup was done earlier.\n")
+        return 0
+
     os.mkdir("/etc/container_environment")
     for k, v in environ.items():
+        if k == "HOME":
+            continue
         with open("/etc/container_environment/{0}".format(k), "w+") as f:
             f.write(v)
 
@@ -332,7 +372,7 @@ def main(argv):
     students = "/root/config/students.tsv"
     StudentRecord = namedtuple(
         "StudentRecord", "lastname, firstname, email, classname, github, "
-        "image1, team1, image2, team2, comment")
+        "image1, team1, image2, team2, comment, week")
 
     if (os.path.exists(students)):
         with open(students, encoding="utf-8") as f:
@@ -341,7 +381,10 @@ def main(argv):
             next(reader)
             for student in map(StudentRecord._make, reader):
 
-                groups = {student.team1, student.team2}
+                if 'LONE_WOLF' not in environ:
+                    groups = {student.team1, student.team2}
+                else:
+                    groups = {student.email}
 
                 # Only pick the users of the given group (or admin)
                 if not groups.isdisjoint((groupname, "admin")):

@@ -3,32 +3,30 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 
 RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get update -q -y && \
-    apt-get install -q -y \
-        gstreamer1.0-plugins-base \
-        gstreamer1.0-tools \
-        gstreamer1.0-x \
+    apt-get update -q -y \
+ && apt-get install -q -y \
+        autoconf \
         imagemagick \
         libgdbm-dev \
         libffi-dev \
         libncurses5-dev \
         libmagickwand-dev \
-        libqt5webkit5-dev \
         libreadline6-dev \
+        libtool-bin \
         libyaml-dev \
-        libv8-dev \
         libxml2-dev \
         libxslt1-dev \
-        qt5-default \
+        libzmq3-dev \
         ruby2.3 \
         ruby2.3-dev \
-        xvfb && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/tmp/*
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 RUN echo "gem: --no-document" > /etc/gemrc
-RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.3 1 \
-        --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz /usr/share/man/man1/ruby2.3.1.gz \
+RUN update-alternatives \
+        --install /usr/bin/ruby ruby /usr/bin/ruby2.3 1 \
+        --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                /usr/share/man/man1/ruby2.3.1.gz \
         --slave /usr/bin/irb irb /usr/bin/irb2.3 \
         --slave /usr/bin/gem gem /usr/bin/gem2.3 \
         --slave /usr/bin/ri ri /usr/bin/ri2.3
@@ -36,9 +34,13 @@ RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.3 1 \
 ## Runit
 COPY scripts/runit/puma.sh /etc/service/puma/run
 RUN chmod +x /etc/service/puma/run
+COPY scripts/runit/iruby.sh /etc/service/iruby/run
+RUN chmod +x /etc/service/iruby/run
 
+# Templates
+COPY files/rails /var/templates/rails
 # Develop
-#COPY files/templates /var/templates
+#COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
 #COPY scripts/setup.py /usr/local/bin/setup.py
 #RUN chmod +x /usr/local/bin/boot.sh \

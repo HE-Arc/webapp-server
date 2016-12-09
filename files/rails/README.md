@@ -1,4 +1,6 @@
-{# vim: set ft=jinja: -#} {% extends "README.md" -%}
+{%- extends "base/README.md" -%}
+
+{#- vim: set ft=jinja: -#}
 
 {% block body %} {{ super() }}
 
