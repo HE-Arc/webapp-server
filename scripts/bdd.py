@@ -54,6 +54,7 @@ postgresql_schema = r"""
     CREATE SCHEMA test AUTHORIZATION {username};
 """
 
+
 def main(argv):
     groups = argv[1]
 
@@ -67,18 +68,15 @@ def main(argv):
             print(groupname)
             print("=" * len(groupname))
 
-            p = subprocess.Popen(['mysql',
-                                  '-h', hostname,
-                                  '-u', 'root',
-                                  '-p{}'.format(root)
-                                 ],
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
+            p = subprocess.Popen(
+                ['mysql', '-h', hostname, '-u', 'root', '-p{}'.format(root)],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
 
-            stdin = mysql.format(username=groupname,
-                                 password=password,
-                                 database=groupname).strip()
+            stdin = mysql.format(
+                username=groupname, password=password,
+                database=groupname).strip()
 
             out, err = p.communicate(bytearray(stdin, 'utf-8'))
             if p.returncode != 0:
@@ -88,32 +86,33 @@ def main(argv):
                 #print(out.decode('utf-8'), end='')
 
             with tempfile.NamedTemporaryFile() as fp:
-                fp.write(bytearray('{}:*:*:postgres:{}'.format(hostname, root),
-                                   'utf-8'))
+                fp.write(
+                    bytearray('{}:*:*:postgres:{}'.format(hostname, root),
+                              'utf-8'))
                 fp.seek(0)
                 os.chmod(fp.name, 0o600)
 
                 env = os.environ.copy()
                 env['PGPASSFILE'] = fp.name
 
-                commands = (('database',
-                             ('psql', '-h', hostname, '-U', 'postgres'),
-                             postgresql),
-                            ('schemas',
-                             ('psql', '-h', hostname, '-U', 'postgres', '-d',
-                              groupname),
-                             postgresql_schema))
+                commands = (
+                    ('database', ('psql', '-h', hostname, '-U', 'postgres'),
+                     postgresql), ('schemas', ('psql', '-h', hostname, '-U',
+                                               'postgres', '-d', groupname),
+                                   postgresql_schema))
 
                 for txt, command, stdin in commands:
-                    p = subprocess.Popen(command,
-                                         env=env,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE)
+                    p = subprocess.Popen(
+                        command,
+                        env=env,
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE)
 
-                    stdin = stdin.format(username=groupname,
-                                         password=password,
-                                         database=groupname).strip()
+                    stdin = stdin.format(
+                        username=groupname,
+                        password=password,
+                        database=groupname).strip()
 
                     out, err = p.communicate(bytearray(stdin, 'utf-8'))
                     if p.returncode != 0:

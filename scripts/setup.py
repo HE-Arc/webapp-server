@@ -34,7 +34,7 @@ def passwd(passphrase, algorithm='sha1'):
     h = hashlib.new(algorithm)
     salt = ("{0:0%dx}" % salt_len).format(random.getrandbits(4 * salt_len))
     h.update(passphrase.encode("utf-8") + bytearray.fromhex(salt))
-    return ':'.join(algorithm, salt, h.hexdigest())
+    return ':'.join((algorithm, salt, h.hexdigest()))
 
 
 env.filters['passwd'] = passwd
@@ -384,7 +384,8 @@ def main(argv):
                 if 'LONE_WOLF' not in environ:
                     groups = {student.team1, student.team2}
                 else:
-                    groups = {student.email}
+                    # '.' is bad for databases name.
+                    groups = {student.email.replace('.', '_')}
 
                 # Only pick the users of the given group (or admin)
                 if not groups.isdisjoint((groupname, "admin")):

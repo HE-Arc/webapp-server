@@ -45,6 +45,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         sudo \
         syslog-ng \
         unzip \
+        vim \
         wget \
     # NodeSource specific setup for up to date Node.js
     && curl -sL https://deb.nodesource.com/setup_7.x | bash - \
