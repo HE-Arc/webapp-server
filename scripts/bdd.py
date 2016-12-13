@@ -46,10 +46,13 @@ postgresql = r"""
 """
 
 postgresql_schema = r"""
-    DROP SCHEMA IF EXISTS public;
+    DROP SCHEMA IF EXISTS public CASCADE;
     CREATE SCHEMA {username} AUTHORIZATION {username};
     CREATE SCHEMA production AUTHORIZATION {username};
     CREATE SCHEMA test AUTHORIZATION {username};
+    CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA {username};
+    CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA production;
+    CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA test;
 """
 
 

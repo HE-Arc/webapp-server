@@ -72,7 +72,7 @@ services:
       - mysql:/var/lib/mysql
 
   postgres:
-    image: postgres:9.6-alpine
+    image: mdillon/postgis:9.6
     environment:
       - POSTGRES_PASSWORD=root
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
