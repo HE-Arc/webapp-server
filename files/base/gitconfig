@@ -1,6 +1,6 @@
 {# vim: set ft=jinja: -#}
 [user]
-    email = {{ email }}
+    email = {{ email }}@he-arc.ch
     name = {{ firstname }} {{ lastname }}
 [credentials "https://github.com"]
     helper = store

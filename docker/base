@@ -1,18 +1,22 @@
 FROM ubuntu:yakkety
 LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG MYSQL_VERSION=5.7
+ARG NODEJS_VERSION=7.x
+ARG POSTGRES_VERSION=9.6
+ARG TINI_VERSION=0.13.1
 
 # Add Tini (reaping problem)
-ARG TINI_VERSION=0.13.1
 ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
 # All the packages.
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get update -q \
-    && apt-get upgrade -q -y \
-    && apt-get install -q -y \
+RUN apt-get update -q \
+ && apt-get upgrade -q -y \
+ && apt-get install -q -y \
         acl \
         apt-transport-https \
         build-essential \
@@ -23,17 +27,15 @@ RUN DEBIAN_FRONTEND=noninteractive \
         git \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
-        libpq-dev \
         libsass-dev \
         libsqlite3-dev \
         lsof \
         man \
-        mysql-client \
-        mercurial \
+        mysql-client-${MYSQL_VERSION} \
         nano \
         nginx-extras \
         openssh-server \
-        postgresql-client \
+        psmisc \
         python3-pip \
         python3-venv \
         pwgen \
@@ -41,46 +43,61 @@ RUN DEBIAN_FRONTEND=noninteractive \
         sqlite3 \
         software-properties-common \
         ssmtp \
-        subversion \
         sudo \
         syslog-ng \
         unzip \
         vim \
         wget \
-    # NodeSource specific setup for up to date Node.js
-    && curl -sL https://deb.nodesource.com/setup_7.x | bash - \
-    && apt-get install -q -y nodejs \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+ && apt-get autoremove -y \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+# NodeSource Apt Repository
+# https://deb.nodesource.com/setup_7.x
+RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} yakkety main" \
+  > /etc/apt/sources.list.d/nodesource.list
+RUN wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+  | apt-key add -
+# PostgreSQL Apt Repository
+# https://www.postgresql.org/download/linux/ubuntu/
+#
+# (yakkety is not yet supported, so xenial)
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" \
+  > /etc/apt/sources.list.d/pgdg.list
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+  | apt-key add -
+# Installation of external and “experimental” packages
+RUN apt-get update \
+ && apt-get install -q -y \
+    libpq-dev \
+    nodejs \
+    postgresql-client-${POSTGRES_VERSION} \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # Locale
-RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; do \
-        locale-gen $l && \
-        locale-gen $l.UTF-8; \
-    done && \
-    update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
+RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
+      do locale-gen $l \
+      && locale-gen $l.UTF-8; \
+    done \
+ && update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 # Python
-RUN python3 -m pip install -U pip \
-    && python3 -m pip install jinja2 \
-    && rm -rf ~/.cache/pip
-
-# Clean up tmp when done.
-RUN rm -rf /tmp/* /var/tmp/*
+RUN python3 -m pip install --no-cache-dir jinja2
 
 ## Nginx
 RUN export f=/etc/nginx/nginx.conf \
-    && rm /etc/nginx/sites-enabled/default \
-    && rm -r /var/www/html \
+ && rm /etc/nginx/sites-enabled/default \
+ && rm -r /var/www/html \
     # auto worker processes and no daemonize (for my_init.d)
-    && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
+ && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
     # logs to stdout
-    && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
-    && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f \
+ && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
+ && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f \
     # allow environment variables to be read by nginx confs
-    && sed -i 's/^\(http {\)/env GROUPNAME;\n\1/' $f \
-    && sed -i 's/^\(http {\)/env PASSWORD;\n\n\1/' $f
+ && sed -i 's/^\(http {\)/env GROUPNAME;\n\1/' $f \
+ && sed -i 's/^\(http {\)/env PASSWORD;\n\n\1/' $f
 
 # SSMTP
 # mailhub configuration is done by setup.py
@@ -96,22 +113,22 @@ RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
 # * Delete any configured host keys (boot.sh)
 #
 RUN export f=/etc/ssh/sshd_config \
-    && mkdir /var/run/sshd \
-    && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
-    && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f \
-    && rm -v /etc/ssh/ssh_host_*
+ && mkdir /var/run/sshd \
+ && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
+ && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f \
+ && rm -v /etc/ssh/ssh_host_*
 
 # Syslog
 #
 # * Output all the things to stdout!
 #
 RUN export f=/etc/syslog-ng/syslog-ng.conf \
-    && sed -i 's/system()/#system()/' $f \
-    && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
-    && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/dev\/stdout"); };\n\1/' $f \
-    && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/dev\/stderr"); };\n\n\1/' $f \
-    && sed -i 's/\(destination\)(d_[^)]*)/\1(d_stdout)/g' $f \
-    && sed -i 's/\(filter(f_console);\)\s*destination(d_stdout);/\1/g' $f
+ && sed -i 's/system()/#system()/' $f \
+ && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
+ && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/dev\/stdout"); };\n\1/' $f \
+ && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/dev\/stderr"); };\n\n\1/' $f \
+ && sed -i 's/\(destination\)(d_[^)]*)/\1(d_stdout)/g' $f \
+ && sed -i 's/\(filter(f_console);\)\s*destination(d_stdout);/\1/g' $f
 
 #
 # SUDO for any user
@@ -130,11 +147,11 @@ COPY scripts/runit/syslog.sh /etc/service/syslog/run
 COPY scripts/boot.sh /usr/local/bin/boot.sh
 COPY scripts/setup.py /usr/local/bin/setup.py
 RUN chmod +x /etc/service/cron/run \
-    && chmod +x /etc/service/nginx/run \
-    && chmod +x /etc/service/sshd/run \
-    && chmod +x /etc/service/syslog/run \
-    && chmod o+x /usr/local/bin/boot.sh \
-    && chmod o+x /usr/local/bin/setup.py
+ && chmod +x /etc/service/nginx/run \
+ && chmod +x /etc/service/sshd/run \
+ && chmod +x /etc/service/syslog/run \
+ && chmod o+x /usr/local/bin/boot.sh \
+ && chmod o+x /usr/local/bin/setup.py
 
 # Logrotate
 COPY files/base/vhost.logrotate /etc/logrotate.d/

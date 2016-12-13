@@ -4,9 +4,9 @@ services:
   greut:
     image: greut/webapp-server:rails
     environment:
-      - GROUPNAME=yoan_blanc
-      - PASSWORD=root
-      - LONE_WOLF="true"
+      GROUPNAME: yoan_blanc
+      PASSWORD: root
+      LONE_WOLF: "true"
     hostname: yoan.blanc
     domainname: srvz-webapp.he-arc.ch
     volumes:

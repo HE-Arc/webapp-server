@@ -45,6 +45,20 @@ $ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <pas
 
 The key is a [personal access token](https://github.com/settings/tokens) to avoid being rate limited by the API.
 
+### Docker-compose
+
+Based on the same TSV file, you can generate `docker-compose.yml` file.
+
+```shell
+$ scripts/rails_compose.py config/students.tsv docker-compose.yml
+```
+
+### Database creation
+
+```shell
+$ script/bdd.py docker-compose.yml
+```
+
 ## Containers
 
 If you don't want to use the [publicly available containers](https://hub.docker.com/r/greut/webapp-server/), you can build them yourself.
@@ -107,19 +121,3 @@ $ psql -h 127.0.0.1 \
     -U postgres \
     -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"
 ```
-
-#### Creating the roles and users
-
-Use the script bdd.py to create the proper databases and roles.
-
-```
-$ python3 scripts/bdd.py config/bdd.csv
-```
-
-Where the csv file contains key values of this type:
-
-```
-groupname;password
-```
-
-`pwgen` is a great way to build good passwords.

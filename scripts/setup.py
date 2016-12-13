@@ -70,8 +70,8 @@ def init_user(username, groupname, **kwargs):
     os.environ["HOME"] = homedir
     os.environ["UID"] = str(uid)
 
-    paths = [("base/bash_profile", ".bash_profile"), ("base/gitconfig",
-                                                      ".gitconfig")]
+    paths = [("base/bash_profile", ".bash_profile"),
+             ("base/gitconfig", ".gitconfig"), ("base/pgpass", ".pgpass")]
     config = kwargs["environ"].get("CONFIG", None)
     if config == "Laravel":
         paths.append(("laravel/README-php.md", "README.md"))
@@ -84,6 +84,9 @@ def init_user(username, groupname, **kwargs):
     for tpl, dest in paths:
         if not os.path.exists(dest):
             render(tpl, dest, username=username, groupname=groupname, **kwargs)
+
+    # Chmod the postgres configuration
+    os.chmod(".pgpass", mode=0o0600)
 
     # link /var/www to ~/www
     os.symlink(wwwdir, "www")
