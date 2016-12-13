@@ -16,7 +16,8 @@ from passgen import passgen
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
 __version__ = "0.1.0"
 
-User = namedtuple("User", "machine groupname password ssh http jupyter")
+User = namedtuple("User",
+                  "machine hostname groupname password ssh http jupyter")
 StudentRecord = namedtuple("StudentRecord",
                            "lastname, firstname, email, classname, github, "
                            "image1, team1, image2, team2, comment, week")
@@ -36,9 +37,9 @@ services:
   {{ user.machine }}:
     image: greut/webapp-server:rails
     environment:
-      - GROUPNAME="{{ user.groupname }}"
-      - PASSWORD="{{ user.password }}"
-      - LONE_WOLF="true"
+      GROUPNAME: "{{ user.groupname }}"
+      PASSWORD: "{{ user.password }}"
+      LONE_WOLF: "true"
     hostname: {{ user.hostname }}
     domainname: srvz-webapp.he-arc.ch
     volumes:
@@ -116,6 +117,7 @@ def main(argv):
                 User(
                     machine=groupname,
                     groupname=groupname,
+                    hostname=student.email,
                     password=passgen(punctuation=False),
                     ssh=2200 + counter,
                     http=8000 + counter,

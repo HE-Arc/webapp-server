@@ -4,25 +4,21 @@ Database creation
 -----------------
 
 Sets up all the databases
-
-TODO: read the password from the YAML file...
 """
 
 import os
-import csv
 import sys
+import yaml
 import subprocess
 import tempfile
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # Database host
 hostname = "127.0.0.1"
-#hostname = "srvz-webapp.he-arc.ch"
 # Root password
 root = "root"
-#root = "phao9Nai4ash"
 
 mysql = r"""
     DROP USER IF EXISTS `{username}`;
@@ -58,14 +54,17 @@ postgresql_schema = r"""
 
 
 def main(argv):
-    groups = argv[1]
+    compose_file = argv[1]
 
-    with open(groups, "r", encoding="utf-8") as f:
-        reader = csv.reader(f, delimiter=";")
-        # skip headers
-        next(reader)
-        for row in reader:
-            groupname, password, *_ = row
+    with open(compose_file, "r", encoding="utf-8") as f:
+        compose = yaml.load(f)
+
+        for machine, description in compose['services'].items():
+            if 'hostname' not in description:
+                continue
+
+            groupname = description['environment']['GROUPNAME']
+            password = description['environment']['PASSWORD']
 
             print(groupname)
             print("=" * len(groupname))
@@ -92,7 +91,7 @@ def main(argv):
                     bytearray('{}:*:*:postgres:{}'.format(hostname, root),
                               'utf-8'))
                 fp.seek(0)
-                os.chmod(fp.name, 0o600)
+                os.chmod(fp.name, mode=0o600)
 
                 env = os.environ.copy()
                 env['PGPASSFILE'] = fp.name
