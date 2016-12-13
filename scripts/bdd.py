@@ -4,6 +4,8 @@ Database creation
 -----------------
 
 Sets up all the databases
+
+TODO: read the password from the YAML file...
 """
 
 import os
