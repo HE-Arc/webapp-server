@@ -16,18 +16,27 @@ from passgen import passgen
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
 __version__ = "0.1.0"
 
-User = namedtuple("User",
-                  "machine hostname groupname password ssh http jupyter")
+User = namedtuple(
+    "User", "machine hostname github groupname password ssh http jupyter")
 StudentRecord = namedtuple("StudentRecord",
                            "lastname, firstname, email, classname, github, "
                            "image1, team1, image2, team2, comment, week")
 
-bdd = Template("""\
-database;password;port
+nginx = Template("""\
 {%- for user in users %}
-{{ user.groupname }};{{ user.password }};{{ user.http }}
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{ user.hostname }}.srvzct-52.he-arc.ch {{ user.github | lower }}.srvzct-52.he-arc.ch;
+
+    location / {
+        proxy_pass http://localhost:{{ user.http }}/;
+    }
+}
+
 {%- endfor %}
-               """)
+""")
 
 template = Template("""\
 version: "2"
@@ -54,11 +63,11 @@ services:
       - mysql
       - smtp
 
-    links:
-      - {{ user.machine }}_redis:redis
+    #links:
+    #  - {{ user.machine }}_redis:redis
 
-  {{ user.machine }}_redis:
-    image: redis:3.2-alpine
+  #{{ user.machine }}_redis:
+  #  image: redis:3.2-alpine
 {% endfor %}
 
   # Remember to change both passwords after the boot!
@@ -99,7 +108,7 @@ volumes:
 def main(argv):
     students = argv[1]
     destination = argv[2]
-    databases = argv[3]
+    nginx_conf = argv[3]
 
     users = []
     counter = 0
@@ -119,6 +128,7 @@ def main(argv):
                     groupname=groupname,
                     hostname=student.email,
                     password=passgen(punctuation=False),
+                    github=student.github,
                     ssh=2200 + counter,
                     http=8000 + counter,
                     jupyter=8800 + counter))
@@ -126,8 +136,8 @@ def main(argv):
 
     with open(destination, 'w', encoding='utf-8') as f:
         f.write(template.render(users=users))
-    with open(databases, 'w', encoding='utf-8') as f:
-        f.write(bdd.render(users=users))
+    with open(nginx_conf, 'w', encoding='utf-8') as f:
+        f.write(nginx.render(users=users))
 
 
 if __name__ == "__main__":

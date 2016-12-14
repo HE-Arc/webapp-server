@@ -144,6 +144,8 @@ $ gulp
 $ gulp --production
 ```
 
+Although, doing this on the production server is not a good idea. Putting the generated scripts and stylesheets on Git is ok.
+
 # Advanced topics
 
 Run them at your own risks!
