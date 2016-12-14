@@ -16,12 +16,14 @@ RUN DEBIAN_FRONTEND=noninteractive \
 COPY scripts/runit/uwsgi.sh /etc/service/uwsgi/run
 RUN chmod +x /etc/service/uwsgi/run
 
+# Templates
+COPY files/python /var/templates/python
 # Develop
-COPY files/templates /var/templates
-COPY scripts/boot.sh /usr/local/bin/boot.sh
-COPY scripts/setup.py /usr/local/bin/setup.py
-RUN chmod +x /usr/local/bin/boot.sh \
- && chmod +x /usr/local/bin/setup.py
+#COPY files/base /var/templates/base
+#COPY scripts/boot.sh /usr/local/bin/boot.sh
+#COPY scripts/setup.py /usr/local/bin/setup.py
+#RUN chmod +x /usr/local/bin/boot.sh \
+# && chmod +x /usr/local/bin/setup.py
 
 
 # Config

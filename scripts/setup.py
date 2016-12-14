@@ -78,7 +78,7 @@ def init_user(username, groupname, **kwargs):
     elif config == "Rails":
         paths.append(("rails/README.md", "README.md"))
     elif config == "Python":
-        paths.append(("py/README.md", "README.md"))
+        paths.append(("python/README.md", "README.md"))
     else:
         paths.append(("base/README.md", "README.md"))
     for tpl, dest in paths:
@@ -183,9 +183,9 @@ def init_group(groupname, **kwargs):
         dirs.append("app/venv")
         dirs.append(kwargs["environ"]["PYTHONUSERBASE"])
 
-        paths = (("py/config/nginx.conf", "config/nginx.conf"),
-                 ("py/config/uwsgi.ini", "config/uwsgi.ini"),
-                 ("py/app/wsgi.py", "app/wsgi.py"))
+        paths = (("python/config/nginx.conf", "config/nginx.conf"),
+                 ("python/config/uwsgi.ini", "config/uwsgi.ini"),
+                 ("python/app/wsgi.py", "app/wsgi.py"))
 
     else:
         dirs.append("public")
@@ -240,7 +240,7 @@ def init_group(groupname, **kwargs):
         os.chdir(homedir)
 
     elif config == "Python":
-        shutil.copy2("/var/templates/py/app/public/nginx-uwsgi.png",
+        shutil.copy2("/var/templates/python/app/public/nginx-uwsgi.png",
                      "app/public")
 
         sys.stderr.write("Running uwsgi installation.\n")
