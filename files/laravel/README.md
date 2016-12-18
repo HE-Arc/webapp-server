@@ -210,7 +210,7 @@ MAIL_ENCRYPTION=null
 
 With this, laravel will send the mail locally to your [ssmtp](https://wiki.archlinux.org/index.php/SSMTP) service, and therefore this one will forward it to the mail server which uses mailhog, through the port 1025.
 
-
+_Note: this doesn't allow you to send email outside the local network, all mails will be catch by mailhog, so if you want to realy put your app in production with real email service, you'll need to config another service such as mailgun, amazon etc..._
 
 
 {% endblock -%}
