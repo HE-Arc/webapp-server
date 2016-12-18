@@ -193,4 +193,24 @@ The hard part is that we only have ports 80 and 443 available to us. Hence, we m
 
 If you want to go this route, ping me first.
 
+## Mail
+
+If you want to use the mail service from the local server : https://webmail.srvz-webapp.he-arc.ch/ you need to open your .env file and paste this informations :
+
+```
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ADDRESS=your@siteadress.com
+MAIL_NAME="A name for your mails"
+MAIL_ENCRYPTION=null
+```
+
+With this, laravel will send the mail locally to your [ssmtp](https://wiki.archlinux.org/index.php/SSMTP) service, and therefore this one will forward it to the mail server which uses mailhog, through the port 1025.
+
+
+
+
 {% endblock -%}
