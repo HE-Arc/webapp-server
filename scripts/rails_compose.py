@@ -30,10 +30,15 @@ index = Template("""\
 <title>{{ domainname }}</title>
 
 <h1>Domains</h1>
+<p>
+    <a href="http://webmail.{{ domainname }}">Webmail</a>
+</p>
+<h2>Users</h2>
 <ul>
 {%- for user in users %}
-    <li><a href="http://{{ user.hostname }}.{{ domainname }}">{{ user.hostname }}</a>
-        (<a href="http://{{ user.github | lower }}.{{ domainname }}">@{{ user.github }}</a>)
+    <li><a href="http://{{ user.hostname }}.{{ domainname }}">{{ user.hostname }}</a>,
+        <a href="http://{{ user.github | lower }}.{{ domainname }}">@{{ user.github }}</a>
+        ({{ user.ssh }})
 {%- endfor %}
 </ul>
 """)
