@@ -1,4 +1,4 @@
 docker-compose
-requests
+requests<2.12
 passgen
 jinja2

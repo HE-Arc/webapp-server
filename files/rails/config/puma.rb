@@ -4,6 +4,9 @@
 #environment "staging"
 environment "production"
 
+threads 0, 16
+workers 2
+
 directory "/var/www/app"
 bind "unix:///tmp/puma.sock"
 

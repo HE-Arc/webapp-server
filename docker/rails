@@ -10,7 +10,6 @@ RUN apt-get update -q -y \
         autoconf \
         imagemagick \
         libgdbm-dev \
-        libffi-dev \
         libncurses5-dev \
         libmagickwand-dev \
         libreadline6-dev \
@@ -18,7 +17,6 @@ RUN apt-get update -q -y \
         libyaml-dev \
         libxml2-dev \
         libxslt1-dev \
-        libzmq3-dev \
         ruby${RUBY_VERSION} \
         ruby${RUBY_VERSION}-dev \
  && apt-get clean \
@@ -36,8 +34,6 @@ RUN update-alternatives \
 ## Runit
 COPY scripts/runit/puma.sh /etc/service/puma/run
 RUN chmod +x /etc/service/puma/run
-COPY scripts/runit/iruby.sh /etc/service/iruby/run
-RUN chmod +x /etc/service/iruby/run
 
 # Templates
 COPY files/rails /var/templates/rails

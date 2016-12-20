@@ -16,19 +16,32 @@ from passgen import passgen
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
 __version__ = "0.1.0"
 
-User = namedtuple(
-    "User", "machine hostname github groupname password ssh http jupyter")
+domainname = "srvz-webapp2.he-arc.ch"
+
+User = namedtuple("User",
+                  "machine hostname github groupname password ssh http")
 StudentRecord = namedtuple("StudentRecord",
                            "lastname, firstname, email, classname, github, "
                            "image1, team1, image2, team2, comment, week")
 
 nginx = Template("""\
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name webmail.{{ domainname }};
+
+    location / {
+                 proxy_pass http://localhost:8125;
+    }
+}
+
 {%- for user in users %}
 server {
     listen 80;
     listen [::]:80;
 
-    server_name {{ user.hostname }}.srvzct-52.he-arc.ch {{ user.github | lower }}.srvzct-52.he-arc.ch;
+    server_name {{ user.hostname }}.{{ domainname }} {{ user.github | lower }}.{{ domainname }};
 
     location / {
         proxy_pass http://localhost:{{ user.http }}/;
@@ -50,17 +63,16 @@ services:
       PASSWORD: "{{ user.password }}"
       LONE_WOLF: "true"
     hostname: {{ user.hostname }}
-    domainname: srvz-webapp.he-arc.ch
+    domainname: {{ domainname }}
     volumes:
       - {{ user.machine }}:/var/www
       - ./config:/root/config:ro
     ports:
       - "{{ user.ssh }}:22"
       - "{{ user.http }}:80"
-      - "{{ user.jupyter }}:8888" # iruby (jupyter)
     depends_on:
       - postgres
-      - mysql
+      #- mysql
       - smtp
 
     #links:
@@ -71,14 +83,14 @@ services:
 {% endfor %}
 
   # Remember to change both passwords after the boot!
-  mysql:
-    image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql:/var/lib/mysql
+  #mysql:
+  #  image: mysql:5.7
+  #  environment:
+  #    - MYSQL_ROOT_PASSWORD=root
+  #  ports:
+  #    - "3306:3306"
+  #  volumes:
+  #    - mysql:/var/lib/mysql
 
   postgres:
     image: mdillon/postgis:9.6
@@ -93,7 +105,7 @@ services:
   smtp:
     image: mailhog/mailhog:latest
     ports:
-      - "8025:8025"
+      - "8125:8025"
 
 volumes:
   postgres:
@@ -130,14 +142,13 @@ def main(argv):
                     password=passgen(punctuation=False),
                     github=student.github,
                     ssh=2200 + counter,
-                    http=8000 + counter,
-                    jupyter=8800 + counter))
+                    http=8000 + counter))
             counter += 1
 
     with open(destination, 'w', encoding='utf-8') as f:
-        f.write(template.render(users=users))
+        f.write(template.render(users=users, domainname=domainname))
     with open(nginx_conf, 'w', encoding='utf-8') as f:
-        f.write(nginx.render(users=users))
+        f.write(nginx.render(users=users, domainname=domainname))
 
 
 if __name__ == "__main__":

@@ -16,7 +16,6 @@ import sys
 import pwd
 import random
 import shutil
-import hashlib
 import subprocess
 import unicodedata
 import multiprocessing
@@ -26,18 +25,6 @@ from jinja2 import Environment, FileSystemLoader
 
 env = Environment(loader=FileSystemLoader("/var/templates"))
 wwwdir = "/var/www"
-
-
-def passwd(passphrase, algorithm='sha1'):
-    """Code borrowed from notebook.auth.security"""
-    salt_len = 32
-    h = hashlib.new(algorithm)
-    salt = ("{0:0%dx}" % salt_len).format(random.getrandbits(4 * salt_len))
-    h.update(passphrase.encode("utf-8") + bytearray.fromhex(salt))
-    return ':'.join((algorithm, salt, h.hexdigest()))
-
-
-env.filters['passwd'] = passwd
 
 
 def formatUserName(firstname):
@@ -166,16 +153,11 @@ def init_group(groupname, **kwargs):
 
     elif config == "Rails":
         dirs.append("app/public")
-        dirs.append("iruby")
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
         paths = (("rails/config/nginx.conf", "config/nginx.conf"),
                  ("rails/config/puma.rb", "config/puma.rb"),
                  ("rails/app/Gemfile", "app/Gemfile"),
-                 ("rails/iruby/Gemfile", "iruby/Gemfile"),
-                 ("rails/iruby/hello-ruby.ipynb", "iruby/hello-ruby.ipynb"),
-                 ("rails/iruby/run.sh", "iruby/.run.sh"),
-                 ("rails/iruby/jupyter-config.py", "iruby/.jupyter-config.py"),
                  ("rails/app/config.ru", "app/config.ru"))
 
     elif config == "Python":
@@ -219,21 +201,6 @@ def init_group(groupname, **kwargs):
             ["gem", "install", "bundler", "rack", "rails", "rake", "puma"],
             env=kwargs["environ"])
         os.chdir('app')
-        check_call(
-            ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
-            env=kwargs["environ"])
-        os.chdir(homedir)
-
-        os.chdir('iruby')
-        os.chmod('.run.sh', mode=0o0775)
-        sys.stderr.write("Running jupyter/iruby installation.\n")
-        check_call(["python3", "-m", "venv", ".venv"], env=kwargs["environ"])
-        check_call(
-            [
-                ".venv/bin/pip", "--no-cache-dir", "install", "-U", "pip",
-                "jupyter[notebook]"
-            ],
-            env=kwargs["environ"])
         check_call(
             ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
             env=kwargs["environ"])
