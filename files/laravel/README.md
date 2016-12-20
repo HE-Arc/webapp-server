@@ -195,22 +195,22 @@ If you want to go this route, ping me first.
 
 ## Mail
 
-If you want to use the mail service from the local server : https://webmail.srvz-webapp.he-arc.ch/ you need to open your .env file and paste this informations :
+If you want to use the mail service from the local server : <https://webmail.srvz-webapp.he-arc.ch/> you need to configure your application as such.
 
 ```
-MAIL_DRIVER=smtp
+MAIL_DRIVER=mail
+
+# or
+
 MAIL_HOST=smtp
 MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
-MAIL_ADDRESS=your@siteadress.com
-MAIL_NAME="A name for your mails"
+MAIL_ADDRESS=noreply@example.org
+MAIL_NAME="No Reply"
 MAIL_ENCRYPTION=null
 ```
 
-With this, laravel will send the mail locally to your [ssmtp](https://wiki.archlinux.org/index.php/SSMTP) service, and therefore this one will forward it to the mail server which uses mailhog, through the port 1025.
-
-_Note: this doesn't allow you to send email outside the local network, all mails will be catch by mailhog, so if you want to realy put your app in production with real email service, you'll need to config another service such as mailgun, amazon etc..._
-
+**NB:** this doesn't allow you to send email outside the local network, all mails will be caught by mailhog. If you want to really put your app in production with real email service, you'll need to config another service such as gmail, mailgun, amazon, etc._
 
 {% endblock -%}
