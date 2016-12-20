@@ -24,6 +24,20 @@ StudentRecord = namedtuple("StudentRecord",
                            "lastname, firstname, email, classname, github, "
                            "image1, team1, image2, team2, comment, week")
 
+index = Template("""\
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>{{ domainname }}</title>
+
+<h1>Domains</h1>
+<ul>
+{%- for user in users %}
+    <li><a href="http://{{ user.hostname }}.{{ domainname }}">{{ user.hostname }}</a>
+        (<a href="http://{{ user.github | lower }}.{{ domainname }}">@{{ user.github }}</a>)
+{%- endfor %}
+</ul>
+""")
+
 nginx = Template("""\
 server {
     listen 80;
@@ -121,6 +135,7 @@ def main(argv):
     students = argv[1]
     destination = argv[2]
     nginx_conf = argv[3]
+    index_html = argv[4]
 
     users = []
     counter = 0
@@ -149,6 +164,8 @@ def main(argv):
         f.write(template.render(users=users, domainname=domainname))
     with open(nginx_conf, 'w', encoding='utf-8') as f:
         f.write(nginx.render(users=users, domainname=domainname))
+    with open(index_html, 'w', encoding='utf-8') as f:
+        f.write(index.render(users=users, domainname=domainname))
 
 
 if __name__ == "__main__":
