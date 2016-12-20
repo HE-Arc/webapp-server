@@ -34,13 +34,12 @@ index = Template("""\
     <a href="http://webmail.{{ domainname }}">Webmail</a>
 </p>
 <h2>Users</h2>
-<ul>
+<ol start=2200>
 {%- for user in users %}
-    <li><a href="http://{{ user.hostname }}.{{ domainname }}">{{ user.hostname }}</a>,
-        <a href="http://{{ user.github | lower }}.{{ domainname }}">@{{ user.github }}</a>
-        ({{ user.ssh }})
+    <li><a href="http://{{ user.hostname }}.{{ domainname }}">{{ user.hostname }}</a>
+        (<a href="http://{{ user.github | lower }}.{{ domainname }}">@{{ user.github }}</a>)
 {%- endfor %}
-</ul>
+</ol>
 """)
 
 nginx = Template("""\
