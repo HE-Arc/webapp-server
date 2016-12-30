@@ -15,26 +15,25 @@ services:
     ports:
       - "2020:22"
       - "8080:80"
-      - "8888:8888" # iruby (jupyter)
     depends_on:
       - postgres
-      - mysql
+      #- mysql
       - smtp
 
-    links:
-      - greut_redis:redis
+    #links:
+    #  - greut_redis:redis
 
-  greut_redis:
-    image: redis:3.2-alpine
+  #greut_redis:
+  #  image: redis:3.2-alpine
 
-  mysql:
-    image: mysql:5.7
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql:/var/lib/mysql
+  #mysql:
+  #  image: mysql:5.7
+  #  environment:
+  #    - MYSQL_ROOT_PASSWORD=root
+  #  ports:
+  #    - "3306:3306"
+  #  volumes:
+  #    - mysql:/var/lib/mysql
 
   postgres:
     image: mdillon/postgis:9.6

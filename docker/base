@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG MYSQL_VERSION=5.7
 ARG NODEJS_VERSION=7.x
 ARG POSTGRES_VERSION=9.6
-ARG TINI_VERSION=0.13.1
+ARG TINI_VERSION=0.13.2
 
 # Add Tini (reaping problem)
 ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini

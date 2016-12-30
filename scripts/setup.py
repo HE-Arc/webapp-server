@@ -163,6 +163,7 @@ def init_group(groupname, **kwargs):
     elif config == "Python":
         dirs.append("app/public")
         dirs.append("app/venv")
+        dirs.append("app/tmp")
         dirs.append(kwargs["environ"]["PYTHONUSERBASE"])
 
         paths = (("python/config/nginx.conf", "config/nginx.conf"),

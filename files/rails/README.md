@@ -12,7 +12,7 @@ Most of the stuff required are installed by default as you can see.
 $ ruby --version
 ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
 $ rails --version
-Rails 5.0.0.1
+Rails 5.0.1
 ```
 
 ## The current application
@@ -38,16 +38,18 @@ Let's modify it and restart the application server:
 
 ```
 $ sed -i 's/Ruby/HE-ARC/' config.ru
+
 $ sudo sv restart puma
+# or
+$ touch tmp/restart.txt
 ```
 
-Here we replaced PHP-FPM with Puma to serve the Ruby application.
+Here, we replaced PHP-FPM with Puma to serve the Ruby application.
 
 ```
 $ ls ~/www/config
 nginx.conf                    # the HTTP server configuration
 puma.rb                       # the application server configuration
-env                           # environment variables used by puma
 ```
 
 The application will be relaunched every time you modify (or touch) the `config.ru` file.
@@ -64,29 +66,17 @@ $ rails new app --database=postgresql
 $ rails new app --database=mysql
 
 $ cd app
-```
-
-Add 'puma' the to Gemfile. This will be the default in Rails 5.
-
-```
-# Use Puma as the web server
-gem 'puma'
-```
-
-Install puma and restart the web server:
-
-```
-$ bundle
+# restart the server
 $ sudo sv restart puma
 ```
 
-And experience the database fail screen. That's good.
+And experience the connection error (in development) or 404 page (in production). That's good.
 
 ## Configure the database.yml file
 
 The database is the named after the username. And the various environments are set in three schemas ($user, production and test). As you'll develop locally, let the development environment set to your local setup and use only the production environment. (See also the staging environment below)
 
-```
+```yaml
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -135,21 +125,11 @@ production:
   database: <%= ENV['GROUPNAME'] %>_production
 ```
 
-## The server
-
-The puma server should be running already, you can restart it this way:
+Yay! You're on Rails!
 
 ```
-$ sudo sv restart puma
+$ touch tmp/restart.txt
 ```
-
-Idem with nginx.
-
-```
-$ sudo sv restart nginx
-```
-
-You should get the "Welcome abroad" screen now.
 
 ## Differences with Laravel
 
@@ -217,4 +197,6 @@ Rails.application.configure do
 end
 ```
 
-You can also enable a subnet using the CIDR notation. {% endblock -%}
+You can also enable a subnet using the CIDR notation.
+
+{% endblock -%}
