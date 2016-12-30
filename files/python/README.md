@@ -16,8 +16,7 @@ Python 3.5.2+
 (venv)$ pip list
 pip (9.0.1)
 pkg-resources (0.0.0)
-setuptools (28.8.0)
-wheel (0.30.0a0)
+setuptools (26.1.1)
 ```
 
 The WSGI application is defined in the `wsgi.py` file. WSGI is the protocol between the application server and a Python application. The application server used is called uWSGI. A request is handled by Nginx which delegates it to uWSGI that manages various Python processes running you application.
@@ -59,7 +58,7 @@ run: uwsgi: (pid: 3) ...s
 $ cd /var/www/app
 $ source venv/bin/activate
 (venv) $ pip install Django
-Successfully installed Django-1.10.3
+Successfully installed Django-1.10.4
 (venv) $ django-admin startproject mysite
 (venv) $ cd mysite
 ```
@@ -70,6 +69,7 @@ Change the `chdir` instruction into `conf/uwsgi.ini`
 
 ```
 chdir=/var/www/app/mysite
+virtualenv=/var/www/app/venv    # change it if you recreate a venv
 module=mysite.wsgi:application
 ```
 
