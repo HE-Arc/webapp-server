@@ -10,7 +10,7 @@ Most of the stuff required are installed by default as you can see.
 
 ```
 $ ruby --version
-ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
+ruby 2.4.0p0 (2016-12-24 revision 57164) [x86_64-linux-gnu]
 $ rails --version
 Rails 5.0.1
 ```
