@@ -23,8 +23,18 @@ Feel free to adapt the git configuration in `~/.gitconfig`.
 Connect to MySQL (hint: `echo \$PASSWORD`):
 
 ```
-$ mysql --user $GROUPNAME --host mysql --password
+$ mysql --host $MYSQL_HOST --user $GROUPNAME --password
 ```
+
+## Postgres
+
+Connect to Postgres:
+
+```
+$ psql -h $POSTGRES_HOST -U $GROUPNAME
+```
+
+(hint: `more ~/.pgpass`)
 
 {% endblock -%}
 
