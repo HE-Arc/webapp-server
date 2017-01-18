@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 ## Runit
-COPY scripts/runit/uwsgi.sh /etc/service/uwsgi/run
+COPY runit/uwsgi.sh /etc/service/uwsgi/run
 RUN chmod +x /etc/service/uwsgi/run
 
 # Templates

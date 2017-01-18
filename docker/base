@@ -33,7 +33,7 @@ RUN apt-get update -q \
         man \
         mysql-client-${MYSQL_VERSION} \
         nano \
-        nginx-extras \
+        nginx \
         openssh-server \
         psmisc \
         python3-pip \
@@ -94,10 +94,7 @@ RUN export f=/etc/nginx/nginx.conf \
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
     # logs to stdout
  && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
- && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f \
-    # allow environment variables to be read by nginx confs
- && sed -i 's/^\(http {\)/env GROUPNAME;\n\1/' $f \
- && sed -i 's/^\(http {\)/env PASSWORD;\n\n\1/' $f
+ && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f
 
 # SSMTP
 # mailhub configuration is done by setup.py
@@ -140,10 +137,10 @@ RUN chmod 0440 /etc/sudoers.d/users
 COPY files/base /var/templates/base
 
 ## Runit
-COPY scripts/runit/cron.sh /etc/service/cron/run
-COPY scripts/runit/nginx.sh /etc/service/nginx/run
-COPY scripts/runit/sshd.sh /etc/service/sshd/run
-COPY scripts/runit/syslog.sh /etc/service/syslog/run
+COPY runit/cron.sh /etc/service/cron/run
+COPY runit/nginx.sh /etc/service/nginx/run
+COPY runit/sshd.sh /etc/service/sshd/run
+COPY runit/syslog.sh /etc/service/syslog/run
 COPY scripts/boot.sh /usr/local/bin/boot.sh
 COPY scripts/setup.py /usr/local/bin/setup.py
 RUN chmod +x /etc/service/cron/run \

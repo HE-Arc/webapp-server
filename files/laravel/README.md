@@ -8,11 +8,16 @@ You may also see how it's currently done in `index.php`.
 
 # PHP
 
-Composer and Laravel are installed for your convenience.
+Composer is installed for your convenience.
 
 ```
 $ composer --help
-$ laravel --help
+```
+
+But you may have to install the laravel-installer.
+
+```
+$ composer global require laravel/installer=~1.3
 ```
 
 # Laravel tutorial

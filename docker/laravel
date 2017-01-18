@@ -42,26 +42,20 @@ RUN DEBIAN_FRONTEND=noninteractive \
 RUN curl -sS https://getcomposer.org/installer | \
         sudo php -- --install-dir=/usr/local/bin --filename=composer
 
-# PHP ${PHP_VERSION} FPM (fix)
-RUN mkdir -p /run/php
-RUN sed -i 's/^\(error_log = \).*$/\1syslog/' /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
-
-# Disable xdebug for CLI (composer doesn't like it)
-RUN phpdismod -s cli xdebug
-
-## PHP ini
-RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php/${PHP_VERSION}/fpm/php.ini
-RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php/${PHP_VERSION}/fpm/php.ini
-RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php/${PHP_VERSION}/fpm/php.ini
-RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/${PHP_VERSION}/fpm/php.ini
-
-RUN sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' /etc/php/${PHP_VERSION}/cli/php.ini
-RUN sed -i 's/\(error_reporting =\).*/\1 E_ALL/' /etc/php/${PHP_VERSION}/cli/php.ini
-RUN sed -i 's/\(display_errors =\).*/\1 On/' /etc/php/${PHP_VERSION}/cli/php.ini
-RUN sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' /etc/php/${PHP_VERSION}/cli/php.ini
+# PHP
+RUN mkdir -p /run/php \
+ && sed -i 's/^\(error_log = \).*$/\1syslog/' /etc/php/${PHP_VERSION}/fpm/php-fpm.conf \
+ && ln -s /usr/sbin/php-fpm7.1 /usr/sbin/php-fpm \
+ && phpdismod -s cli xdebug \
+ && for f in "/etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini"; do \
+        sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' $f \
+     && sed -i 's/\(error_reporting =\).*/\1 E_ALL/' $f \
+     && sed -i 's/\(display_errors =\).*/\1 On/' $f \
+     && sed -i 's/;\(cgi.fix_pathinfo=\).*/\1 0/' $f; \
+    done
 
 ## Runit
-COPY scripts/runit/php-fpm.sh /etc/service/php-fpm/run
+COPY runit/php-fpm.sh /etc/service/php-fpm/run
 RUN chmod +x /etc/service/php-fpm/run
 
 # Templates

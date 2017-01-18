@@ -61,7 +61,7 @@ def init_user(username, groupname, **kwargs):
              ("base/gitconfig", ".gitconfig"), ("base/pgpass", ".pgpass")]
     config = kwargs["environ"].get("CONFIG", None)
     if config == "Laravel":
-        paths.append(("laravel/README-php.md", "README.md"))
+        paths.append(("laravel/README.md", "README.md"))
     elif config == "Rails":
         paths.append(("rails/README.md", "README.md"))
     elif config == "Python":
@@ -148,7 +148,8 @@ def init_group(groupname, **kwargs):
     if config == "Laravel":
         dirs.append("public")
 
-        paths = (("laravel/public/index.php", "public/index.php"),
+        paths = (("laravel/app/index.php", "public/index.php"),
+                 ("laravel/config/php-fpm.conf", "config/php-fpm.conf"),
                  ("laravel/config/nginx.conf", "config/nginx.conf"))
 
     elif config == "Rails":
@@ -187,20 +188,12 @@ def init_group(groupname, **kwargs):
     def check_call(command, env, stderr=sys.stderr, stdout=sys.stderr):
         subprocess.check_call(command, env=env, stderr=stderr, stdout=stdout)
 
-    if config == "Laravel":
-        sys.stderr.write("Running composer global require laravel/installer\n")
-        check_call(
-            ["composer", "global", "require", "laravel/installer=~1.3"],
-            env=kwargs["environ"])
-
-    elif config == "Rails":
+    if config == "Rails":
         shutil.copy2("/var/templates/rails/app/public/nginx-puma.png",
                      "app/public")
 
-        sys.stderr.write("Running rails installation.\n")
-        check_call(
-            ["gem", "install", "bundler", "rack", "rails", "rake", "puma"],
-            env=kwargs["environ"])
+        sys.stderr.write("Running Bundler installation.\n")
+        check_call(["gem", "install", "bundler"], env=kwargs["environ"])
         os.chdir('app')
         check_call(
             ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
@@ -337,6 +330,10 @@ def main(argv):
     # symlink the server config
     os.symlink("/var/www/config/nginx.conf",
                "/etc/nginx/sites-enabled/{}".format(groupname))
+    # symlink the php-fpm config
+    os.unlink("/etc/php/7.1/fpm/pool.d/www.conf")
+    os.symlink("/var/www/config/php-fpm.conf",
+               "/etc/php/7.1/fpm/pool.d/www.conf")
 
     # Create users
     students = "/root/config/students.tsv"

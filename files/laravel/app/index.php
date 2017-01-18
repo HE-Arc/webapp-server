@@ -32,6 +32,9 @@ $pgsql = [
 
 // Hide the passwords from phpinfo.
 unset($_SERVER["PASSWORD"]);
+unset($_ENV["PASSWORD"]);
+putenv("PASSWORD=");
+putenv("PASSWORD");
 
 // MySQL
 try {
