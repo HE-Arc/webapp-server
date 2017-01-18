@@ -331,9 +331,10 @@ def main(argv):
     os.symlink("/var/www/config/nginx.conf",
                "/etc/nginx/sites-enabled/{}".format(groupname))
     # symlink the php-fpm config
-    os.unlink("/etc/php/7.1/fpm/pool.d/www.conf")
-    os.symlink("/var/www/config/php-fpm.conf",
-               "/etc/php/7.1/fpm/pool.d/www.conf")
+    if os.path.exists("/etc/php/7.1/fpm/pool.d/www.conf"):
+        os.unlink("/etc/php/7.1/fpm/pool.d/www.conf")
+        os.symlink("/var/www/config/php-fpm.conf",
+                   "/etc/php/7.1/fpm/pool.d/www.conf")
 
     # Create users
     students = "/root/config/students.tsv"
