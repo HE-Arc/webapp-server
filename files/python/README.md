@@ -58,7 +58,7 @@ run: uwsgi: (pid: 3) ...s
 $ cd /var/www/app
 $ source venv/bin/activate
 (venv) $ pip install Django
-Successfully installed Django-1.10.4
+Successfully installed Django-1.10.5
 (venv) $ django-admin startproject mysite
 (venv) $ cd mysite
 ```
@@ -102,7 +102,7 @@ Before running the migrations, we need to configure the database.
 ```python
 DATABASES = {
   'default': {
-    'ENGINE': 'django.db.backends.postgresql_mysql',
+    'ENGINE': 'django.db.backends.mysql',
     'NAME': os.environ.get('GROUPNAME'),
     'USER': os.environ.get('GROUPNAME', 'root'),
     'PASSWORD': os.environ.get('PASSWORD', ''),
