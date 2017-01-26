@@ -3,7 +3,7 @@
 Rails Compose
 -------------
 
-Create the docker-compose YAML file for the users and CSV for the database.
+Create the docker-compose YAML file for the users.
 """
 
 import csv
