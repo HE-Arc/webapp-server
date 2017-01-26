@@ -10,7 +10,10 @@ ARG TINI_VERSION=0.13.2
 
 # Add Tini (reaping problem)
 ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
+RUN sig=`sha256sum /tini | cut -d " " -f1` \
+ && [ "$sig" = "790c9eb6e8a382fdcb1d451f77328f1fac122268fa6f735d2a9f1b1670ad74e3" ] \
+ && chmod +x /tini \
+ || exit 1
 ENTRYPOINT ["/tini", "--"]
 
 # All the packages.
