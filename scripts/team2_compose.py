@@ -41,6 +41,11 @@ index = Template("""\
 """)
 
 nginx = Template("""\
+map $http_upgrade $connection_upgrade {
+    default Upgrade;
+    ''      close;
+}
+
 server {
     listen 80;
     listen [::]:80;
@@ -52,6 +57,11 @@ server {
         proxy_set_header X-Real-IP  $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header Host $host;
+
+        # WebSocket support.
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
     }
 }
 
@@ -72,7 +82,7 @@ server {
     location /ws {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header Connection $http_connection;
         proxy_pass http://localhost:{{ team.http }}/ws;
     }
 }
