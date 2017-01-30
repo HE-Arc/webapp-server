@@ -18,7 +18,7 @@ __version__ = "0.1.0"
 
 domainname = "srvz-webapp.he-arc.ch"
 
-Team = namedtuple("Team", "machine hostname groupname password ssh http")
+Team = namedtuple("Team", "machine image hostname groupname password ssh http")
 StudentRecord = namedtuple("StudentRecord",
                            "lastname, firstname, email, classname, github, "
                            "image1, team1, image2, team2, comment, week")
@@ -170,8 +170,9 @@ def main(argv):
         next(reader)
         for student in map(StudentRecord._make, reader):
             groupname = student.team2.lower().strip().replace('-', '')
-            if groupname and groupname not in teams:
+            if groupname and groupname not in teams and student.image2:
                 teams[groupname] = Team(
+                    image=student.image2.lower(),
                     machine=groupname,
                     groupname=groupname,
                     hostname=groupname,
