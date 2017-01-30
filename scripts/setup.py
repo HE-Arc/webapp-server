@@ -255,14 +255,14 @@ def main(argv):
     config = environ["CONFIG"]
 
     # Global environment "variables"
-    environ["MYSQL_HOST"] = "mysql"
-    environ["MYSQL_PORT"] = "3306"
-    environ["POSTGRES_HOST"] = "postgres"
-    environ["POSTGRES_PORT"] = "5432"
-    environ["REDIS_HOST"] = "redis"
-    environ["REDIS_PORT"] = "6379"
-    environ["SMTP_HOST"] = "smtp"
-    environ["SMTP_PORT"] = "1025"
+    environ["MYSQL_HOST"] = environ.get("MYSQL_HOST", "mysql")
+    environ["MYSQL_PORT"] = environ.get("MYSQL_PORT", 3306)
+    environ["POSTGRES_HOST"] = environ.get("POSTGRES_HOST", "postgres")
+    environ["POSTGRES_PORT"] = environ.get("POSTGRES_PORT", 5432)
+    environ["REDIS_HOST"] = environ.get("REDIS_HOST", "redis")
+    environ["REDIS_PORT"] = environ.get("REDIS_PORT", 6379)
+    environ["SMTP_HOST"] = environ.get("SMTP_HOST", "smtp")
+    environ["SMTP_PORT"] = environ.get("SMTP_PORT", 1025)
 
     if config == "Laravel":
         environ["COMPOSER_HOME"] = "/var/www/.composer"
