@@ -26,6 +26,8 @@ from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader("/var/templates"))
 wwwdir = "/var/www"
 
+ADMIN = "teachers"
+
 
 def formatUserName(firstname):
     """
@@ -356,7 +358,7 @@ def main(argv):
                     groups = {student.email.replace('.', '_')}
 
                 # Only pick the users of the given group (or admin)
-                if not groups.isdisjoint((groupname, "admin")):
+                if not groups.isdisjoint((groupname, ADMIN)):
                     username = formatUserName(student.firstname)
                     create_user(username, groupname, student.classname)
                     p = multiprocessing.Process(
