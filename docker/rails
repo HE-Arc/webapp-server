@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ARG RUBY_VERSION=2.4
 
-RUN apt-add-repository ppa:brightbox/ruby-ng-experimental \
+RUN apt-add-repository ppa:brightbox/ruby-ng \
  && apt-get update -q -y \
  && apt-get install -q -y \
         autoconf \

@@ -6,8 +6,9 @@ The setup scripts to create development environments for many groups.
 
 ## Requirements
 
-- Docker >1.10
-- Python 3 (pip, virtualenv or requests)
+- Docker >1.13
+- Python 3 (pip & venv)
+- libyaml-dev
 
 ## Setup
 
@@ -36,7 +37,7 @@ To download the public keys, run this python script:
 
 ```shell
 # setup
-$ virtualenv3 .
+$ python3 -m venv .
 $ . bin/activate
 $ pip3 install -r requirements.txt
 
@@ -72,15 +73,6 @@ $ docker-compose -f build.yml build laravel
 $ docker-compose -f build.yml build python
 # Rails container
 $ docker-compose -f build.yml build rails
-```
-
-## Run the base
-
-```
-$ docker run -d \
-             -v `pwd`/config \
-             -p 80 \
-             greut/webapp-server
 ```
 
 ## Run via docker-compose

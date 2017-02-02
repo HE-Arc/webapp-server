@@ -90,8 +90,8 @@ RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
 RUN python3 -m pip install --no-cache-dir jinja2
 
 ## Nginx
-RUN export f=/etc/nginx/nginx.conf \
- && rm /etc/nginx/sites-enabled/default \
+ARG f=/etc/nginx/nginx.conf
+RUN rm /etc/nginx/sites-enabled/default \
  && rm -r /var/www/html \
     # auto worker processes and no daemonize (for my_init.d)
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
@@ -112,8 +112,8 @@ RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
 # * Disallow TCP forwarding
 # * Delete any configured host keys (boot.sh)
 #
-RUN export f=/etc/ssh/sshd_config \
- && mkdir /var/run/sshd \
+ARG f=/etc/ssh/sshd_config
+RUN mkdir /var/run/sshd \
  && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
  && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f \
  && rm -v /etc/ssh/ssh_host_*
@@ -122,8 +122,8 @@ RUN export f=/etc/ssh/sshd_config \
 #
 # * Output all the things to stdout!
 #
-RUN export f=/etc/syslog-ng/syslog-ng.conf \
- && sed -i 's/system()/#system()/' $f \
+ARG f=/etc/syslog-ng/syslog-ng.conf
+RUN sed -i 's/system()/#system()/' $f \
  && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
  && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/dev\/stdout"); };\n\1/' $f \
  && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/dev\/stderr"); };\n\n\1/' $f \
