@@ -43,9 +43,7 @@ postgresql = r"""
     CREATE DATABASE {database} WITH ENCODING 'UTF8' OWNER {username};
     REVOKE ALL PRIVILEGES ON DATABASE {database} FROM public;
     GRANT ALL PRIVILEGES ON DATABASE {database} TO {username};
-"""
-
-postgresql_schema = r"""
+    \c {database}
     DROP SCHEMA IF EXISTS public CASCADE;
     CREATE SCHEMA {username} AUTHORIZATION {username};
     CREATE SCHEMA production AUTHORIZATION {username};
@@ -99,31 +97,23 @@ def main(argv):
                 env = os.environ.copy()
                 env['PGPASSFILE'] = fp.name
 
-                commands = (
-                    ('database', ('psql', '-h', hostname, '-U', 'postgres'),
-                     postgresql), ('schemas', ('psql', '-h', hostname, '-U',
-                                               'postgres', '-d', groupname),
-                                   postgresql_schema))
+                p = subprocess.Popen(
+                    ['psql', '-h', hostname, '-U', 'postgres'],
+                    env=env,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE)
 
-                for txt, command, stdin in commands:
-                    p = subprocess.Popen(
-                        command,
-                        env=env,
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+                stdin = postgresql.format(
+                    username=groupname, password=password,
+                    database=groupname).strip()
 
-                    stdin = stdin.format(
-                        username=groupname,
-                        password=password,
-                        database=groupname).strip()
-
-                    out, err = p.communicate(bytearray(stdin, 'utf-8'))
-                    if p.returncode != 0:
-                        print(err.decode('utf-8'), end='', file=sys.stderr)
-                    else:
-                        print("Postgresql {} created.".format(txt))
-                        #print(out.decode('utf-8'), end='')
+                out, err = p.communicate(bytearray(stdin, 'utf-8'))
+                if p.returncode != 0:
+                    print(err.decode('utf-8'), end='', file=sys.stderr)
+                else:
+                    print("Postgresql {} created.".format(txt))
+                    #print(out.decode('utf-8'), end='')
 
             print("")
 

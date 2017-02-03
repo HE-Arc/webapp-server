@@ -93,7 +93,7 @@ RUN python3 -m pip install --no-cache-dir jinja2
 ARG f=/etc/nginx/nginx.conf
 RUN rm /etc/nginx/sites-enabled/default \
  && rm -r /var/www/html \
-    # auto worker processes and no daemonize (for my_init.d)
+    # auto worker processes and no daemonize (for runit)
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
     # logs to stdout
  && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
