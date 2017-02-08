@@ -1,0 +1,23 @@
+logLevel = "INFO"
+defaultEntryPoints = ["http", "https"]
+
+[web]
+address = ":8080"
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+watch = true
+
+[acme]
+email = "yoan.blanc@he-arc.ch"
+storage = "/etc/traefik/acme/acme.json"
+onDemand = true
+entryPoint = "https"
+
+[entryPoints]
+  [entryPoint.http]
+  address  =":80"
+    [entryPoint.http.redirect]
+    entryPoint = "https"
+  [entryPoint.https]
+  address = ":443"

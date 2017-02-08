@@ -1,7 +1,24 @@
 version: '3'
 
 services:
+  proxy:
+    image: traefik:morbier-alpine
+    hostname: proxy
+    domainname: srvz-webapp.he-arc.ch
+    volumes:
+      - ./traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - proxy:/etc/traefik/acme
+    ports:
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
+    command: -c /etc/treafik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
+    labels:
+      - "traefik.enable=false"
+
    # Free project
+
   free:
     image: greut/webapp-server:latest
     environment:
@@ -9,19 +26,26 @@ services:
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: free
-    domainname: srvz-webapp.he-arc.ch
     volumes:
       - free:/var/www
       - ./config:/root/config:ro
     ports:
       - "2222:22"
-      - "8080:80"
     depends_on:
       - postgres
       - mysql
       - smtp
-    networks:
-      - free
+    labels:
+      - "treafik.frontend.rule=Host:free.srvz-webapp.he-arc.ch"
+      - "traefik.port=80"
+
+  free_redis:
+    image: redis:3.2-alpine
+    volumes:
+      - free_redis:/data
+    labels:
+      - "traefik.enable=false"
+
 
   # Python
 
@@ -37,14 +61,22 @@ services:
       - python:/var/www
       - ./config:/root/config:ro
     ports:
-      - "2222:22"
-      - "8080:80"
+      - "2223:22"
     depends_on:
       - postgres
       - mysql
       - smtp
-    networks:
-      - python
+    labels:
+      - "treafik.frontend.rule=Host:python.srvz-webapp.he-arc.ch"
+      - "traefik.port=80"
+
+  python_redis:
+    image: redis:3.2-alpine
+    volumes:
+      - python_redis:/data
+    labels:
+      - "traefik.enable=false"
+
 
   # PHP project.
 
@@ -60,23 +92,23 @@ services:
       - eatapp:/var/www
       - ./config:/root/config:ro
     ports:
-      - "2222:22"
-      - "8080:80"
+      - "2224:22"
     depends_on:
       - postgres
       - mysql
       - smtp
     links:
       - eatapp_redis:redis
-    networks:
-      - eatapp
+    labels:
+      - "treafik.frontend.rule=Host:eatapp.srvz-webapp.he-arc.ch"
+      - "traefik.port=80"
 
   eatapp_redis:
     image: redis:3.2-alpine
-    networks:
-      - eatapp
     volumes:
       - eatapp_redis:/data
+    labels:
+      - "traefik.enable=false"
 
   # Ruby on Rails project
 
@@ -91,23 +123,20 @@ services:
       - capistrano:/var/www
       - ./config:/root/config:ro
     ports:
-      - "2020:22"
-      - "8080:80"
+      - "2225:22"
     depends_on:
       - postgres
       - mysql
       - smtp
     links:
       - capistrano_redis:redis
-    networks:
-      - capistrano
 
   capistrano_redis:
     image: redis:3.2-alpine
-    networks:
-      - capistrano
     volumes:
       - capistrano_redis:/data
+    labels:
+      - "traefik.enable=false"
 
   # Shared services
   postgres:
@@ -117,13 +146,10 @@ services:
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
-    networks:
-      - capistrano
-      - eatapp
-      - free
-      - python
     volumes:
      - postgres:/var/lib/postgresql/data
+    labels:
+      - "traefik.enable=false"
 
   mysql:
     image: mysql:5.7
@@ -131,43 +157,30 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     ports:
       - "3306:3306"
-    networks:
-      - capistrano
-      - eatapp
-      - free
-      - python
     volumes:
       - mysql:/var/lib/mysql
+    labels:
+      - "traefik.enable=false"
 
   smtp:
     image: mailhog/mailhog:latest
-    ports:
-      - "8025:8025"
-    networks:
-      - free
-      - eatapp
-      - capistrano
-
-networks:
-  # base
-  free:
-  # laravel
-  eatapp:
-  # python
-  python:
-  # rails
-  capistrano:
+    labels:
+      - "traefik.frontend.rule=Host:webmail.docker.localhost"
+      - "traefik.port=8025"
 
 volumes:
+  proxy:
   mysql:
   postgres:
   # base
   free:
+  free_redis:
   # laravel
   eatapp:
   eatapp_redis:
   # python
   python:
+  python_redis:
   # rails
   capistrano:
   capistrano_redis:
