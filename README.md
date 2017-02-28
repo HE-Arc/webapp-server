@@ -51,7 +51,11 @@ The key is a [personal access token](https://github.com/settings/tokens) to avoi
 Based on the same TSV file, you can generate `docker-compose.yml` file.
 
 ```shell
-$ scripts/rails_compose.py config/students.tsv docker-compose.yml
+$ scripts/team2_compose.py \
+    config/students.tsv \
+    docker-compose.yml \
+    nginx.conf \
+    index.html
 ```
 
 ### Database creation

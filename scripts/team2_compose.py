@@ -100,7 +100,6 @@ services:
     environment:
       GROUPNAME: "{{ team.groupname }}"
       PASSWORD: "{{ team.password }}"
-      LONE_WOLF: "true"
     hostname: {{ team.hostname }}
     domainname: {{ domainname }}
     volumes:
@@ -132,7 +131,7 @@ services:
       - mysql:/var/lib/mysql
 
   postgres:
-    image: postgres:9.6-alpine
+    image: mdillon/postgis:9.6-alpine
     environment:
       - POSTGRES_PASSWORD=root
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
@@ -169,13 +168,13 @@ def main(argv):
         # skip headers
         next(reader)
         for student in map(StudentRecord._make, reader):
-            groupname = student.team2.lower().strip().replace('-', '')
+            groupname = student.team2
             if groupname and groupname not in teams and student.image2:
                 teams[groupname] = Team(
                     image=student.image2.lower(),
-                    machine=groupname,
+                    machine=groupname.lower(),
                     groupname=groupname,
-                    hostname=groupname,
+                    hostname=groupname.lower(),
                     password=passgen(punctuation=False),
                     ssh=2200 + len(teams),
                     http=8000 + len(teams))
