@@ -94,6 +94,8 @@ Run the container(s)
 docker-compose up -d
 ```
 
+Traefik control dashboard runs on port 8080.
+
 ### Databases
 
 The databases are open the external world, hence we must modify the super admin password. Setting up a good one during the startup won't be as effective as it will be visible from within the containers anyway.
