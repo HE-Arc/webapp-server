@@ -16,7 +16,7 @@ def application(environ, start_response):
         "<h2>ENV</h2>"
         "<dl>", *("<dt>{0}<dd>{1}".format(k, v)
                   for e in (environ, os.environ) for k, v in e.items()
-                  if k != "PASSWORD"), "</dl>")
+                  if k not in ("PASSWORD", "SECRET_KEY")), "</dl>")
     start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
 
     for data in body:
