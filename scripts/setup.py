@@ -195,7 +195,8 @@ def init_group(groupname, **kwargs):
                      "app/public")
 
         sys.stderr.write("Running Bundler installation.\n")
-        check_call(["gem", "install", "bundler"], env=kwargs["environ"])
+        check_call(
+            ["gem", "install", "bundler", "puma"], env=kwargs["environ"])
         os.chdir('app')
         check_call(
             ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
