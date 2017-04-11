@@ -5,7 +5,9 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update -q -y \
  && apt-get install -q -y \
+        libffi-dev \
         libpcre3-dev \
+        libssl-dev \
         uwsgi \
         uwsgi-plugin-python3 \
         uwsgi-plugin-asyncio-python3 \
