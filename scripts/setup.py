@@ -353,7 +353,10 @@ def main(argv):
             for student in map(StudentRecord._make, reader):
 
                 if 'LONE_WOLF' not in environ:
-                    groups = {student.team1.lower(), student.team2.lower()}
+                    groups = {
+                        t.strip().lower()
+                        for t in (student.team1, student.team2)
+                    }
                 else:
                     # '.' is bad for databases name.
                     groups = {student.email.replace('.', '_')}
