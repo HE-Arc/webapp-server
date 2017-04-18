@@ -3,10 +3,9 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG RUBY_VERSION=2.4
+ARG RUBY_VERSION=2.3
 
-RUN apt-add-repository ppa:brightbox/ruby-ng \
- && apt-get update -q -y \
+RUN apt-get update -q -y \
  && apt-get install -q -y \
         autoconf \
         imagemagick \
@@ -18,14 +17,19 @@ RUN apt-add-repository ppa:brightbox/ruby-ng \
         libyaml-dev \
         libxml2-dev \
         libxslt1-dev \
-        ruby-switch \
         ruby${RUBY_VERSION} \
         ruby${RUBY_VERSION}-dev \
  && apt-get clean \
- && ruby-switch --set ruby$RUBY_VERSION \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 RUN echo "gem: --no-document" > /etc/gemrc
+RUN update-alternatives \
+        --install /usr/bin/ruby ruby /usr/bin/ruby${RUBY_VERSION} 1 \
+        --slave /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                /usr/share/man/man1/ruby${RUBY_VERSION}.1.gz \
+        --slave /usr/bin/irb irb /usr/bin/irb${RUBY_VERSION} \
+        --slave /usr/bin/gem gem /usr/bin/gem${RUBY_VERSION} \
+        --slave /usr/bin/ri ri /usr/bin/ri${RUBY_VERSION}
 
 ## Runit
 COPY runit/puma.sh /etc/service/puma/run

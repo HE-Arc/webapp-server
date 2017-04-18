@@ -268,7 +268,7 @@ def main(argv):
     if config == "Laravel":
         environ["COMPOSER_HOME"] = "/var/www/.composer"
     elif config == "Rails":
-        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.4.0"
+        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.3.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(
             random.randrange(16**128))
     elif config == "Python":
@@ -368,8 +368,7 @@ def main(argv):
                     p = multiprocessing.Process(
                         target=init_user,
                         args=(username, groupname),
-                        kwargs=dict(
-                            environ=environ, **student._asdict()))
+                        kwargs=dict(environ=environ, **student._asdict()))
                     p.start()
                     p.join()
                     authorized_keys(username, student.github)
