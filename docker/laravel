@@ -3,15 +3,15 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG LC_ALL=C.UTF-8
 
 ARG PHP_VERSION=7.1
 
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C && \
-    add-apt-repository ppa:ondrej/php -y && \
-    apt-get update -q && \
-    apt-get upgrade -q -y --allow-unauthenticated && \
-    apt-get install -q -y --allow-unauthenticated \
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
+ && add-apt-repository ppa:ondrej/php -y \
+ && apt-get update -q \
+ && apt-get upgrade -q -y --allow-unauthenticated \
+ && apt-get install -q -y --allow-unauthenticated \
         php-apcu \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-cli \
@@ -19,6 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         php${PHP_VERSION}-intl \
         php${PHP_VERSION}-fpm \
         php${PHP_VERSION}-gd \
+        php-libsodium \
         php-imagick \
         php${PHP_VERSION}-imap \
         php${PHP_VERSION}-mbstring \
@@ -32,14 +33,16 @@ RUN DEBIAN_FRONTEND=noninteractive \
         php${PHP_VERSION}-xsl \
         php${PHP_VERSION}-zip \
         php-redis \
-        php-xdebug && \
-    apt-get autoremove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/tmp/*
+        php-xdebug \
+ && apt-get autoremove \
+ && apt-get clean \
+ && rm -rf \
+        /var/lib/apt/lists/* \
+        /var/tmp/*
 
 # Composer (but no Laravel)
-RUN curl -sS https://getcomposer.org/installer | \
-        sudo php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer \
+  | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 # PHP
 RUN mkdir -p /run/php \

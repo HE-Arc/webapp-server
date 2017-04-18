@@ -29,6 +29,10 @@ RUN apt-get update -q \
         curl \
         fontconfig \
         git \
+        language-pack-de-base \
+        language-pack-en-base \
+        language-pack-fr-base \
+        language-pack-it-base \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
         libsass-dev \
