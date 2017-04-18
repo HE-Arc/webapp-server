@@ -12,6 +12,7 @@ watch = true
 email = "yoan.blanc@he-arc.ch"
 storage = "/etc/traefik/acme/acme.json"
 onDemand = true
+onHostRule = true
 entryPoint = "https"
 
 [entryPoints]

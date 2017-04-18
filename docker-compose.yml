@@ -4,16 +4,16 @@ services:
   proxy:
     image: traefik:morbier-alpine
     hostname: proxy
-    domainname: srvz-webapp.he-arc.ch
+    domainname: docker.localhost
     volumes:
-      - ./traefik.toml:/etc/traefik/traefik.toml
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/etc/traefik/traefik.toml
       - proxy:/etc/traefik/acme
     ports:
       - "8080:8080"
       - "80:80"
       - "443:443"
-    command: -c /etc/treafik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
+    command: -c /etc/treafik/traefik.toml --docker.domain=docker.localhost
     labels:
       - "traefik.enable=false"
 
@@ -36,7 +36,7 @@ services:
       - mysql
       - smtp
     labels:
-      - "treafik.frontend.rule=Host:free.srvz-webapp.he-arc.ch"
+      - "traefik.frontend.rule=Host:free.docker.localhost"
       - "traefik.port=80"
 
   free_redis:
@@ -56,7 +56,6 @@ services:
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: python
-    domainname: srvz-webapp.he-arc.ch
     volumes:
       - python:/var/www
       - ./config:/root/config:ro
@@ -67,7 +66,7 @@ services:
       - mysql
       - smtp
     labels:
-      - "treafik.frontend.rule=Host:python.srvz-webapp.he-arc.ch"
+      - "treafik.frontend.rule=Host:python.docker.localhost"
       - "traefik.port=80"
 
   python_redis:
@@ -87,7 +86,6 @@ services:
       - PASSWORD=eatapp  # CHANGE ME
       - REPOSITORY=https://github.com/HE-Arc/EatApp
     hostname: eatapp
-    domainname: srvz-webapp.he-arc.ch
     volumes:
       - eatapp:/var/www
       - ./config:/root/config:ro
@@ -100,7 +98,7 @@ services:
     links:
       - eatapp_redis:redis
     labels:
-      - "treafik.frontend.rule=Host:eatapp.srvz-webapp.he-arc.ch"
+      - "treafik.frontend.rule=Host:eatapp.docker.localhost"
       - "traefik.port=80"
 
   eatapp_redis:
@@ -118,7 +116,6 @@ services:
       - GROUPNAME=capistrano
       - PASSWORD=capistrano  # CHANGE ME
     hostname: capistrano
-    domainname: srvz-webapp.he-arc.ch
     volumes:
       - capistrano:/var/www
       - ./config:/root/config:ro
@@ -130,6 +127,9 @@ services:
       - smtp
     links:
       - capistrano_redis:redis
+    labels:
+      - "treafik.frontend.rule=Host:capistrano.docker.localhost"
+      - "traefik.port=80"
 
   capistrano_redis:
     image: redis:3.2-alpine
