@@ -171,3 +171,9 @@ volumes:
   # rails
   capistrano:
   capistrano_redis:
+
+logging:
+  driver: "json-file"
+  log_opt:
+    max-size: "1M"
+    max-file: "100"
