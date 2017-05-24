@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
    # Free project
@@ -171,9 +171,3 @@ volumes:
   # rails
   capistrano:
   capistrano_redis:
-
-logging:
-  driver: "json-file"
-  log_opt:
-    max-size: "1M"
-    max-file: "100"

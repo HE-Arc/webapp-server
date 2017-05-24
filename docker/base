@@ -1,4 +1,4 @@
-FROM ubuntu:zesty
+FROM ubuntu:rolling
 LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -35,6 +35,7 @@ RUN apt-get update -q \
         language-pack-it-base \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
+        libpq-dev \
         libsass-dev \
         libsqlite3-dev \
         locales \
@@ -44,6 +45,7 @@ RUN apt-get update -q \
         nano \
         nginx \
         openssh-server \
+        postgresql-client-${POSTGRES_VERSION} \
         psmisc \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-venv \
@@ -67,20 +69,11 @@ RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} yakkety main" \
   > /etc/apt/sources.list.d/nodesource.list
 RUN wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
   | apt-key add -
-# PostgreSQL Apt Repository
-# https://www.postgresql.org/download/linux/ubuntu/
-#
-# (yakkety is not yet supported, so xenial)
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" \
-  > /etc/apt/sources.list.d/pgdg.list
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc \
-  | apt-key add -
+
 # Installation of external and “experimental” packages
 RUN apt-get update \
  && apt-get install -q -y \
-    libpq-dev \
     nodejs \
-    postgresql-client-${POSTGRES_VERSION} \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -93,7 +86,8 @@ RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
  && update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 # Python3
-RUN curl https://bootstrap.pypa.io/get-pip.py | python3 \
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 \
+ && curl https://bootstrap.pypa.io/get-pip.py | python3 \
  && python3 -m pip install --no-cache-dir jinja2
 
 ## Nginx
