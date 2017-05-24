@@ -12,6 +12,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
  && apt-get update -q \
  && apt-get upgrade -q -y --allow-unauthenticated \
  && apt-get install -q -y --allow-unauthenticated \
+        composer \
         php-apcu \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-cli \
@@ -39,10 +40,6 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
  && rm -rf \
         /var/lib/apt/lists/* \
         /var/tmp/*
-
-# Composer (but no Laravel)
-RUN curl -sS https://getcomposer.org/installer \
-  | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 # PHP
 RUN mkdir -p /run/php \
