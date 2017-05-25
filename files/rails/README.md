@@ -10,7 +10,7 @@ Ruby and gem are installed by default.
 
 ```
 $ ruby --version
-ruby 2.3
+ruby 2.4
 $ gem --version
 2.6.8
 ```

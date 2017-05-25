@@ -25,8 +25,9 @@ This is how this file is used:
 
 - _Lastname_ no particular usage
 - _Firstname_ becomes the username
+- _Email_ no particular usage
 - _Group_ no particular usage
-- _GitHub_ identifier to download the SSH public keys
+- _Github_ identifier to download the SSH public keys
 - _ImageX_ stores the information of which container to use
 - _TeamX_ will be the name of the virtual host and identify a container
 - _Comment_ no particular usage
@@ -58,7 +59,11 @@ $ scripts/team2_compose.py \
     index.html
 ```
 
+**TODO** `team2_compose.py` was intended for the second round of projects, one for the first one is still needed.
+
 ### Database creation
+
+Reusing the `docker-compose.yml` file, it builds
 
 ```shell
 $ script/bdd.py docker-compose.yml
@@ -100,9 +105,6 @@ The databases are open the external world, hence we must modify the super admin 
 Changing MySQL root password because the above value will be passed to each linked containers.
 
 ```shell
-# 5.6
-$ mysqladmin -h 127.0.0.1 -u root -p'root' password 's3cur3@P45sw0rd'
-
 # 5.7
 $ mysql -h 127.0.0.1 -u root -proot
 > SET PASSWORD FOR 'root'@'%' = PASSWORD('s3cur3@P45sw0rd');
