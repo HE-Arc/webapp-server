@@ -209,7 +209,7 @@ def init_group(groupname, **kwargs):
 
         sys.stderr.write("Running uwsgi installation.\n")
         check_call(
-            ["python3", "-m", "venv", "app/venv"], env=kwargs["environ"])
+            ["python3.6", "-m", "venv", "app/venv"], env=kwargs["environ"])
         check_call(
             ["app/venv/bin/pip", "--no-cache-dir", "install", "-U", "pip"],
             env=kwargs["environ"])

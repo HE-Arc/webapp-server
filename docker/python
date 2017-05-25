@@ -3,16 +3,35 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+ARG PYTHON_VERSION=3.6
+
 RUN apt-get update -q -y \
  && apt-get install -q -y \
+        libcap-dev \
         libffi-dev \
         libpcre3-dev \
         libssl-dev \
+        python${PYTHON_VERSION} \
+        python${PYTHON_VERSION}-dev \
+        python${PYTHON_VERSION}-venv \
+        uuid-dev \
         uwsgi \
+        uwsgi-src \
         uwsgi-plugin-python3 \
         uwsgi-plugin-asyncio-python3 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
+
+# Python
+RUN curl https://bootstrap.pypa.io/get-pip.py | python${PYTHON_VERSION}
+
+# uWSGI
+ARG PLUGIN=36
+# https://dev.to/pauloxnet/how-to-use-uwsgi-with-ptyhon36-in-ubuntu
+RUN PYTHON=python${PYTHON_VERSION} uwsgi \
+        --build-plugin "/usr/src/uwsgi/plugins/python python${PLUGIN}" \
+ && mv python${PLUGIN}_plugin.so /usr/lib/uwsgi/plugins/python${PLUGIN}_plugin.so \
+ && chmod 0644 /usr/lib/uwsgi/plugins/python${PLUGIN}_plugin.so
 
 ## Runit
 COPY runit/uwsgi.sh /etc/service/uwsgi/run

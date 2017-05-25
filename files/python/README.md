@@ -12,11 +12,11 @@ By default, the system comes with a virtual env and a simple WSGI application.
 $ cd /var/www/app
 $ source venv/bin/activate
 (venv)$ python --version
-Python 3.5.2+
+Python 3.6.3
 (venv)$ pip list
 pip (9.0.1)
 pkg-resources (0.0.0)
-setuptools (26.1.1)
+setuptools (33.1.1)
 ```
 
 The WSGI application is defined in the `wsgi.py` file. WSGI is the protocol between the application server and a Python application. The application server used is called uWSGI. A request is handled by Nginx which delegates it to uWSGI that manages various Python processes running you application.

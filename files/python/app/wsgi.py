@@ -14,9 +14,12 @@ def application(environ, start_response):
         "<h1>Hello Python!</h1>"
         "<p><img src=nginx-uwsgi.png alt='Powered by NGinx + uWSGI'>"
         "<h2>ENV</h2>"
-        "<dl>", *("<dt>{0}<dd>{1}".format(k, v)
-                  for e in (environ, os.environ) for k, v in e.items()
-                  if k not in ("PASSWORD", "SECRET_KEY")), "</dl>")
+        "<dl>",
+        *(f"<dt>{k}<dd>{v}"
+          for e in (environ, os.environ)
+          for k, v in e.items()
+          if k not in ("PASSWORD", "SECRET_KEY")),
+        "</dl>")
     start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
 
     for data in body:
