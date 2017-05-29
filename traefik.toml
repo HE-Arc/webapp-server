@@ -1,5 +1,9 @@
+#debug = true
 logLevel = "INFO"
 defaultEntryPoints = ["http", "https"]
+
+traefikLogsFile = "/proc/self/fd/1"
+accessLogsFile = "/proc/self/fd/1"
 
 [web]
 address = ":8080"
@@ -11,14 +15,16 @@ watch = true
 [acme]
 email = "yoan.blanc@he-arc.ch"
 storage = "/etc/traefik/acme/acme.json"
+acmeLogging = true
 onDemand = true
 onHostRule = true
 entryPoint = "https"
 
 [entryPoints]
-  [entryPoint.http]
-  address  =":80"
-    [entryPoint.http.redirect]
+  [entryPoints.http]
+  address =":80"
+    [entryPoints.http.redirect]
     entryPoint = "https"
-  [entryPoint.https]
+  [entryPoints.https]
   address = ":443"
+    [entryPoints.https.tls]

@@ -61,6 +61,8 @@ $ scripts/team2_compose.py \
 
 **TODO** `team2_compose.py` was intended for the second round of projects, one for the first one is still needed.
 
+**TODO** the generated docker-composer.yml doesn't take into account the Traefik setup in place.
+
 ### Database creation
 
 Reusing the `docker-compose.yml` file, it builds

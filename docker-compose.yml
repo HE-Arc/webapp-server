@@ -13,19 +13,19 @@ services:
       - "8080:8080"
       - "80:80"
       - "443:443"
-    command: -c /etc/treafik/traefik.toml --docker.domain=docker.localhost
+    command: -c /etc/traefik/traefik.toml --docker.domain=docker.localhost
     labels:
       - "traefik.enable=false"
 
    # Free project
 
-  free:
+  admin:
     image: greut/webapp-server:latest
     environment:
-      - GROUPNAME=free
+      - GROUPNAME=admin
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
-    hostname: free
+    hostname: admin
     volumes:
       - free:/var/www
       - ./config:/root/config:ro
@@ -36,23 +36,23 @@ services:
       - mysql
       - smtp
     labels:
-      - "traefik.frontend.rule=Host:free.docker.localhost"
+      - "traefik.frontend.rule=Host:admin.docker.localhost"
       - "traefik.port=80"
 
-  free_redis:
+  admin_redis:
     image: redis:3.2-alpine
     volumes:
-      - free_redis:/data
+      - admin_redis:/data
     labels:
       - "traefik.enable=false"
 
 
   # Python
 
-  python:
+  weblog:
     image: greut/webapp-server:python
     environment:
-      - GROUPNAME=free
+      - GROUPNAME=weblog
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: python
@@ -66,13 +66,13 @@ services:
       - mysql
       - smtp
     labels:
-      - "treafik.frontend.rule=Host:python.docker.localhost"
+      - "traefik.frontend.rule=Host:weblog.docker.localhost"
       - "traefik.port=80"
 
-  python_redis:
+  weblog_redis:
     image: redis:3.2-alpine
     volumes:
-      - python_redis:/data
+      - weblog_redis:/data
     labels:
       - "traefik.enable=false"
 
@@ -98,7 +98,7 @@ services:
     links:
       - eatapp_redis:redis
     labels:
-      - "treafik.frontend.rule=Host:eatapp.docker.localhost"
+      - "traefik.frontend.rule=Host:eatapp.docker.localhost"
       - "traefik.port=80"
 
   eatapp_redis:
@@ -128,7 +128,7 @@ services:
     links:
       - capistrano_redis:redis
     labels:
-      - "treafik.frontend.rule=Host:capistrano.docker.localhost"
+      - "traefik.frontend.rule=Host:capistrano.docker.localhost"
       - "traefik.port=80"
 
   capistrano_redis:
@@ -173,14 +173,14 @@ volumes:
   mysql:
   postgres:
   # base
-  free:
-  free_redis:
+  admin:
+  admin_redis:
   # laravel
   eatapp:
   eatapp_redis:
   # python
-  python:
-  python_redis:
+  weblog:
+  weblog_redis:
   # rails
   capistrano:
   capistrano_redis:
