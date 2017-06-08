@@ -1,4 +1,4 @@
-version: '3'
+version: '2.2'
 
 services:
   proxy:
@@ -21,13 +21,14 @@ services:
 
   admin:
     image: greut/webapp-server:latest
+    init: true
     environment:
       - GROUPNAME=admin
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: admin
     volumes:
-      - free:/var/www
+      - admin:/var/www
       - ./config:/root/config:ro
     ports:
       - "2222:22"
@@ -51,13 +52,14 @@ services:
 
   weblog:
     image: greut/webapp-server:python
+    init: true
     environment:
       - GROUPNAME=weblog
       - PASSWORD=root
       - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
     hostname: python
     volumes:
-      - python:/var/www
+      - weblog:/var/www
       - ./config:/root/config:ro
     ports:
       - "2223:22"
@@ -81,6 +83,7 @@ services:
 
   eatapp:
     image: greut/webapp-server:laravel
+    init: true
     environment:
       - GROUPNAME=eatapp
       - PASSWORD=eatapp  # CHANGE ME
@@ -112,6 +115,7 @@ services:
 
   capistrano:
     image: greut/webapp-server:rails
+    init: true
     environment:
       - GROUPNAME=capistrano
       - PASSWORD=capistrano  # CHANGE ME
