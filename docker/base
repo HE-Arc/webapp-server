@@ -6,15 +6,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG MYSQL_VERSION=5.7
 ARG NODEJS_VERSION=7.x
 ARG POSTGRES_VERSION=9.6
-ARG TINI_VERSION=0.14.0
-
-# Add Tini (reaping problem)
-ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
-RUN sig=`b2sum /tini | cut -d " " -f1` \
- && [ "$sig" = "816f84c4f17244f96e7c3063c74ae5ad8d3bf63722218b23863b73df5fae6d0430c02c0eea7d6d65c6c7a5f3453c3c736fd0ed96ac1f758974693705b3199039" ] \
-&& chmod +x /tini \
- || exit 1
-ENTRYPOINT ["/tini", "--"]
 
 # All the packages.
 RUN apt-get update -q \
