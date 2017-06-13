@@ -64,7 +64,7 @@ def main(argv):
             if 'hostname' not in description:
                 continue
 
-            groupname = description['environment']['GROUPNAME']
+            groupname = description['environment']['GROUPNAME'].lower()
             password = description['environment']['PASSWORD']
 
             print(groupname)
@@ -84,7 +84,7 @@ def main(argv):
             if p.returncode != 0:
                 print(err.decode('utf-8'), end='', file=sys.stderr)
             else:
-                print("MySQL databases created.")
+                print("MySQL database {} created.".format(groupname))
                 #print(out.decode('utf-8'), end='')
 
             with tempfile.NamedTemporaryFile() as fp:
@@ -112,7 +112,7 @@ def main(argv):
                 if p.returncode != 0:
                     print(err.decode('utf-8'), end='', file=sys.stderr)
                 else:
-                    print("Postgresql {} created.".format(txt))
+                    print("Postgresql database {} created.".format(groupname))
                     #print(out.decode('utf-8'), end='')
 
             print("")
