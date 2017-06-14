@@ -96,7 +96,8 @@ Run the container(s)
 docker-compose up -d
 ```
 
-Traefik control dashboard runs on port 8080.
+- Traefik control dashboard runs on port 8080.
+- Portainer control dashboard runs on port 80, `/portainer`.
 
 ### Databases
 
