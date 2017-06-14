@@ -17,6 +17,16 @@ services:
     labels:
       - "traefik.enable=false"
 
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    labels:
+      - "traefik.backend=portainer"
+      - "traefik.frontend.rule=PathPrefixStrip:/portainer"
+      - "traefik.port=9000"
+
    # Free project
 
   admin:
@@ -174,6 +184,7 @@ services:
 
 volumes:
   proxy:
+  portainer:
   mysql:
   postgres:
   # base
