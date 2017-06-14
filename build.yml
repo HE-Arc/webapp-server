@@ -1,27 +1,49 @@
+# This file is only intended to be used for building the images.
+
 version: '3'
 
 services:
 
   base:
-    image: greut/webapp-server:latest
+    image: hearcch/webapp-server:latest
     build:
       dockerfile: docker/base
       context: .
+      # Set VCS/BUILD manually or use the Makefile.
+      args:
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - MYSQL_VERSION=5.7
+        - NODE_VERSION=8.x
+        - POSTGRES_VERSION=9.6
 
   laravel:
-    image: greut/webapp-server:laravel
+    image: hearcch/webapp-server:laravel
     build:
       dockerfile: docker/laravel
       context: .
+      args:
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - PHP_VERSION=7.1
 
   rails:
-    image: greut/webapp-server:rails
+    image: hearcch/webapp-server:rails
     build:
       dockerfile: docker/rails
       context: .
+      args:
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - RUBY_VERSION=2.4
 
   python:
-    image: greut/webapp-server:python
+    image: hearcch/webapp-server:python
     build:
       dockerfile: docker/python
       context: .
+      args:
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - PYTHON_VERSION=3.6
+        - UWSGI_PLUGIN_NAME=36

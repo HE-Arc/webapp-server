@@ -75,7 +75,7 @@ version: "2"
 services:
 {%- for user in users %}
   {{ user.machine }}:
-    image: greut/webapp-server:rails
+    image: hearcch/webapp-server:rails
     environment:
       GROUPNAME: "{{ user.groupname }}"
       PASSWORD: "{{ user.password }}"

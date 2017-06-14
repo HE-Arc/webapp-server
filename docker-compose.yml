@@ -30,7 +30,7 @@ services:
    # Free project
 
   admin:
-    image: greut/webapp-server:latest
+    image: hearcch/webapp-server:latest
     init: true
     environment:
       - GROUPNAME=admin
@@ -61,7 +61,7 @@ services:
   # Python
 
   weblog:
-    image: greut/webapp-server:python
+    image: hearcch/webapp-server:python
     init: true
     environment:
       - GROUPNAME=weblog
@@ -92,7 +92,7 @@ services:
   # PHP project.
 
   eatapp:
-    image: greut/webapp-server:laravel
+    image: hearcch/webapp-server:laravel
     init: true
     environment:
       - GROUPNAME=eatapp
@@ -124,7 +124,7 @@ services:
   # Ruby on Rails project
 
   capistrano:
-    image: greut/webapp-server:rails
+    image: hearcch/webapp-server:rails
     init: true
     environment:
       - GROUPNAME=capistrano

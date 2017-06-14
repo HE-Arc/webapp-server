@@ -96,7 +96,7 @@ version: "2"
 services:
 {%- for team in teams %}
   {{ team.machine }}:
-    image: greut/webapp-server:{{ team.image }}
+    image: hearcch/webapp-server:{{ team.image }}
     environment:
       GROUPNAME: "{{ team.groupname }}"
       PASSWORD: "{{ team.password }}"

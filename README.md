@@ -1,6 +1,6 @@
 # WebApp Server
 
-[![Join the chat at https://gitter.im/HE-Arc/webapp-server](https://badges.gitter.im/HE-Arc/webapp-server.svg)](https://gitter.im/HE-Arc/webapp-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/HE-Arc/webapp-server](https://badges.gitter.im/HE-Arc/webapp-server.svg)](https://gitter.im/HE-Arc/webapp-server) [![](https://images.microbadger.com/badges/image/hearcch/webapp-server.svg)](https://microbadger.com/images/hearcch/webapp-server)
 
 The setup scripts to create development environments for many groups.
 
@@ -73,17 +73,17 @@ $ script/bdd.py docker-compose.yml
 
 ## Containers
 
-If you don't want to use the [publicly available containers](https://hub.docker.com/r/greut/webapp-server/), you can build them yourself.
+If you don't want to use the [publicly available containers](https://hub.docker.com/r/hearcch/webapp-server/), you can build them yourself.
 
 ```
 # Base container
-$ docker-compose -f build.yml build base
+$ make base
 # Laravel container
-$ docker-compose -f build.yml build laravel
+$ make laravel
 # Python container
-$ docker-compose -f build.yml build python
+$ make python
 # Rails container
-$ docker-compose -f build.yml build rails
+$ make rails
 ```
 
 ## Run via docker-compose
