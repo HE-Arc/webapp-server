@@ -99,15 +99,15 @@ RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
  && update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
 
 
-## Nginx
-ARG f=/etc/nginx/nginx.conf
-RUN rm /etc/nginx/sites-enabled/default \
+## NGINX
+RUN f=/etc/nginx/nginx.conf \
+ && rm /etc/nginx/sites-enabled/default \
  && rm -r /var/www/html \
     # auto worker processes and no daemonize (for runit)
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
-    # logs to stdout
- && sed -i 's/\/var\/log\/nginx\/access.log/\/dev\/stdout/' $f \
- && sed -i 's/\/var\/log\/nginx\/error.log/\/dev\/stdout/' $f
+    # logs to user directory
+ && sed -i 's/\/var\/log\/nginx\/access.log/\/var\/www\/logs\/nginx_access.log/' $f \
+ && sed -i 's/\/var\/log\/nginx\/error.log/\/var\/www\/logs\/nginx_error.log/' $f
 
 # SSMTP
 # mailhub configuration is done by setup.py
@@ -122,29 +122,45 @@ RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
 # * Disallow TCP forwarding
 # * Delete any configured host keys (boot.sh)
 #
-ARG f=/etc/ssh/sshd_config
-RUN mkdir /var/run/sshd \
+
+RUN f=/etc/ssh/sshd_config \
+ && mkdir /var/run/sshd \
  && sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $f \
  && sed -i 's/^AllowTcpForwarding yes/AllowTcpForwarding no/' $f \
  && rm -v /etc/ssh/ssh_host_*
 
 # Syslog
 #
-# * Output all the things to stdout!
-#
-ARG f=/etc/syslog-ng/syslog-ng.conf
-RUN sed -i 's/system()/#system()/' $f \
+RUN f=/etc/syslog-ng/syslog-ng.conf \
+ && sed -i 's/system()/#system()/' $f \
  && sed -i 's/^\(# The root\)/# Stdout\/Stderr\n\n\1/' $f \
- && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/dev\/stdout"); };\n\1/' $f \
- && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/dev\/stderr"); };\n\n\1/' $f \
+ && sed -i 's/^\(# The root\)/destination d_stdout { pipe("\/var\/www\/logs\/syslog.out.log"); };\n\1/' $f \
+ && sed -i 's/^\(# The root\)/destination d_stderr { pipe("\/var\/www\/logs\/syslog.err.log"); };\n\n\1/' $f \
  && sed -i 's/\(destination\)(d_[^)]*)/\1(d_stdout)/g' $f \
  && sed -i 's/\(filter(f_console);\)\s*destination(d_stdout);/\1/g' $f
 
 #
+# Create the user
+#
+RUN useradd ${USERNAME} \
+        --user-group \
+        --shell /bin/bash
+ENV HOME /home/${USERNAME}
+WORKDIR /home/${USERNAME}
+COPY files/base/gitconfig .gitconfig
+COPY files/base/bash_profile .bash_profile
+COPY files/base/README.md README
+RUN ln -s /var/www www \
+ && mkdir .ssh \
+ && chmod 0700 .ssh \
+ && chown -R ${USERNAME}:${USERNAME} ./
+
+#
 # SUDO for any user
 #
-RUN echo '%users ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/users
+RUN echo "%${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/users
 RUN chmod 0440 /etc/sudoers.d/users
+
 
 # Templates
 COPY files/base /var/templates/base

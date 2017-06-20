@@ -1,21 +1,6 @@
 #!/bin/bash
-{# vim: set ft=jinja: -#}
 
-{% for k, v in environ.items() -%}
-  {%- if "." not in k and ":" not in k and k not in ("PATH", "UID") %}
-export {{ k }}='{{ v }}'
-  {%- endif -%}
-{% endfor %}
 export PATH=$PATH:/usr/games/
-export DEBIAN_FRONTEND=noninteractive
-
-{% if environ.CONFIG == "Laravel" -%}
-export PATH+=:$COMPOSER_HOME/vendor/bin
-{% elif environ.CONFIG == "Rails" -%}
-export PATH+=:$GEM_HOME/bin
-{% elif environ.CONFIG == "Python" -%}
-export PATH+=:$PYTHONUSERBASE/bin
-{% endif -%}
 
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
@@ -31,8 +16,6 @@ echo " :!:  !:!  :!:                  :!:  !:!  :!:  !:!  :!:"
 echo " ::   :::   :: ::::             ::   :::  ::   :::   ::: :::"
 echo "  :   : :  : :: ::               :   : :   :   : :   :: :: :"
 echo ""
-echo ""
-echo "   Welcome {{ firstname }} {{ lastname }} ({{ classname }})!"
 echo ""
 echo "   Please checkout the README.md file for all the details!"
 echo ""
