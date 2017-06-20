@@ -1,20 +1,33 @@
 FROM ubuntu:rolling
 
-ARG BUILD_DATE
-ARG VCS_REF
-
 ARG MYSQL_VERSION
 ARG NODEJS_VERSION
 ARG POSTGRES_VERSION
-
-LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>" \
-      org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.vendor="HE-Arc" \
-      org.label-schema.vcs-ref=${VCS_REF} \
-      org.label-schema.vcs-url="https://github.com/HE-Arc/webapp-server" \
-      org.label-schema.schema-version="1.0"
+ARG TINI_VERSION
+ARG TINI_SIG
 
 ARG DEBIAN_FRONTEND=noninteractive
+
+ARG USERNAME=poweruser
+
+# Ports
+EXPOSE 22 80
+
+# Config
+ENV GROUPNAME unknown
+ENV CONFIG Base
+
+
+# Add Tini (reaping problem)
+ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
+RUN sig=`b2sum /tini | cut -d " " -f1` \
+ && [ "$sig" = "${TINI_SIG}" ] \
+ && chmod +x /tini \
+ || exit 1
+
+ENTRYPOINT ["/tini", "--"]
+
+CMD [ "/usr/local/bin/boot.sh" ]
 
 # All the packages.
 RUN apt-get update -q \
@@ -157,16 +170,18 @@ COPY files/base/vhost.logrotate /etc/logrotate.d/
 VOLUME /root/config \
     /var/www
 
-# Ports
-EXPOSE 22 80
-
 # Set correct environment variables.
 ENV HOME /root
 
-# Config
-ENV GROUPNAME unknown
-ENV CONFIG Base
+# This changes everytime so... the end is better.
+ARG BUILD_DATE
+ARG VCS_REF
 
-CMD [ "/usr/local/bin/boot.sh" ]
+LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>" \
+      org.label-schema.build-date=${BUILD_DATE} \
+      org.label-schema.vendor="HE-Arc" \
+      org.label-schema.vcs-ref=${VCS_REF} \
+      org.label-schema.vcs-url="https://github.com/HE-Arc/webapp-server" \
+      org.label-schema.schema-version="1.0"
 
 # vim: ft=dockerfile:

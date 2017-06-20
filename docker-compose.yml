@@ -1,4 +1,4 @@
-version: '2.2'
+version: '3.2'
 
 services:
   proxy:
@@ -31,7 +31,6 @@ services:
 
   admin:
     image: hearcch/webapp-server:latest
-    init: true
     environment:
       - GROUPNAME=admin
       - PASSWORD=root
@@ -62,7 +61,6 @@ services:
 
   weblog:
     image: hearcch/webapp-server:python
-    init: true
     environment:
       - GROUPNAME=weblog
       - PASSWORD=root
@@ -93,7 +91,6 @@ services:
 
   eatapp:
     image: hearcch/webapp-server:laravel
-    init: true
     environment:
       - GROUPNAME=eatapp
       - PASSWORD=eatapp  # CHANGE ME
@@ -125,7 +122,6 @@ services:
 
   capistrano:
     image: hearcch/webapp-server:rails
-    init: true
     environment:
       - GROUPNAME=capistrano
       - PASSWORD=capistrano  # CHANGE ME
