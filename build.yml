@@ -14,8 +14,10 @@ services:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
         - MYSQL_VERSION=5.7
-        - NODE_VERSION=8.x
+        - NODEJS_VERSION=8.x
         - POSTGRES_VERSION=9.6
+        - TINI_VERSION=0.14.0
+        - TINI_SIG=816f84c4f17244f96e7c3063c74ae5ad8d3bf63722218b23863b73df5fae6d0430c02c0eea7d6d65c6c7a5f3453c3c736fd0ed96ac1f758974693705b3199039
 
   laravel:
     image: hearcch/webapp-server:laravel
