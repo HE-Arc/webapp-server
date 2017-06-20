@@ -108,11 +108,6 @@ def init_group(groupname, **kwargs):
                  ("python/config/uwsgi.ini", "config/uwsgi.ini"),
                  ("python/app/wsgi.py", "app/wsgi.py"))
 
-    else:
-        dirs.append("public")
-
-        paths = (("base/config/nginx.conf", "config/nginx.conf"),
-                 ("base/public/index.html", "public/index.html"))
 
     for p in dirs:
         if not os.path.exists(p):
@@ -196,15 +191,6 @@ def main(argv):
         with open("/etc/container_environment/{0}".format(k), "w+") as f:
             f.write(v)
 
-    # Configure SSMTP
-    subprocess.check_call(
-        [
-            "sed", "-i", "s/mailhub=mail/mailhub=smtp:1025/",
-            "/etc/ssmtp/ssmtp.conf"
-        ],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE)
-
     # Init the group files
     p = multiprocessing.Process(
         target=init_group, args=(poweruser, ), kwargs=dict(environ=environ))
@@ -212,16 +198,6 @@ def main(argv):
     p.join()
 
     assert p.exitcode == 0, "init_group failed."
-
-    # symlink the server config
-    os.symlink("/var/www/config/nginx.conf",
-               "/etc/nginx/sites-enabled/{}".format(groupname))
-
-    # symlink the php-fpm config
-    if os.path.exists("/etc/php/7.1/fpm/pool.d/www.conf"):
-        os.unlink("/etc/php/7.1/fpm/pool.d/www.conf")
-        os.symlink("/var/www/config/php-fpm.conf",
-                   "/etc/php/7.1/fpm/pool.d/www.conf")
 
     # Create users
     if (os.path.exists(STUDENTS)):
