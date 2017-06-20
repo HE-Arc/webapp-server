@@ -98,17 +98,6 @@ def init_group(groupname, **kwargs):
                  ("rails/app/Gemfile", "app/Gemfile"),
                  ("rails/app/config.ru", "app/config.ru"))
 
-    elif config == "Python":
-        dirs.append("app/public")
-        dirs.append("app/venv")
-        dirs.append("app/tmp")
-        dirs.append(kwargs["environ"]["PYTHONUSERBASE"])
-
-        paths = (("python/config/nginx.conf", "config/nginx.conf"),
-                 ("python/config/uwsgi.ini", "config/uwsgi.ini"),
-                 ("python/app/wsgi.py", "app/wsgi.py"))
-
-
     for p in dirs:
         if not os.path.exists(p):
             os.makedirs(p)
@@ -129,17 +118,6 @@ def init_group(groupname, **kwargs):
             ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
             env=kwargs["environ"])
         os.chdir(homedir)
-
-    elif config == "Python":
-        shutil.copy2("/var/templates/python/app/public/nginx-uwsgi.png",
-                     "app/public")
-
-        sys.stderr.write("Running uwsgi installation.\n")
-        check_call(
-            ["python3.6", "-m", "venv", "app/venv"], env=kwargs["environ"])
-        check_call(
-            ["app/venv/bin/pip", "--no-cache-dir", "install", "-U", "pip"],
-            env=kwargs["environ"])
 
     return homedir, uid, gid
 
@@ -177,7 +155,6 @@ def main(argv):
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(
             random.randrange(16**128))
     elif config == "Python":
-        environ["PYTHONUSERBASE"] = "/var/www/.local"
         environ["SECRET_KEY"] = "{:0128x}".format(random.randrange(16**128))
 
     if os.path.exists('/etc/container_environment'):
