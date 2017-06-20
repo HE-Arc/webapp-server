@@ -1,10 +1,5 @@
-{# vim: set ft=jinja: -#}
-[user]
-    email = {{ email }}@he-arc.ch
-    name = {{ firstname }} {{ lastname }}
 [credentials "https://github.com"]
     helper = store
-    username = {{ github }}
 [push]
     default = simple
 [color]
