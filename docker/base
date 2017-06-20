@@ -110,8 +110,9 @@ RUN f=/etc/nginx/nginx.conf \
  && sed -i 's/\/var\/log\/nginx\/error.log/\/var\/www\/logs\/nginx_error.log/' $f
 
 # SSMTP
-# mailhub configuration is done by setup.py
-RUN sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' /etc/ssmtp/ssmtp.conf
+RUN f=/etc/ssmtp/ssmtp.conf \
+ && sed -i 's/#FromLineOverride=YES/FromLineOverride=YES/' $f \
+ && sed -i 's/mailhub=mail/mailhub=smtp:1025/' $f
 
 # Cron
 RUN sed -i 's/^\(SHELL=\)/MAILTO=""\n\1/' /etc/crontab
@@ -171,12 +172,14 @@ COPY runit/nginx.sh /etc/service/nginx/run
 COPY runit/sshd.sh /etc/service/sshd/run
 COPY runit/syslog.sh /etc/service/syslog/run
 COPY scripts/boot.sh /usr/local/bin/boot.sh
+COPY scripts/Base.sh /usr/local/bin/Base.sh
 COPY scripts/setup.py /usr/local/bin/setup.py
 RUN chmod +x /etc/service/cron/run \
  && chmod +x /etc/service/nginx/run \
  && chmod +x /etc/service/sshd/run \
  && chmod +x /etc/service/syslog/run \
  && chmod o+x /usr/local/bin/boot.sh \
+ && chmod o+x /usr/local/bin/Base.sh \
  && chmod o+x /usr/local/bin/setup.py
 
 # Logrotate
