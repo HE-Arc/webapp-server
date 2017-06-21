@@ -13,7 +13,6 @@ import os
 import csv
 import sys
 import pwd
-import random
 
 from collections import namedtuple
 from jinja2 import Environment, FileSystemLoader
@@ -52,31 +51,7 @@ def main(argv):
     environ = os.environ
 
     groupname = environ["GROUPNAME"]
-    config = environ["CONFIG"]
     poweruser = environ.get("POWERUSER", "poweruser")
-
-    # Global environment "variables"
-    environ["MYSQL_HOST"] = environ.get("MYSQL_HOST", "mysql")
-    environ["MYSQL_PORT"] = environ.get("MYSQL_PORT", "3306")
-    environ["POSTGRES_HOST"] = environ.get("POSTGRES_HOST", "postgres")
-    environ["POSTGRES_PORT"] = environ.get("POSTGRES_PORT", "5432")
-    environ["REDIS_HOST"] = environ.get("REDIS_HOST", "redis")
-    environ["REDIS_PORT"] = environ.get("REDIS_PORT", "6379")
-    environ["SMTP_HOST"] = environ.get("SMTP_HOST", "smtp")
-    environ["SMTP_PORT"] = environ.get("SMTP_PORT", "1025")
-
-    if config == "Rails":
-        environ["SECRET_KEY_BASE"] = "{:0128x}".format(
-            random.randrange(16**128))
-    elif config == "Python":
-        environ["SECRET_KEY"] = "{:0128x}".format(random.randrange(16**128))
-
-    os.mkdir("/etc/container_environment")
-    for k, v in environ.items():
-        if k == "HOME":
-            continue
-        with open("/etc/container_environment/{0}".format(k), "w+") as f:
-            f.write(v)
 
     # Create users
     if (os.path.exists(STUDENTS)):
