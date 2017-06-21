@@ -58,10 +58,9 @@ if [ ! -d /var/www/config ]
 
     for u in $SSH_KEYS
     do
-        if [ -f "/root/config/keys/$u.key" ]
-        then
-            cat "/root/config/keys/$u.key" >> /home/$username/.ssh/authorized_keys
-        fi
+        curl https://api.github.com/users/$u/keys \
+            | jq -r ".[]|.key+\" \"+(.id|tostring)+\"@$u\"" \
+            | tee -a /home/$username/.ssh/authorized_keys
     done
 
     # enable nginx

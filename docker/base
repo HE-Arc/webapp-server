@@ -12,6 +12,9 @@ ARG USERNAME=poweruser
 
 # Ports
 EXPOSE 22 80
+# Volumes
+VOLUME /var/www
+
 
 # Config
 ENV GROUPNAME unknown
@@ -41,6 +44,7 @@ RUN apt-get update -q \
         curl \
         fontconfig \
         git \
+        jq \
         language-pack-de-base \
         language-pack-en-base \
         language-pack-fr-base \
@@ -99,7 +103,7 @@ RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
 ## NGINX
 RUN f=/etc/nginx/nginx.conf \
  && rm /etc/nginx/sites-enabled/default \
- && rm -r /var/www/html \
+ && rm -rf /var/www/html \
     # auto worker processes and no daemonize (for runit)
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
     # logs to user directory
@@ -180,10 +184,6 @@ RUN chmod +x /etc/service/cron/run \
 
 # Logrotate
 COPY files/base/vhost.logrotate /etc/logrotate.d/
-
-# Expose VOLUME
-VOLUME /root/config \
-    /var/www
 
 # Set correct environment variables.
 ENV HOME /root
