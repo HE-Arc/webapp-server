@@ -2,10 +2,13 @@
 
 set -xe
 
-# regen SSH keys on each boot.
+# regen SSH keys / passwords on each boot.
 if [ 0 -eq `ls /etc/ssh/ssh_host_* | wc -l` ]
     then
     dpkg-reconfigure openssh-server
+
+    # randomize the password
+    pwgen 64 1 | chpasswd $username:$username
 fi
 
 # pre-setup
@@ -15,7 +18,7 @@ if [ ! -d /var/www/config ]
     mkdir /var/www/logs
 
     # global config
-    ${CONFIG}.sh
+    chpst -u $username ${CONFIG}.sh
 
     username=poweruser
 

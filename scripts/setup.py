@@ -14,9 +14,6 @@ import csv
 import sys
 import pwd
 import random
-import shutil
-import subprocess
-import multiprocessing
 
 from collections import namedtuple
 from jinja2 import Environment, FileSystemLoader
@@ -31,11 +28,6 @@ StudentRecord = namedtuple(
     "StudentRecord", "lastname, firstname, email, classname, github, "
     "image1, team1, image2, team2, comment, week"
 )
-
-
-
-def check_call(command, env, stderr=sys.stderr, stdout=sys.stderr):
-    subprocess.check_call(command, env=env, stderr=stderr, stdout=stdout)
 
 
 def authorized_keys(username, github):
@@ -53,74 +45,6 @@ def authorized_keys(username, github):
         os.chmod(authorized_keys, mode=0o0600)
     else:
         sys.stderr.write("No public key for {}!\n".format(github))
-
-
-def init_group(groupname, **kwargs):
-    """Init the group as the user representing it."""
-    p = pwd.getpwnam(groupname)
-    uid, gid = p.pw_uid, p.pw_gid
-    homedir = p.pw_dir
-
-    os.initgroups(groupname, gid)
-    os.setgid(gid)
-    os.setuid(uid)
-    os.chdir(wwwdir)
-
-    # Randomize the password, for good measure.
-    proc = subprocess.Popen(
-        ["chpasswd"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
-    password = "{:064x}".format(random.randrange(16**64))
-    proc.communicate("{}:{}".format(groupname, password).encode('utf-8'))
-
-    config = kwargs["environ"].get("CONFIG", None)
-    environ = kwargs["environ"].copy()
-    environ["HOME"] = homedir
-
-    paths = []
-    dirs = ["config", "logs"]
-
-    if config == "Rails":
-        dirs.append("app/public")
-        dirs.append(kwargs["environ"]["GEM_HOME"])
-
-        paths = (("rails/config/nginx.conf", "config/nginx.conf"),
-                 ("rails/config/puma.rb", "config/puma.rb"),
-                 ("rails/app/Gemfile", "app/Gemfile"),
-                 ("rails/app/config.ru", "app/config.ru"))
-
-    for p in dirs:
-        if not os.path.exists(p):
-            os.makedirs(p)
-
-    for tpl, dest in paths:
-        if not os.path.exists(dest):
-            render(tpl, dest, groupname=groupname, **kwargs)
-
-    if config == "Rails":
-        shutil.copy2("/var/templates/rails/app/public/nginx-puma.png",
-                     "app/public")
-
-        sys.stderr.write("Running Bundler installation.\n")
-        check_call(
-            ["gem", "install", "bundler", "puma"], env=kwargs["environ"])
-        os.chdir('app')
-        check_call(
-            ["{0}/bin/bundler".format(environ["GEM_HOME"]), "install"],
-            env=kwargs["environ"])
-        os.chdir(homedir)
-
-    return homedir, uid, gid
-
-
-def render(template, path, **kwargs):
-    """Render a Jinja2 template into the given file."""
-    if not os.path.exists(path):
-        template = env.get_template(template)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(template.render(**kwargs))
 
 
 def main(argv):
@@ -142,15 +66,10 @@ def main(argv):
     environ["SMTP_PORT"] = environ.get("SMTP_PORT", "1025")
 
     if config == "Rails":
-        environ["GEM_HOME"] = "/var/www/.gem/ruby/2.4.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(
             random.randrange(16**128))
     elif config == "Python":
         environ["SECRET_KEY"] = "{:0128x}".format(random.randrange(16**128))
-
-    if os.path.exists('/etc/container_environment'):
-        sys.stderr.write("Setup was done earlier.\n")
-        return 0
 
     os.mkdir("/etc/container_environment")
     for k, v in environ.items():
@@ -158,14 +77,6 @@ def main(argv):
             continue
         with open("/etc/container_environment/{0}".format(k), "w+") as f:
             f.write(v)
-
-    # Init the group files
-    p = multiprocessing.Process(
-        target=init_group, args=(poweruser, ), kwargs=dict(environ=environ))
-    p.start()
-    p.join()
-
-    assert p.exitcode == 0, "init_group failed."
 
     # Create users
     if (os.path.exists(STUDENTS)):
