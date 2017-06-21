@@ -18,7 +18,7 @@ VOLUME /var/www
 
 # Config
 ENV GROUPNAME unknown
-ENV CONFIG Base
+ENV CONFIG base
 
 
 # Add Tini (reaping problem)
@@ -174,13 +174,11 @@ COPY runit/nginx.sh /etc/service/nginx/run
 COPY runit/sshd.sh /etc/service/sshd/run
 COPY runit/syslog.sh /etc/service/syslog/run
 COPY scripts/boot.sh /usr/local/bin/boot.sh
-COPY scripts/Base.sh /usr/local/bin/Base.sh
 RUN chmod +x /etc/service/cron/run \
  && chmod +x /etc/service/nginx/run \
  && chmod +x /etc/service/sshd/run \
  && chmod +x /etc/service/syslog/run \
- && chmod o+x /usr/local/bin/boot.sh \
- && chmod o+x /usr/local/bin/Base.sh
+ && chmod o+x /usr/local/bin/boot.sh
 
 # Logrotate
 COPY files/base/vhost.logrotate /etc/logrotate.d/
