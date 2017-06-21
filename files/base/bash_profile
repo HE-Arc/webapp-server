@@ -1,5 +1,10 @@
 #!/bin/bash
 
+for f in `ls /etc/container_environment`
+do
+  export $f=`cat /etc/container_environment/$f`
+done
+
 export PATH=$PATH:/usr/games/
 
 # If not running interactively, don't do anything
