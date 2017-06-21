@@ -2,6 +2,7 @@
 
 set -xe
 
+cp /var/templates/base/README.md /var/www/
 cp /var/templates/python/config/nginx.conf /var/www/config/nginx.conf
 cp /var/templates/python/config/uwsgi.ini /var/www/config/uwsgi.ini
 cp -r /var/templates/python/app /var/www/app

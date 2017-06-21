@@ -29,14 +29,8 @@ if [ ! -d /var/www/config ]
     # create the users and finalize the setup.
     /usr/local/bin/setup.py
 
-    # enabled nginx
+    # enable nginx
     ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
-
-    # configure php
-    if [ -f "/etc/php/7.1/fpm/pool.d/www.conf" ]; then
-        mv /etc/php/7.1/fpm/pool.d/www.conf /etc/php/7.1/fpm/pool.d/www.conf.old
-        ln -s /var/www/config/php-fpm.conf /etc/php/7.1/fpm/pool.d/www.conf
-    fi
 fi
 
 exec /usr/bin/runsvdir -P /etc/service

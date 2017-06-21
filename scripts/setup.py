@@ -82,14 +82,7 @@ def init_group(groupname, **kwargs):
     paths = []
     dirs = ["config", "logs"]
 
-    if config == "Laravel":
-        dirs.append("public")
-
-        paths = (("laravel/app/index.php", "public/index.php"),
-                 ("laravel/config/php-fpm.conf", "config/php-fpm.conf"),
-                 ("laravel/config/nginx.conf", "config/nginx.conf"))
-
-    elif config == "Rails":
+    if config == "Rails":
         dirs.append("app/public")
         dirs.append(kwargs["environ"]["GEM_HOME"])
 
@@ -148,9 +141,7 @@ def main(argv):
     environ["SMTP_HOST"] = environ.get("SMTP_HOST", "smtp")
     environ["SMTP_PORT"] = environ.get("SMTP_PORT", "1025")
 
-    if config == "Laravel":
-        environ["COMPOSER_HOME"] = "/var/www/.composer"
-    elif config == "Rails":
+    if config == "Rails":
         environ["GEM_HOME"] = "/var/www/.gem/ruby/2.4.0"
         environ["SECRET_KEY_BASE"] = "{:0128x}".format(
             random.randrange(16**128))

@@ -1,7 +1,6 @@
 <?php
-{# vim: set ft=jinja: -#}
 
-// Hello {{ groupname }}!
+// Hello!
 //
 // This is your first PHP page that proves that everything works just fine.
 //
@@ -77,8 +76,8 @@ try {
 
 // Sending emails
 mail(
-  "{{ groupname }}@example.org",
-  "{{ groupname }}",
+  "no-reply@example.org",
+  gethostname(),
   "Hello World!"
 );
 
