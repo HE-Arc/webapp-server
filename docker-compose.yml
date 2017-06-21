@@ -39,7 +39,6 @@ services:
     hostname: admin
     volumes:
       - admin:/var/www
-      - ./config:/root/config:ro
     ports:
       - "2222:22"
     depends_on:
@@ -70,7 +69,6 @@ services:
     hostname: python
     volumes:
       - weblog:/var/www
-      - ./config:/root/config:ro
     ports:
       - "2223:22"
     depends_on:
@@ -101,7 +99,6 @@ services:
     hostname: eatapp
     volumes:
       - eatapp:/var/www
-      - ./config:/root/config:ro
     ports:
       - "2224:22"
     depends_on:
@@ -132,7 +129,6 @@ services:
     hostname: capistrano
     volumes:
       - capistrano:/var/www
-      - ./config:/root/config:ro
     ports:
       - "2225:22"
     depends_on:
