@@ -43,9 +43,7 @@ RUN chmod o+x /usr/local/bin/Python.sh
 # Develop
 #COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
-#COPY scripts/setup.py /usr/local/bin/setup.py
-#RUN chmod o+x /usr/local/bin/boot.sh \
-# && chmod +x /usr/local/bin/setup.py
+#RUN chmod o+x /usr/local/bin/boot.sh
 
 
 # Config

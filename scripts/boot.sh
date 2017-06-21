@@ -56,9 +56,13 @@ if [ ! -d /var/www/config ]
     chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
     chmod 0600 /home/$username/.pgpass
 
-    # create the users and finalize the setup.
-
-    /usr/local/bin/setup.py
+    for u in $SSH_KEYS
+    do
+        if [ -f "/root/config/keys/$u.key" ]
+        then
+            cat "/root/config/keys/$u.key" >> /home/$username/.ssh/authorized_keys
+        fi
+    done
 
     # enable nginx
     ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
