@@ -51,7 +51,7 @@ if [ ! -d /var/www/config ]
     find /var/www -group root -exec chgrp -h $gid {} \;
 
     # global config
-    chpst -u $username ${CONFIG}.sh
+    chpst -u $username sh /var/templates/${CONFIG}/boot.sh
     # Postgres helper
     chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
     chmod 0600 /home/$username/.pgpass

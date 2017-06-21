@@ -57,15 +57,13 @@ RUN chmod +x /etc/service/php-fpm/run
 
 # Templates
 COPY files/laravel /var/templates/laravel
-COPY scripts/Laravel.sh /usr/local/bin/Laravel.sh
-RUN chmod o+x /usr/local/bin/Laravel.sh
 # Develop
 #COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
 #RUN chmod +x /usr/local/bin/boot.sh
 
 # Config
-ENV CONFIG Laravel
+ENV CONFIG laravel
 
 ARG BUILD_DATE
 ARG VCS_REF

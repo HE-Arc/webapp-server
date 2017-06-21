@@ -32,15 +32,13 @@ RUN chmod +x /etc/service/puma/run
 
 # Templates
 COPY files/rails /var/templates/rails
-COPY scripts/Rails.sh /usr/local/bin/Rails.sh
-RUN chmod o+x /usr/local/bin/Rails.sh
 # Develop
 #COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
 #RUN chmod +x /usr/local/bin/boot.sh
 
 # Config
-ENV CONFIG Rails
+ENV CONFIG rails
 
 ARG BUILD_DATE
 ARG VCS_REF

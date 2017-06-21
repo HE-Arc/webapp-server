@@ -38,8 +38,6 @@ RUN chmod +x /etc/service/uwsgi/run
 
 # Templates
 COPY files/python /var/templates/python
-COPY scripts/Python.sh /usr/local/bin/Python.sh
-RUN chmod o+x /usr/local/bin/Python.sh
 # Develop
 #COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
@@ -47,7 +45,7 @@ RUN chmod o+x /usr/local/bin/Python.sh
 
 
 # Config
-ENV CONFIG Python
+ENV CONFIG python
 
 
 ARG BUILD_DATE
