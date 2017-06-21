@@ -32,7 +32,7 @@ export SECRET_KEY=${SECRET_KEY:-$SECRET_KEY_BASE}
 mkdir -p /etc/container_environment
 
 awk 'END { for (name in ENVIRON) {
-    if (name != "PWD" && name != "USER" && name != "HOSTNAME" && name != "PATH")
+    if (name != "PWD" && name != "USER" && name != "HOSTNAME" && name != "PATH" && name != "HOME")
       print ENVIRON[name] > "/etc/container_environment/"name
   }
 }' < /dev/null
@@ -52,8 +52,12 @@ if [ ! -d /var/www/config ]
 
     # global config
     chpst -u $username ${CONFIG}.sh
+    # Postgres helper
+    chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
+    chmod 0600 /home/$username/.pgpass
 
     # create the users and finalize the setup.
+
     /usr/local/bin/setup.py
 
     # enable nginx
