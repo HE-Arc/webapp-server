@@ -150,7 +150,6 @@ ENV HOME /home/${USERNAME}
 WORKDIR /home/${USERNAME}
 COPY files/base/gitconfig .gitconfig
 COPY files/base/bash_profile .bash_profile
-COPY files/base/README.md README
 RUN ln -s /var/www www \
  && mkdir .ssh \
  && chmod 0700 .ssh \

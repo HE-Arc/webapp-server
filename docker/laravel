@@ -1,11 +1,6 @@
 FROM hearcch/webapp-server:latest
 
-ARG BUILD_DATE
-ARG VCS_REF
 ARG PHP_VERSION
-
-LABEL org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.vcs-ref=${VCS_REF}
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LC_ALL=C.UTF-8
@@ -62,6 +57,8 @@ RUN chmod +x /etc/service/php-fpm/run
 
 # Templates
 COPY files/laravel /var/templates/laravel
+COPY scripts/Laravel.sh /usr/local/bin/Laravel.sh
+RUN chmod o+x /usr/local/bin/Laravel.sh
 # Develop
 #COPY files/base /var/templates/base
 #COPY scripts/boot.sh /usr/local/bin/boot.sh
@@ -72,4 +69,9 @@ COPY files/laravel /var/templates/laravel
 # Config
 ENV CONFIG Laravel
 
+ARG BUILD_DATE
+ARG VCS_REF
+
+LABEL org.label-schema.build-date=${BUILD_DATE} \
+      org.label-schema.vcs-ref=${VCS_REF}
 # vim: ft=dockerfile:
