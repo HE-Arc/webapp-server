@@ -2,7 +2,7 @@
 
 set -xe
 
-cp /var/templates/base/README.md /var/www/
+cp /var/templates/laravel/README.md /var/www/
 cp /var/templates/laravel/config/nginx.conf /var/www/config/nginx.conf
 cp /var/templates/laravel/config/php-fpm.conf /var/www/config/php-fpm.conf
 cp -r /var/templates/laravel/app /var/www/app
