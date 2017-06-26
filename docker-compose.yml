@@ -10,9 +10,9 @@ services:
       - ./traefik.toml:/etc/traefik/traefik.toml
       - proxy:/etc/traefik/acme
     ports:
-      - "8080"
-      - "80"
-      - "443"
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
     command: -c /etc/traefik/traefik.toml --docker.domain=docker.localhost
     labels:
       - "traefik.enable=false"
@@ -22,11 +22,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
+    # private
     ports:
-      - "9000"
+      - "9000:9000"
+    # public
     #labels:
     #  - "traefik.backend=portainer"
-    #  - "traefik.frontend.rule=PathPrefixStrip:/portainer"
+    #  - "traefik.frontend.rule=Host:portainer.docker.localhost"
     #  - "traefik.port=9000"
 
   # Databases
@@ -38,7 +40,7 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
     ports:
-      - "5432"
+      - "5432:5432"
     volumes:
      - postgres:/var/lib/postgresql/data
     labels:
@@ -50,7 +52,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
-      - "3306"
+      - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
     labels:
