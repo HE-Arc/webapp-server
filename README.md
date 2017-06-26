@@ -57,26 +57,22 @@ The key is a [personal access token](https://github.com/settings/tokens) to avoi
 
 ### Docker-compose
 
-Based on the same TSV file, you can generate `docker-compose.yml` file.
+Based on the same TSV file, you can generate a Docker Compose YAML file.
 
 ```console
-$ scripts/team2_compose.py \
-    config/students.tsv \
-    docker-compose.yml \
-    nginx.conf \
-    index.html
+$ scripts/make_compose.py eatapp \
+    < config/students.tsv \
+    > teams/eatapp-compose.yml
 ```
 
-**TODO** `team2_compose.py` was intended for the second round of projects, one for the first one is still needed.
-
-**TODO** the generated docker-composer.yml doesn't take into account the Traefik setup in place.
+Then adapt the port number.
 
 ### Database creation
 
 Reusing the `docker-compose.yml` file, it builds
 
 ```console
-$ script/bdd.py docker-compose.yml
+$ script/bdd.py < teams/eatapp-compose.yml
 ```
 
 ## Containers

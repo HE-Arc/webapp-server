@@ -11,16 +11,17 @@ import sys
 import yaml
 import subprocess
 import tempfile
+import textwrap
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 # Database host
 hostname = "127.0.0.1"
 # Root password
 root = "root"
 
-mysql = r"""
+mysql = textwrap.dedent(r"""\
     DROP USER IF EXISTS `{username}`;
     DROP DATABASE IF EXISTS `{database}`;
     DROP DATABASE IF EXISTS `{database}_production`;
@@ -34,9 +35,9 @@ mysql = r"""
     GRANT ALL PRIVILEGES ON `{database}_production`.* TO '{username}'@'%';
     GRANT ALL PRIVILEGES ON `{database}_test`.* TO '{username}'@'%';
     FLUSH PRIVILEGES;
-"""
+""")
 
-postgresql = r"""
+postgresql = textwrap.dedent(r"""\
     DROP DATABASE IF EXISTS {database};
     DROP ROLE IF EXISTS {username};
     CREATE ROLE {username} WITH NOINHERIT LOGIN PASSWORD '{password}' VALID UNTIL 'infinity';
@@ -51,72 +52,71 @@ postgresql = r"""
     CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA {username};
     CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA production;
     CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA test;
-"""
+""")
 
 
-def main(argv):
-    compose_file = argv[1]
+def main():
+    compose = yaml.load(sys.stdin)
 
-    with open(compose_file, "r", encoding="utf-8") as f:
-        compose = yaml.load(f)
+    for machine, description in compose['services'].items():
+        if not description['image'].startswith('hearcch'):
+            continue
 
-        for machine, description in compose['services'].items():
-            if 'hostname' not in description:
-                continue
+        groupname = description['environment']['GROUPNAME'].lower()
+        password = description['environment']['PASSWORD']
 
-            groupname = description['environment']['GROUPNAME'].lower()
-            password = description['environment']['PASSWORD']
+        print(groupname)
+        print("=" * len(groupname))
 
-            print(groupname)
-            print("=" * len(groupname))
+        p = subprocess.Popen(
+            ['mysql', '-h', hostname, '-u', 'root', '-p{}'.format(root)],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+
+        stdin = mysql.format(
+            username=groupname, password=password,
+            database=groupname).strip()
+
+        out, err = p.communicate(bytearray(stdin, 'utf-8'))
+        if p.returncode != 0:
+            sys.stderr.write(err.decode('utf-8'))
+        else:
+            print("MySQL database {} created.".format(groupname))
+            # DEBUG
+            # print(out.decode('utf-8'), end='')
+
+        with tempfile.NamedTemporaryFile() as fp:
+            fp.write(
+                bytearray('{}:*:*:postgres:{}'.format(hostname, root),
+                            'utf-8'))
+            fp.seek(0)
+            os.chmod(fp.name, mode=0o600)
+
+            env = os.environ.copy()
+            env['PGPASSFILE'] = fp.name
 
             p = subprocess.Popen(
-                ['mysql', '-h', hostname, '-u', 'root', '-p{}'.format(root)],
+                ['psql', '-h', hostname, '-U', 'postgres'],
+                env=env,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
 
-            stdin = mysql.format(
+            stdin = postgresql.format(
                 username=groupname, password=password,
                 database=groupname).strip()
 
             out, err = p.communicate(bytearray(stdin, 'utf-8'))
             if p.returncode != 0:
-                print(err.decode('utf-8'), end='', file=sys.stderr)
+                sys.stderr.write(err.decode('utf-8'))
             else:
-                print("MySQL database {} created.".format(groupname))
-                #print(out.decode('utf-8'), end='')
+                print("Postgresql database {} created.".format(groupname))
+                # DEBUG
+                # print(out.decode('utf-8'), end='')
 
-            with tempfile.NamedTemporaryFile() as fp:
-                fp.write(
-                    bytearray('{}:*:*:postgres:{}'.format(hostname, root),
-                              'utf-8'))
-                fp.seek(0)
-                os.chmod(fp.name, mode=0o600)
-
-                env = os.environ.copy()
-                env['PGPASSFILE'] = fp.name
-
-                p = subprocess.Popen(
-                    ['psql', '-h', hostname, '-U', 'postgres'],
-                    env=env,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE)
-
-                stdin = postgresql.format(
-                    username=groupname, password=password,
-                    database=groupname).strip()
-
-                out, err = p.communicate(bytearray(stdin, 'utf-8'))
-                if p.returncode != 0:
-                    print(err.decode('utf-8'), end='', file=sys.stderr)
-                else:
-                    print("Postgresql database {} created.".format(groupname))
-                    #print(out.decode('utf-8'), end='')
-
-            print("")
+        print("")
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())
