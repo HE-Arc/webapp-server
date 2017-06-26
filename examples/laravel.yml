@@ -19,7 +19,7 @@ services:
     links:
       - eatapp_redis:redis
     labels:
-      - "traefik.frontend.rule=Host:eatapp.docker.localhost"
+      - "traefik.frontend.rule=Host:eatapp.srvz-webapp.he-arc.ch"
       - "traefik.port=80"
 
   eatapp_redis:

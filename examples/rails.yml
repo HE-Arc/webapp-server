@@ -19,7 +19,7 @@ services:
     links:
       - capistrano_redis:redis
     labels:
-      - "traefik.frontend.rule=Host:capistrano.docker.localhost"
+      - "traefik.frontend.rule=Host:capistrano.srvz-webapp.he-arc.ch"
       - "traefik.port=80"
 
   capistrano_redis:

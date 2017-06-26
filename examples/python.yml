@@ -17,7 +17,7 @@ services:
       - mysql
       - smtp
     labels:
-      - "traefik.frontend.rule=Host:weblog.docker.localhost"
+      - "traefik.frontend.rule=Host:weblog.srvz-webapp.he-arc.ch"
       - "traefik.port=80"
 
   weblog_redis:

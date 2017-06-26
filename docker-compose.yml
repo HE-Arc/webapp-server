@@ -4,7 +4,7 @@ services:
   proxy:
     image: traefik:1.3-alpine
     hostname: proxy
-    domainname: docker.localhost
+    domainname: srvz-webapp.he-arc.ch
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.toml:/etc/traefik/traefik.toml
@@ -13,7 +13,7 @@ services:
       - "8080:8080"
       - "80:80"
       - "443:443"
-    command: -c /etc/traefik/traefik.toml --docker.domain=docker.localhost
+    command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
     labels:
       - "traefik.enable=false"
 
@@ -28,7 +28,7 @@ services:
     # public
     #labels:
     #  - "traefik.backend=portainer"
-    #  - "traefik.frontend.rule=Host:portainer.docker.localhost"
+    #  - "traefik.frontend.rule=Host:portainer.srvz-webapp.he-arc.ch"
     #  - "traefik.port=9000"
 
   # Databases
@@ -64,7 +64,7 @@ services:
     image: mailhog/mailhog:latest
     container_name: smtp
     labels:
-      - "traefik.frontend.rule=Host:webmail.docker.localhost"
+      - "traefik.frontend.rule=Host:webmail.srvz-webapp.he-arc.ch"
       - "traefik.port=8025"
 
 networks:
