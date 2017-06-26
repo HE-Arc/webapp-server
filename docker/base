@@ -44,6 +44,7 @@ RUN apt-get update -q \
         curl \
         fontconfig \
         git \
+        iproute2 \
         jq \
         language-pack-de-base \
         language-pack-en-base \

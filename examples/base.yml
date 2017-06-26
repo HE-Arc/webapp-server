@@ -1,0 +1,37 @@
+version: '3.2'
+
+services:
+  admin:
+    image: hearcch/webapp-server:latest
+    environment:
+      - GROUPNAME=admin
+      - PASSWORD=root
+      - SSH_KEYS=greut grunenwald
+    hostname: admin
+    volumes:
+      - admin:/var/www
+    ports:
+      - "2222:22"
+    external_links:
+      - postgres
+      - mysql
+      - smtp
+    labels:
+      - "traefik.frontend.rule=Host:admin.docker.localhost"
+      - "traefik.port=80"
+
+  admin_redis:
+    image: redis:3.2-alpine
+    volumes:
+      - admin_redis:/data
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: webapp-net
+
+volumes:
+  admin:
+  admin_redis:

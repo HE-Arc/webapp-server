@@ -1,0 +1,39 @@
+version: '3.2'
+
+services:
+  eatapp:
+    image: hearcch/webapp-server:laravel
+    environment:
+      - GROUPNAME=eatapp
+      - PASSWORD=eatapp  # CHANGE ME
+      - SSH_KEYS=greut grunenwald
+    hostname: eatapp
+    volumes:
+      - eatapp:/var/www
+    ports:
+      - "2224:22"
+    external_links:
+      - postgres
+      - mysql
+      - smtp
+    links:
+      - eatapp_redis:redis
+    labels:
+      - "traefik.frontend.rule=Host:eatapp.docker.localhost"
+      - "traefik.port=80"
+
+  eatapp_redis:
+    image: redis:3.2-alpine
+    volumes:
+      - eatapp_redis:/data
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: webapp-net
+
+volumes:
+  eatapp:
+  eatapp_redis:

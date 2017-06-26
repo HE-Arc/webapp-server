@@ -1,0 +1,37 @@
+version: '3.2'
+
+services:
+  weblog:
+    image: hearcch/webapp-server:python
+    environment:
+      - GROUPNAME=weblog
+      - PASSWORD=root
+      - SSH_KEYS=greut grunenwald
+    hostname: python
+    volumes:
+      - weblog:/var/www
+    ports:
+      - "2223:22"
+    external_links:
+      - postgres
+      - mysql
+      - smtp
+    labels:
+      - "traefik.frontend.rule=Host:weblog.docker.localhost"
+      - "traefik.port=80"
+
+  weblog_redis:
+    image: redis:3.2-alpine
+    volumes:
+      - weblog_redis:/data
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: webapp-net
+
+volumes:
+  weblog:
+  weblog_redis:

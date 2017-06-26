@@ -44,7 +44,7 @@ This is how this file is used:
 
 To download the public keys, run this python script:
 
-```shell
+```console
 # setup
 $ python3 -m venv .
 $ . bin/activate
@@ -59,7 +59,7 @@ The key is a [personal access token](https://github.com/settings/tokens) to avoi
 
 Based on the same TSV file, you can generate `docker-compose.yml` file.
 
-```shell
+```console
 $ scripts/team2_compose.py \
     config/students.tsv \
     docker-compose.yml \
@@ -75,7 +75,7 @@ $ scripts/team2_compose.py \
 
 Reusing the `docker-compose.yml` file, it builds
 
-```shell
+```console
 $ script/bdd.py docker-compose.yml
 ```
 
@@ -100,12 +100,19 @@ Create a `docker-compose.yml` file base on the sample one.
 
 Run the container(s)
 
-```shell
-docker-compose up -d
+```console
+# create the shared network
+$ docker network create --driver=bridge webapp-net
+
+# running the central services
+$ docker-compose up -d
+
+# running "a" project
+$ docker-compose -f examples/base.yml up -d
 ```
 
 - Traefik control dashboard runs on port 8080.
-- Portainer control dashboard runs on port 80, `/portainer`.
+- Portainer control dashboard runs on port 9000. The admin password must be set upon boot!
 
 ### Databases
 
@@ -113,21 +120,18 @@ The databases are open the external world, hence we must modify the super admin 
 
 #### MySQL
 
-##### Post-setup
+Change the password either in the `docker-compose.yml` file or afterwards this way.
 
-Changing MySQL root password because the above value will be passed to each linked containers.
-
-```shell
-# 5.7
+```console
 $ mysql -h 127.0.0.1 -u root -proot
 > SET PASSWORD FOR 'root'@'%' = PASSWORD('s3cur3@P45sw0rd');
 ```
 
 #### PostgreSQL
 
-Changing Postgres password because the above value will be passed to each linked containers.
+Change the password either in the `docker-compose.yml` file or afterwards this way.
 
-```shell
+```console
 $ psql -h 127.0.0.1 \
     -U postgres \
     -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"

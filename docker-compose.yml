@@ -10,9 +10,9 @@ services:
       - ./traefik.toml:/etc/traefik/traefik.toml
       - proxy:/etc/traefik/acme
     ports:
-      - "8080:8080"
-      - "80:80"
-      - "443:443"
+      - "8080"
+      - "80"
+      - "443"
     command: -c /etc/traefik/traefik.toml --docker.domain=docker.localhost
     labels:
       - "traefik.enable=false"
@@ -22,140 +22,23 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
-    labels:
-      - "traefik.backend=portainer"
-      - "traefik.frontend.rule=PathPrefixStrip:/portainer"
-      - "traefik.port=9000"
-
-   # Free project
-
-  admin:
-    image: hearcch/webapp-server:latest
-    environment:
-      - GROUPNAME=admin
-      - PASSWORD=root
-      - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
-      - SSH_KEYS=greut grunenwald
-    hostname: admin
-    volumes:
-      - admin:/var/www
     ports:
-      - "2222:22"
-    depends_on:
-      - postgres
-      - mysql
-      - smtp
-    labels:
-      - "traefik.frontend.rule=Host:admin.docker.localhost"
-      - "traefik.port=80"
+      - "9000"
+    #labels:
+    #  - "traefik.backend=portainer"
+    #  - "traefik.frontend.rule=PathPrefixStrip:/portainer"
+    #  - "traefik.port=9000"
 
-  admin_redis:
-    image: redis:3.2-alpine
-    volumes:
-      - admin_redis:/data
-    labels:
-      - "traefik.enable=false"
+  # Databases
 
-
-  # Python
-
-  weblog:
-    image: hearcch/webapp-server:python
-    environment:
-      - GROUPNAME=weblog
-      - PASSWORD=root
-      - REPOSITORY=http://github.com/HE-Arc/demo-rails-application
-      - SSH_KEYS=greut grunenwald
-    hostname: python
-    volumes:
-      - weblog:/var/www
-    ports:
-      - "2223:22"
-    depends_on:
-      - postgres
-      - mysql
-      - smtp
-    labels:
-      - "traefik.frontend.rule=Host:weblog.docker.localhost"
-      - "traefik.port=80"
-
-  weblog_redis:
-    image: redis:3.2-alpine
-    volumes:
-      - weblog_redis:/data
-    labels:
-      - "traefik.enable=false"
-
-
-  # PHP project.
-
-  eatapp:
-    image: hearcch/webapp-server:laravel
-    environment:
-      - GROUPNAME=eatapp
-      - PASSWORD=eatapp  # CHANGE ME
-      - REPOSITORY=https://github.com/HE-Arc/EatApp
-      - SSH_KEYS=greut grunenwald
-    hostname: eatapp
-    volumes:
-      - eatapp:/var/www
-    ports:
-      - "2224:22"
-    depends_on:
-      - postgres
-      - mysql
-      - smtp
-    links:
-      - eatapp_redis:redis
-    labels:
-      - "traefik.frontend.rule=Host:eatapp.docker.localhost"
-      - "traefik.port=80"
-
-  eatapp_redis:
-    image: redis:3.2-alpine
-    volumes:
-      - eatapp_redis:/data
-    labels:
-      - "traefik.enable=false"
-
-  # Ruby on Rails project
-
-  capistrano:
-    image: hearcch/webapp-server:rails
-    environment:
-      - GROUPNAME=capistrano
-      - PASSWORD=capistrano  # CHANGE ME
-      - SSH_KEYS=greut grunenwald osaris
-    hostname: capistrano
-    volumes:
-      - capistrano:/var/www
-    ports:
-      - "2225:22"
-    depends_on:
-      - postgres
-      - mysql
-      - smtp
-    links:
-      - capistrano_redis:redis
-    labels:
-      - "traefik.frontend.rule=Host:capistrano.docker.localhost"
-      - "traefik.port=80"
-
-  capistrano_redis:
-    image: redis:3.2-alpine
-    volumes:
-      - capistrano_redis:/data
-    labels:
-      - "traefik.enable=false"
-
-  # Shared services
   postgres:
     image: postgres:9.6-alpine
+    container_name: postgres
     environment:
       - POSTGRES_PASSWORD=root
       - POSTGRES_PGDATA=/var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5432"
     volumes:
      - postgres:/var/lib/postgresql/data
     labels:
@@ -163,35 +46,32 @@ services:
 
   mysql:
     image: mysql:5.7
+    container_name: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
-      - "3306:3306"
+      - "3306"
     volumes:
       - mysql:/var/lib/mysql
     labels:
       - "traefik.enable=false"
 
+  # Email
+
   smtp:
     image: mailhog/mailhog:latest
+    container_name: smtp
     labels:
       - "traefik.frontend.rule=Host:webmail.docker.localhost"
       - "traefik.port=8025"
+
+networks:
+  default:
+    external:
+      name: webapp-net
 
 volumes:
   proxy:
   portainer:
   mysql:
   postgres:
-  # base
-  admin:
-  admin_redis:
-  # laravel
-  eatapp:
-  eatapp_redis:
-  # python
-  weblog:
-  weblog_redis:
-  # rails
-  capistrano:
-  capistrano_redis:

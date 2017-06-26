@@ -65,6 +65,8 @@ if [ ! -d /var/www/config ]
 
     # enable nginx
     ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
+else
+    echo "/var/www/config already exists, skipping..."
 fi
 
 exec /usr/bin/runsvdir -P /etc/service
