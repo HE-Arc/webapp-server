@@ -8,5 +8,5 @@ cp /var/templates/laravel/config/php-fpm.conf /var/www/config/php-fpm.conf
 cp -r /var/templates/laravel/app /var/www/app
 
 
-mv /etc/php/7.1/fpm/pool.d/www.conf /etc/php/7.1/fpm/pool.d/www.conf.old
-ln -s /var/www/config/php-fpm.conf /etc/php/7.1/fpm/pool.d/www.conf
+sudo mv /etc/php/7.1/fpm/pool.d/www.conf /etc/php/7.1/fpm/pool.d/www.conf.old
+sudo ln -s /var/www/config/php-fpm.conf /etc/php/7.1/fpm/pool.d/www.conf
