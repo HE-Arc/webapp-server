@@ -32,6 +32,7 @@ services:
 {%- for team in teams %}
   {{ team.machine }}:
     image: hearcch/webapp-server:{{ team.image }}
+    hostname: {{ team.hostname }}
     environment:
       GROUPNAME: {{ team.groupname }}
       PASSWORD: {{ team.password }}
