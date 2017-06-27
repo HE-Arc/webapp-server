@@ -132,3 +132,53 @@ $ psql -h 127.0.0.1 \
     -U postgres \
     -c "ALTER USER postgres WITH PASSWORD 's3cur3@P45sw0rd';"
 ```
+
+## Standalone setup
+
+Below is a sample of a simple PHP machine with a MySQL instance. The default
+environment variable can be overridden (see `scripts/boot.sh`)
+
+```yml
+version: "3"
+
+services:
+  web:
+    image: hearcch/webapp-server:laravel
+    ports:
+      - "8080:80"
+      - "2222:22"
+    environment:
+      - GROUPNAME=test
+      - PASSWORD=test
+      - SSH_KEYS=greut
+    volumes:
+      - web:/var/www
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  web:
+  mysql:
+```
+
+The login using your github SSH key.
+
+```
+$ ssh -p 2222 poweruser@127.0.0.1
+```
+
+### Volumes and Windows
+
+On non-UNIX filesystem, it's okay to mount a local folder a the `/var/www` volume. However, on Windows, don't do it and mount the container volume on the machine using SFTP(e.g. <http://www.sftpnetdrive.com/>)
