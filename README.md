@@ -40,24 +40,19 @@ This is how this file is used:
 - _TeamX_ will be the name of the virtual host and identify a container
 - _Comment_ no particular usage
 
-### Public keys
+### Setup
 
-To download the public keys, run this python script:
+The scripts require `docker-compose` as well as other dependencies.
 
 ```console
-# setup
 $ python3 -m venv .
 $ . bin/activate
-$ pip3 install -r requirements.txt
-
-$ scripts/github_keys.py config/students.tsv config/keys/ <github_username> <password_or_key>
+(webapp-server)$ pip3 install -r requirements.txt
 ```
-
-The key is a [personal access token](https://github.com/settings/tokens) to avoid being rate limited by the API.
 
 ### Docker-compose
 
-Based on the same TSV file, you can generate a Docker Compose YAML file.
+Based on the TSV file, you can generate a Docker Compose YAML file.
 
 ```console
 $ scripts/make_compose.py eatapp \
@@ -65,11 +60,15 @@ $ scripts/make_compose.py eatapp \
     > teams/eatapp-compose.yml
 ```
 
-Then adapt the port number.
+Then adapt the port number, and run it.
+
+```console
+$ docker-compose -f teams/eatapp-compose.yml up
+```
 
 ### Database creation
 
-Reusing the `docker-compose.yml` file, it builds
+Reusing the `docker-compose.yml` file, we create the databases.
 
 ```console
 $ script/bdd.py < teams/eatapp-compose.yml
