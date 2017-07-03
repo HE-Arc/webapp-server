@@ -29,11 +29,13 @@ $pgsql = [
 ];
 
 
-// Hide the passwords from phpinfo.
-unset($_SERVER["PASSWORD"]);
-unset($_ENV["PASSWORD"]);
-putenv("PASSWORD=");
-putenv("PASSWORD");
+// Hide the secrets from phpinfo.
+foreach(["PASSWORD", "SECRET_KEY", "SECRET_KEY_BASE"] as $secret) {
+  unset($_SERVER[$secret]);
+  unset($_ENV[$secret]);
+  putenv("$secret=");
+  putenv($secret);
+}
 
 // MySQL
 try {
