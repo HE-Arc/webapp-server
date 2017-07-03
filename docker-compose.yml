@@ -14,8 +14,6 @@ services:
       - "80:80"
       - "443:443"
     command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
-    labels:
-      - "traefik.enable=false"
 
   portainer:
     image: portainer/portainer
@@ -43,8 +41,6 @@ services:
       - "5432:5432"
     volumes:
      - postgres:/var/lib/postgresql/data
-    labels:
-      - "traefik.enable=false"
 
   mysql:
     image: mysql:5.7
@@ -55,8 +51,6 @@ services:
       - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
-    labels:
-      - "traefik.enable=false"
 
   # Email
 
@@ -66,6 +60,7 @@ services:
     labels:
       - "traefik.frontend.rule=Host:webmail.srvz-webapp.he-arc.ch"
       - "traefik.port=8025"
+      - "traefik.enable=true"
 
 networks:
   default:

@@ -19,13 +19,12 @@ services:
     labels:
       - "traefik.frontend.rule=Host:admin.srvz-webapp.he-arc.ch"
       - "traefik.port=80"
+      - "traefik.enable=true"
 
   admin_redis:
     image: redis:3.2-alpine
     volumes:
       - admin_redis:/data
-    labels:
-      - "traefik.enable=false"
 
 networks:
   default:

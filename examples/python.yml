@@ -19,13 +19,12 @@ services:
     labels:
       - "traefik.frontend.rule=Host:weblog.srvz-webapp.he-arc.ch"
       - "traefik.port=80"
+      - "traefik.enable=true"
 
   weblog_redis:
     image: redis:3.2-alpine
     volumes:
       - weblog_redis:/data
-    labels:
-      - "traefik.enable=false"
 
 networks:
   default:
