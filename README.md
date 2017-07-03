@@ -56,7 +56,7 @@ Based on the TSV file, you can generate a Docker Compose YAML file.
 
 ```console
 $ scripts/make_compose.py eatapp \
-    < config/students.tsv \
+    < students.tsv \
     > teams/eatapp-compose.yml
 ```
 
