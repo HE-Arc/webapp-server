@@ -8,7 +8,8 @@ cp /var/templates/rails/config/puma.rb /var/www/config/puma.rb
 cp -r /var/templates/rails/app /var/www/app
 
 USER=`id -nu`
-export GEM_HOME=/home/$USER/.gem/ruby/2.4.0
+export HOME=/home/$USER
+export GEM_HOME=$HOME/.gem/ruby/2.4.0
 export PATH=$PATH:$GEM_HOME/bin
 
 gem install bundler puma
