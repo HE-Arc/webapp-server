@@ -174,7 +174,7 @@ COPY runit/cron.sh /etc/service/cron/run
 COPY runit/nginx.sh /etc/service/nginx/run
 COPY runit/sshd.sh /etc/service/sshd/run
 COPY runit/syslog.sh /etc/service/syslog/run
-COPY scripts/boot.sh /usr/local/bin/boot.sh
+COPY files/boot.sh /usr/local/bin/boot.sh
 RUN chmod +x /etc/service/cron/run \
  && chmod +x /etc/service/nginx/run \
  && chmod +x /etc/service/sshd/run \
