@@ -166,20 +166,20 @@ RUN echo "%${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/users
 RUN chmod 0440 /etc/sudoers.d/users
 
 
-# Templates
-COPY files/base /var/templates/base
-
 ## Runit
-COPY runit/cron.sh /etc/service/cron/run
-COPY runit/nginx.sh /etc/service/nginx/run
-COPY runit/sshd.sh /etc/service/sshd/run
-COPY runit/syslog.sh /etc/service/syslog/run
+COPY files/base/runit/cron.sh /etc/service/cron/run
+COPY files/base/runit/nginx.sh /etc/service/nginx/run
+COPY files/base/runit/sshd.sh /etc/service/sshd/run
+COPY files/base/runit/syslog.sh /etc/service/syslog/run
 COPY files/boot.sh /usr/local/bin/boot.sh
 RUN chmod +x /etc/service/cron/run \
  && chmod +x /etc/service/nginx/run \
  && chmod +x /etc/service/sshd/run \
  && chmod +x /etc/service/syslog/run \
  && chmod o+x /usr/local/bin/boot.sh
+
+# Templates
+COPY files/base /var/templates/base
 
 # Logrotate
 COPY files/base/vhost.logrotate /etc/logrotate.d/

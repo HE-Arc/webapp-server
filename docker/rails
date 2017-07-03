@@ -27,7 +27,7 @@ RUN apt-add-repository ppa:brightbox/ruby-ng \
 RUN echo "gem: --no-document" > /etc/gemrc
 
 ## Runit
-COPY runit/puma.sh /etc/service/puma/run
+COPY files/rails/runit/puma.sh /etc/service/puma/run
 RUN chmod +x /etc/service/puma/run
 
 # Templates

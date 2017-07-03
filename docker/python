@@ -33,7 +33,7 @@ RUN PYTHON=python${PYTHON_VERSION} uwsgi \
  && chmod 0644 /usr/lib/uwsgi/plugins/python${UWSGI_PLUGIN_NAME}_plugin.so
 
 ## Runit
-COPY runit/uwsgi.sh /etc/service/uwsgi/run
+COPY files/python/runit/uwsgi.sh /etc/service/uwsgi/run
 RUN chmod +x /etc/service/uwsgi/run
 
 # Templates

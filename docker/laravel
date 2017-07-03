@@ -52,7 +52,7 @@ RUN mkdir -p /run/php \
     done
 
 ## Runit
-COPY runit/php-fpm.sh /etc/service/php-fpm/run
+COPY files/laravel/runit/php-fpm.sh /etc/service/php-fpm/run
 RUN chmod +x /etc/service/php-fpm/run
 
 # Templates
