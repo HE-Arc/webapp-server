@@ -5,6 +5,7 @@ set -xe
 username=poweruser
 
 # regen SSH keys / passwords on each boot.
+
 if [ 0 -eq `ls /etc/ssh/ssh_host_* | wc -l` ]
 then
     dpkg-reconfigure openssh-server
@@ -13,8 +14,8 @@ then
     echo $username:`pwgen 64 1` | chpasswd
 fi
 
-# Environment variables
 
+# Environment variables
 export MYSQL_HOST=${MYSQL_HOST:-mysql}
 export MYSQL_PORT=${MYSQL_PORT:-3306}
 export POSTGRES_HOST=${POSTGRES_HOST:-postgres}
@@ -56,17 +57,21 @@ if [ ! -d /var/www/config ]
     chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
     chmod 0600 /home/$username/.pgpass
 
-    for u in $SSH_KEYS
-    do
-        curl https://api.github.com/users/$u/keys \
-            | jq -r ".[]|.key+\" \"+(.id|tostring)+\"@$u\"" \
-            | tee -a /home/$username/.ssh/authorized_keys
-    done
 
     # enable nginx
     ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
 else
     echo "/var/www/config already exists, skipping..."
 fi
+
+# set ssh keys
+touch /home/$username/.ssh/authorized_keys
+for u in $SSH_KEYS
+do
+    curl https://api.github.com/users/$u/keys \
+        | jq -r ".[]|.key+\" \"+(.id|tostring)+\"@$u\"" \
+        | tee -a /home/$username/.ssh/authorized_keys
+done
+
 
 exec /usr/bin/runsvdir -P /etc/service
