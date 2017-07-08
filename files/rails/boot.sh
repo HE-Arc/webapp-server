@@ -3,15 +3,19 @@
 set -xe
 
 cp /var/templates/rails/README.md /var/www/
-cp /var/templates/rails/config/nginx.conf /var/www/config/nginx.conf
-cp /var/templates/rails/config/puma.rb /var/www/config/puma.rb
-cp -r /var/templates/rails/app /var/www/app
+[ ! -f /var/www/config/nginx.conf ] && cp /var/templates/rails/config/nginx.conf /var/www/config/nginx.conf
+[ ! -f /var/www/config/puma.rb ] && cp /var/templates/rails/config/puma.rb /var/www/config/puma.rb
 
-USER=`id -nu`
-export HOME=/home/$USER
-export GEM_HOME=$HOME/.gem/ruby/2.4.0
-export PATH=$PATH:$GEM_HOME/bin
+if [ ! -d /var/www/app ]
+then
+    cp -r /var/templates/rails/app /var/www/app
 
-gem install bundler puma
-cd /var/www/app
-bundler install
+    USER=`id -nu`
+    export HOME=/home/$USER
+    export GEM_HOME=$HOME/.gem/ruby/2.4.0
+    export PATH=$PATH:$GEM_HOME/bin
+
+    gem install bundler puma
+    cd /var/www/app
+    bundler install
+fi

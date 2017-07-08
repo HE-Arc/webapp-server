@@ -39,30 +39,25 @@ awk 'END { for (name in ENVIRON) {
 }' < /dev/null
 
 # pre-setup
-if [ ! -d /var/www/config ]
-    then
-    mkdir /var/www/config
-    mkdir /var/www/logs
+mkdir -p /var/www/config
+mkdir -p /var/www/logs
 
-    uid=`id -u $username`
-    gid=`id -g $username`
+uid=`id -u $username`
+gid=`id -g $username`
 
-    # change the rights
-    find /var/www -user root -exec chown -h $uid {} \;
-    find /var/www -group root -exec chgrp -h $gid {} \;
+# change the rights
+find /var/www -user root -exec chown -h $uid {} \;
+find /var/www -group root -exec chgrp -h $gid {} \;
 
-    # global config
-    chpst -u $username sh /var/templates/${CONFIG}/boot.sh
-    # Postgres helper
-    chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
-    chmod 0600 /home/$username/.pgpass
+# global config
+chpst -u $username sh /var/templates/${CONFIG}/boot.sh
+# Postgres helper
+chpst -u $username sh -c "echo $POSTGRES_HOST:$POSTGRES_PORT:$GROUPNAME:$GROUPNAME:$PASSWORD > /home/$username/.pgpass"
+chmod 0600 /home/$username/.pgpass
 
 
-    # enable nginx
-    ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
-else
-    echo "/var/www/config already exists, skipping..."
-fi
+# enable nginx
+[ ! -f /etc/nginx/sites-enabled/default ] && ln -s /var/www/config/nginx.conf /etc/nginx/sites-enabled/default
 
 # set ssh keys
 touch /home/$username/.ssh/authorized_keys
