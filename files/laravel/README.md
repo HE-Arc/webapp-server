@@ -22,7 +22,7 @@ $ composer global require laravel/installer=~1.3
 
 # Laravel tutorial
 
-This is from the [Laravel 5.3 documentation](http://laravel.com/docs/5.3).
+This is from the [Laravel 5.5 documentation](http://laravel.com/docs/5.5).
 
 ## Creating a new project
 
@@ -110,14 +110,7 @@ In Postgres, it's similar expect that this is done with three schemas within one
 
 # Initializing the models
 
-The models are defined through [migrations](http://laravel.com/docs/5.1/migrations) which enable rollbacks. You should always use them. We will instantiate the default model which creates two tables do deal with users and their password.
-
-The default model was set for utf8 and not utf8mb4, so we have to tweak it a little bit. Open `blog/database/migrations/2014_10_12_000000_create_users_table.php`
-
-```
-//$table->string('email')->unique();
-$table->string('email', 191)->unique();
-```
+The models are defined through [migrations](http://laravel.com/docs/5.5/migrations) which enable rollbacks. You should always use them. We will instantiate the default model which creates two tables do deal with users and their password.
 
 Now, we are ready to run the migrations:
 
@@ -141,12 +134,12 @@ users
 
 # JavaScript and CSS
 
-Laravel comes with some default libraries like Bootstrap. To rebuild them, do the following commands:
+Laravel comes with some default libraries like Bootstrap and Vue.js. To rebuild them, do the following commands:
 
 ```
 $ npm install
-$ gulp
-$ gulp --production
+$ npm run dev # or development
+$ npm run prod # or production
 ```
 
 Although, doing this on the production server is not a good idea. Putting the generated scripts and stylesheets on Git is ok.
