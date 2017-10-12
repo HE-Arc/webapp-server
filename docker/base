@@ -102,12 +102,12 @@ RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
 
 
 ## NGINX
+# auto worker processes and no daemonize (for runit)
+# logs to user directory
 RUN f=/etc/nginx/nginx.conf \
  && rm /etc/nginx/sites-enabled/default \
  && rm -rf /var/www/html \
-    # auto worker processes and no daemonize (for runit)
  && sed -i 's/\(worker_processes\) .*;/\1 auto;\ndaemon off;/' $f \
-    # logs to user directory
  && sed -i 's/\/var\/log\/nginx\/access.log/\/var\/www\/logs\/nginx_access.log/' $f \
  && sed -i 's/\/var\/log\/nginx\/error.log/\/var\/www\/logs\/nginx_error.log/' $f
 

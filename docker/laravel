@@ -11,15 +11,12 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
  && apt-get upgrade -q -y --allow-unauthenticated \
  && apt-get install -q -y --allow-unauthenticated \
         composer \
-        php-apcu \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-cli \
         php${PHP_VERSION}-curl \
         php${PHP_VERSION}-intl \
         php${PHP_VERSION}-fpm \
         php${PHP_VERSION}-gd \
-        php-libsodium \
-        php-imagick \
         php${PHP_VERSION}-imap \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-mysql \
@@ -31,6 +28,9 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
         php${PHP_VERSION}-xmlrpc \
         php${PHP_VERSION}-xsl \
         php${PHP_VERSION}-zip \
+        php-apcu \
+        php-sodium \
+        php-imagick \
         php-redis \
         php-xdebug \
  && apt-get autoremove \
