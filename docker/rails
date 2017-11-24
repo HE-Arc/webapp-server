@@ -20,6 +20,7 @@ RUN apt-add-repository ppa:brightbox/ruby-ng \
         ruby${RUBY_VERSION} \
         ruby${RUBY_VERSION}-dev \
         ruby-switch \
+ && apt-get autoremove -q -y \
  && apt-get clean \
  && ruby-switch --set ruby${RUBY_VERSION} \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
