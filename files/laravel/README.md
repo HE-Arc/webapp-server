@@ -98,13 +98,13 @@ Modify `blog/config/database.php` as such:
 // ...
 ```
 
-`env('MYSQL_HOST') (or`$_SERVER['MYSQL_HOST']`) is the environment variable containing the host for the MySQL connection. It's much more flexible than`.env`files. Keep the`.env` file for you local setup.
+`env('MYSQL_HOST')` (aka `$_SERVER['MYSQL_HOST']`) is the environment variable containing the host name of the MySQL server. Hence, you don't have to put it in the `.env` file. Keep the `.env` file for you local setup.
 
 What is `utf8mb4`? See: <https://mathiasbynens.be/notes/mysql-utf8mb4>
 
 ## Using Postgres instead of MySQL
 
-You may also want to use Postgresql. The configuration is alike but you'all have to change the default key to this one.
+You may also want to use Postgres. The configuration is alike and you'all have to change the default key to this one.
 
 ```
 'default' => env('DB_CONNECTION', 'pgsql'),
