@@ -48,7 +48,7 @@ root /var/www/blog/public;
 And restart the servers:
 
 ```
-$ sudo sv restart nginx
+$ sv restart nginx
 ```
 
 Your website should display the laravel default homepage or an error if the APP_KEY isn't provided.
