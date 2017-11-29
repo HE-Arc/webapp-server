@@ -48,7 +48,7 @@ root /var/www/blog/public;
 And restart the servers:
 
 ```
-$ sv restart nginx
+$ sudo sv restart nginx
 ```
 
 Your website should display the laravel default homepage or an error if the APP_KEY isn't provided.
@@ -56,7 +56,7 @@ Your website should display the laravel default homepage or an error if the APP_
 If you have an error add 'APP_KEY=' to 'blog/.env' then
 
 ```
-php artisan key:generate
+$ php artisan key:generate
 ```
 
 And it will update the .env file with a new key.
