@@ -33,7 +33,7 @@ $ cd www
 $ laravel new blog
 $ cd blog
 $ sudo setfacl -R -m u:www-data:rwx storage bootstrap/cache
-$ sudo setfacl -dR -m g:{{groupname}}:rwx storage bootstrap/cache
+$ sudo setfacl -dR -m g:poweruser:rwx storage bootstrap/cache
 ```
 
 ## Nginx (_engine-X_)
