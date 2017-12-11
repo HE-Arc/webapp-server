@@ -71,6 +71,9 @@ The error log will be useful.
 $ tail /var/www/logs/error.log
 ```
 
+Check `/var/log/nginx` too! It can grow big, to clear it : `sudo truncate -s0 /var/log/nginx/error.log`
+
+
 ## Configuring the database connection
 
 We are gonna read the database configuration from the environment. See [12factors](http://12factor.net/config).
