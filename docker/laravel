@@ -12,6 +12,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
  && apt-get install -q -y --allow-unauthenticated \
         composer \
         php${PHP_VERSION}-apcu \
+        php${PHP_VERSION}-bcmath \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-cli \
         php${PHP_VERSION}-common \
