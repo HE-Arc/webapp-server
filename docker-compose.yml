@@ -16,7 +16,7 @@ services:
     command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
 
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer:1.15.5
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data

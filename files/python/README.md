@@ -38,7 +38,8 @@ Python 3.6.3
 (venv)$ pip list
 pip (9.0.1)
 pkg-resources (0.0.0)
-setuptools (33.1.1)
+setuptools (38.2.5)
+wheel (0.30.0)
 ```
 
 The WSGI application is defined in the `wsgi.py` file. WSGI is the protocol between the application server and a Python application. The application server used is called uWSGI. A request is handled by Nginx which delegates it to uWSGI that manages various Python processes running you application.
@@ -80,19 +81,25 @@ run: uwsgi: (pid: 3) ...s
 $ cd /var/www/app
 $ source venv/bin/activate
 (venv) $ pip install Django
-Successfully installed Django-1.10.5
+Successfully installed Django-2.0 pytz-2017.3
 (venv) $ django-admin startproject mysite
 (venv) $ cd mysite
 ```
 
 ### Configure uWSGI
 
-Change the `chdir` instruction into `conf/uwsgi.ini`
+Change the `chdir` instruction into `/var/www/conf/uwsgi.ini`
 
-```
+```ini
 chdir=/var/www/app/mysite
 virtualenv=/var/www/app/venv    # change it if you recreate a venv
 module=mysite.wsgi:application
+```
+
+Add your host to `mysite/settings.py`
+
+```python
+ALLOWED_HOSTS = ['groupname.srvz-webapp.he-arc.ch']
 ```
 
 Reload uWSGI:
@@ -101,7 +108,7 @@ Reload uWSGI:
 $ sudo sv reload uwsgi
 ```
 
-And open the browser, you should see the _It worked!_ message.
+And open the browser, you should see the _Congratulations!_ message.
 
 ### The Polls app
 
