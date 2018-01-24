@@ -11,16 +11,21 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
  && apt-get upgrade -q -y --allow-unauthenticated \
  && apt-get install -q -y --allow-unauthenticated \
         composer \
+        php${PHP_VERSION}-apcu \
+        php${PHP_VERSION}-bcmath \
         php${PHP_VERSION}-bz2 \
         php${PHP_VERSION}-cli \
+        php${PHP_VERSION}-common \
         php${PHP_VERSION}-curl \
-        php${PHP_VERSION}-intl \
         php${PHP_VERSION}-fpm \
         php${PHP_VERSION}-gd \
+        php${PHP_VERSION}-imagick \
         php${PHP_VERSION}-imap \
+        php${PHP_VERSION}-intl \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-mysql \
         php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-redis \
         php${PHP_VERSION}-soap \
         php${PHP_VERSION}-sqlite3 \
         php${PHP_VERSION}-tidy \
@@ -28,11 +33,6 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
         php${PHP_VERSION}-xmlrpc \
         php${PHP_VERSION}-xsl \
         php${PHP_VERSION}-zip \
-        php-apcu \
-        php-sodium \
-        php-imagick \
-        php-redis \
-        php-xdebug \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf \
@@ -42,8 +42,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
 # PHP
 RUN mkdir -p /run/php \
  && sed -i 's/^\(error_log = \).*$/\1syslog/' /etc/php/${PHP_VERSION}/fpm/php-fpm.conf \
- && ln -s /usr/sbin/php-fpm7.1 /usr/sbin/php-fpm \
- && phpdismod -s cli xdebug \
+ && ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm \
  && for f in "/etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini"; do \
         sed -i 's/;\(date.timezone =\).*/\1 "Europe\/Zurich"/' $f \
      && sed -i 's/\(error_reporting =\).*/\1 E_ALL/' $f \

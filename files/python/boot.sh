@@ -12,5 +12,5 @@ then
 
     # configure python
     python3.6 -m venv /var/www/app/venv
-    /var/www/app/venv/bin/pip --no-cache-dir install -U pip
+    /var/www/app/venv/bin/pip --no-cache-dir install -U pip setuptools wheel
 fi

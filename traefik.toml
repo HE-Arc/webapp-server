@@ -21,6 +21,10 @@ onDemand = true
 onHostRule = true
 entryPoint = "https"
 
+# Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
+[acme.httpChallenge]
+entrypoint = "http"
+
 [entryPoints]
   [entryPoints.http]
   address =":80"
