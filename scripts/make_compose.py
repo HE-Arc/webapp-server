@@ -18,7 +18,7 @@ __author__ = "Yoan Blanc <yoan@dosimple.ch>"
 __version__ = "0.4.0"
 
 domainname = "srvz-webapp.he-arc.ch"
-admin = "teachers"
+admin = "teacher"
 
 Team = namedtuple("Team", "machine image hostname groupname password ssh_keys")
 StudentRecord = namedtuple("StudentRecord",
@@ -93,7 +93,8 @@ def main():
     for student in map(StudentRecord._make, reader):
         # groupname
         groupname = None
-        if args.team in (student.team1, student.team2, admin):
+        if (args.team in (student.team1, student.team2)
+                or student.classname == admin):
             groupname = args.team.lower()
 
         # imagename
@@ -103,7 +104,8 @@ def main():
         elif args.team == student.team2:
             image = student.image2
 
-        if groupname and image:
+        if groupname:
+            # XXX admin group must be after the others
             if groupname not in teams:
                 teams[groupname] = Team(
                     image=image.lower(),
@@ -111,10 +113,9 @@ def main():
                     groupname=groupname,
                     hostname=groupname,
                     password=passgen(punctuation=False),
-                    ssh_keys=[student.github])
+                    ssh_keys={student.github})
             else:
-                # XXX admin group must be after the others
-                teams[groupname].ssh_keys.append(student.github)
+                teams[groupname].ssh_keys.add(student.github)
 
     print(template.render(teams=teams.values(), domainname=domainname))
 
