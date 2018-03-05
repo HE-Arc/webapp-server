@@ -24,11 +24,16 @@ RUN apt-get update -q -y \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 # Python
-RUN curl https://bootstrap.pypa.io/get-pip.py | python${PYTHON_VERSION}
+RUN update-alternatives --install \
+        /usr/bin/python3 \
+        python3 \
+        /usr/bin/python${PYTHON_VERSION} \
+        1 \
+ && curl https://bootstrap.pypa.io/get-pip.py | python3
 
 # uWSGI
 # https://dev.to/pauloxnet/how-to-use-uwsgi-with-ptyhon36-in-ubuntu
-RUN PYTHON=python${PYTHON_VERSION} uwsgi \
+RUN PYTHON=python3 uwsgi \
         --build-plugin "/usr/src/uwsgi/plugins/python python${UWSGI_PLUGIN_NAME}" \
  && mv python${UWSGI_PLUGIN_NAME}_plugin.so /usr/lib/uwsgi/plugins/python${UWSGI_PLUGIN_NAME}_plugin.so \
  && chmod 0644 /usr/lib/uwsgi/plugins/python${UWSGI_PLUGIN_NAME}_plugin.so
