@@ -57,15 +57,7 @@ If you think nginx didn't read the new config (and/or `/var/log/nginx/error.log`
 $ sudo killall nginx
 ```
 
-Your website should display the laravel default homepage or an error if the APP_KEY isn't provided.
-
-If you have an error add 'APP_KEY=' to 'blog/.env' then
-
-```
-$ php artisan key:generate
-```
-
-And it will update the .env file with a new key.
+Your website should display the laravel default homepage.
 
 ### Logs
 

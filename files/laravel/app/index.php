@@ -30,7 +30,7 @@ $pgsql = [
 
 
 // Hide the secrets from phpinfo.
-foreach(["PASSWORD", "SECRET_KEY", "SECRET_KEY_BASE"] as $secret) {
+foreach(["PASSWORD", "APP_KEY", "SECRET_KEY", "SECRET_KEY_BASE"] as $secret) {
   unset($_SERVER[$secret]);
   unset($_ENV[$secret]);
   putenv("$secret=");
