@@ -5,7 +5,7 @@ set -e
 cd "/var/www/app"
 exec 2>&1
 
-export GEM_HOME="/home/poweruser/.gem/ruby/2.4.0"
+export GEM_HOME="/home/poweruser/.gem/ruby/2.5.0"
 export PATH="$PATH:$GEM_HOME/bin"
 
 ENV_FILE="/etc/container_environment"
