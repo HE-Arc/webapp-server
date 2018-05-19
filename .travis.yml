@@ -1,3 +1,8 @@
+sudo: required
+
+services:
+  - docker
+
 script:
   - make base
   - make laravel
