@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   proxy:
-    image: traefik:1.5-alpine
+    image: traefik:1.6-alpine
     hostname: proxy
     domainname: srvz-webapp.he-arc.ch
     volumes:
@@ -16,7 +16,7 @@ services:
     command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
 
   portainer:
-    image: portainer/portainer:1.16.2
+    image: portainer/portainer:1.17.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
@@ -32,7 +32,7 @@ services:
   # Databases
 
   postgres:
-    image: postgres:9.6-alpine
+    image: postgres:10-alpine
     container_name: postgres
     environment:
       - POSTGRES_PASSWORD=root

@@ -1,5 +1,7 @@
-FROM ubuntu:artful
+# vim: ft=dockerfile:
+FROM ubuntu:bionic
 
+ARG UBUNTU_VERSION=bionic
 ARG MYSQL_VERSION
 ARG NODEJS_VERSION
 ARG POSTGRES_VERSION
@@ -42,8 +44,11 @@ RUN apt-get update -q \
         ca-certificates \
         cron \
         curl \
+        dnsutils \
         fontconfig \
         git \
+        htop \
+        inetutils-ping \
         iproute2 \
         jq \
         language-pack-de-base \
@@ -72,15 +77,15 @@ RUN apt-get update -q \
         sudo \
         syslog-ng \
         unzip \
-        vim \
+        vim-tiny \
         wget \
  && apt-get autoremove -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # NodeSource Apt Repository
-# https://deb.nodesource.com/setup_9.x
-RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} zesty main" \
+# https://deb.nodesource.com/setup_10.x
+RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
   > /etc/apt/sources.list.d/nodesource.list
 RUN wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
   | apt-key add -
@@ -197,5 +202,3 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>" \
       org.label-schema.vcs-ref=${VCS_REF} \
       org.label-schema.vcs-url="https://github.com/HE-Arc/webapp-server" \
       org.label-schema.schema-version="1.0"
-
-# vim: ft=dockerfile:
