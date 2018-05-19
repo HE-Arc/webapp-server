@@ -47,5 +47,4 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - PYTHON_VERSION=3.6
-        - UWSGI_PLUGIN_NAME=36
+        - PYTHON_VERSION=3
