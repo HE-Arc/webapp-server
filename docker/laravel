@@ -1,3 +1,4 @@
+# vim: ft=dockerfile:
 FROM hearcch/webapp-server:latest
 
 ARG PHP_VERSION
@@ -5,11 +6,9 @@ ARG PHP_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LC_ALL=C.UTF-8
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E5267A6C \
- && add-apt-repository ppa:ondrej/php -y \
- && apt-get update -q \
- && apt-get upgrade -q -y --allow-unauthenticated \
- && apt-get install -q -y --allow-unauthenticated \
+RUN  apt-get update -q \
+ && apt-get upgrade -q -y \
+ && apt-get install -q -y \
         composer \
         php${PHP_VERSION}-apcu \
         php${PHP_VERSION}-bcmath \
@@ -69,4 +68,3 @@ ARG VCS_REF
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
       org.label-schema.vcs-ref=${VCS_REF}
-# vim: ft=dockerfile:
