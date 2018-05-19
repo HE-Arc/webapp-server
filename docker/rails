@@ -4,8 +4,7 @@ ARG RUBY_VERSION
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-add-repository ppa:brightbox/ruby-ng \
- && apt-get update -q -y \
+RUN apt-get update -q -y \
  && apt-get install -q -y \
         autoconf \
         imagemagick \
@@ -19,10 +18,8 @@ RUN apt-add-repository ppa:brightbox/ruby-ng \
         libxslt1-dev \
         ruby${RUBY_VERSION} \
         ruby${RUBY_VERSION}-dev \
-        ruby-switch \
  && apt-get autoremove -q -y \
  && apt-get clean \
- && ruby-switch --set ruby${RUBY_VERSION} \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 RUN echo "gem: --no-document" > /etc/gemrc
