@@ -18,7 +18,7 @@ def application(environ, start_response):
         *(f"<dt>{k}<dd>{v}"
           for e in (environ, os.environ)
           for k, v in e.items()
-          if k not in ("PASSWORD", "SECRET_KEY", "SECRET_KEY_BASE")),
+          if k not in ("PASSWORD", "APP_KEY", "SECRET_KEY", "SECRET_KEY_BASE")),
         "</dl>")
     start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
 

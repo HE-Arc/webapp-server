@@ -25,8 +25,10 @@ export REDIS_PORT=${REDIS_PORT:-6379}
 export SMTP_HOST=${SMTP_HOST:-smtp}
 export SMTP_PORT=${SMTP_PORT:-1025}
 
+# Laravel
+export APP_KEY=${APP_KEY:-$(echo "base64:$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | base64)")}
 # Rails
-export SECRET_KEY_BASE=${SECRET_KEY_BASE:-`pwgen 128 1`}
+export SECRET_KEY_BASE=${SECRET_KEY_BASE:-$(pwgen 128 1)}
 # Django
 export SECRET_KEY=${SECRET_KEY:-$SECRET_KEY_BASE}
 

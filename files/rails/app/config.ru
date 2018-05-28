@@ -8,7 +8,7 @@ run lambda { |env| [
     "<p><img src=nginx-puma.png alt='Powered by NGINX + Puma'>",
     "<h2>ENV</h2>",
     "<dl>",
-    ENV .select { |k,v| k !~ /^(PASSWORD|SECRET_KEY(_BASE)?)$/ }
+    ENV .select { |k,v| k !~ /^(PASSWORD|APP_KEY|SECRET_KEY(_BASE)?)$/ }
         .collect { |k,v| "<dt>#{k}<dd>#{v}" }
         .flatten
         .join(""),
