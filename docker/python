@@ -13,7 +13,7 @@ RUN apt-get update -q -y \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-dev \
         python${PYTHON_VERSION}-venv \
-        python${PYTHON_VERSINO}-pip \
+        python${PYTHON_VERSION}-pip \
         uuid-dev \
         uwsgi \
         uwsgi-src \
