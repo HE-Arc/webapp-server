@@ -34,9 +34,9 @@ Ruby and gem are installed by default.
 
 ```
 $ ruby --version
-ruby 2.4
+ruby 2.5.0p0
 $ gem --version
-2.6.8
+2.7.3
 ```
 
 But you may have to install Ruby on Rails:

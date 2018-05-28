@@ -11,13 +11,13 @@ services:
       context: .
       # Set VCS/BUILD manually or use the Makefile.
       args:
-        - VCS_REF=$VCS_REF
-        - BUILD_DATE=$BUILD_DATE
-        - MYSQL_VERSION=5.7
-        - NODEJS_VERSION=9.x
-        - POSTGRES_VERSION=9.6
-        - TINI_VERSION=0.16.1
-        - TINI_SIG=135f7342323526e39ba448c6ed5daab8f774430ce7887a3d562aa793e63dd99621b5251f80e5df8813fae0a3a3c041c646f0b0bf5455538d28a8f4b132aad190
+        VCS_REF: $VCS_REF
+        BUILD_DATE: $BUILD_DATE
+        MYSQL_VERSION: "5.7"
+        NODEJS_VERSION: "10.x"
+        POSTGRES_VERSION: "10"
+        TINI_VERSION: "0.18.0"
+        TINI_SIG: 03b3afa45e3720b6fc134b41c510580734446d7cba6b7404ac0ee7213a5b75eb65525e4de022cd54fa6a51200705be9834f844ff39e3869a16cb639bcf32e5e9
 
   laravel:
     image: hearcch/webapp-server:laravel
@@ -37,7 +37,7 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - RUBY_VERSION=2.4
+        - RUBY_VERSION=2.5
 
   python:
     image: hearcch/webapp-server:python
@@ -47,5 +47,4 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - PYTHON_VERSION=3.6
-        - UWSGI_PLUGIN_NAME=36
+        - PYTHON_VERSION=3

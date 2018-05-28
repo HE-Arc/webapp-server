@@ -6,6 +6,6 @@ all: $(ALL)
 .PHONY: $(ALL)
 $(ALL):
 	docker-compose -f build.yml build \
-		--build-arg VCS_REF=`git rev-parse HEAD` \
-		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%m:%SZ"` \
+		--build-arg VCS_REF="$(shell git rev-parse HEAD)" \
+		--build-arg BUILD_DATE="$(shell date -u +"%Y-%m-%dT%H:%m:%SZ")" \
 		$@

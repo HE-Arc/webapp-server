@@ -1,0 +1,10 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - make base
+  - make laravel
+  - make python
+  - make rails

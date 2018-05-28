@@ -1,7 +1,6 @@
 FROM hearcch/webapp-server:latest
 
 ARG PYTHON_VERSION
-ARG UWSGI_PLUGIN_NAME
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -14,24 +13,15 @@ RUN apt-get update -q -y \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-dev \
         python${PYTHON_VERSION}-venv \
+        python${PYTHON_VERSION}-pip \
         uuid-dev \
         uwsgi \
         uwsgi-src \
-        uwsgi-plugin-python3 \
-        uwsgi-plugin-asyncio-python3 \
+        uwsgi-plugin-python${PYTHON_VERSION} \
+        uwsgi-plugin-asyncio-python${PYTHON_VERSION} \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
-
-# Python
-RUN curl https://bootstrap.pypa.io/get-pip.py | python${PYTHON_VERSION}
-
-# uWSGI
-# https://dev.to/pauloxnet/how-to-use-uwsgi-with-ptyhon36-in-ubuntu
-RUN PYTHON=python${PYTHON_VERSION} uwsgi \
-        --build-plugin "/usr/src/uwsgi/plugins/python python${UWSGI_PLUGIN_NAME}" \
- && mv python${UWSGI_PLUGIN_NAME}_plugin.so /usr/lib/uwsgi/plugins/python${UWSGI_PLUGIN_NAME}_plugin.so \
- && chmod 0644 /usr/lib/uwsgi/plugins/python${UWSGI_PLUGIN_NAME}_plugin.so
 
 ## Runit
 COPY files/python/runit/uwsgi.sh /etc/service/uwsgi/run
