@@ -71,7 +71,7 @@ $ docker-compose -f teams/eatapp-compose.yml up
 Reusing the `docker-compose.yml` file, we create the databases.
 
 ```console
-$ script/bdd.py < teams/eatapp-compose.yml
+$ scripts/bdd.py < teams/eatapp-compose.yml
 ```
 
 ## Containers
