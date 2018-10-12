@@ -17,12 +17,20 @@ $ composer --help
 But you may have to install the laravel-installer.
 
 ```
-$ composer global require laravel/installer=~1.3
+$ composer global require laravel/installer
+```
+
+Make sure to place composer's system-wide vendor bin directory in your $PATH so the laravel executable can be located by your system.
+
+By default the composer's bin directory is in `$HOME/vendor/bin`. More infos with:
+
+```
+$ composer config --list --global
 ```
 
 # Laravel tutorial
 
-This is from the [Laravel 5.5 documentation](http://laravel.com/docs/5.5).
+This is from the [Laravel 5.7 documentation](http://laravel.com/docs/5.7).
 
 ## Creating a new project
 
