@@ -161,6 +161,55 @@ $ npm run prod # or production
 
 Although, doing this on the production server is not a good idea. Putting the generated scripts and stylesheets on Git is ok.
 
+# Mixed content issue
+
+Laravel "helper" functions such as [``asset()``](https://laravel.com/docs/5.7/helpers#method-asset) or [``route()``](https://laravel.com/docs/5.7/helpers#method-route) should detect the current protocol (HTTP or HTTPS) and output URLs accordingly. However, when you deploy your application and browse it in HTTPS, you may notice that assets such as JavaScript or CSS are loaded in HTTP. Thus they are blocked for security reasons because your browser considers them as [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content). So, what's happening here ? Why ``asset()`` and ``route()`` functions do not work correctly ?
+
+## Explanation
+
+This comes from the architecture of the server: any HTTP(S) request targeting a subdomain of ``srvz-webapp.he-arc.ch`` first hits a reverse proxy called [Træfik](https://docs.traefik.io/basics/).
+It will parse the requested hostname (``group1.srvz-webapp.he-arc.ch`` or ``group2.srvz-webapp.he-arc.ch`` or ...) and then forward the request to the matching Nginx server (``group1``'s or ``group2``'s or ...).
+
+The mixed content issue comes from here: the [HTTPS connection terminates](https://en.wikipedia.org/wiki/TLS_termination_proxy) between the browser and the reverse proxy ; your proxy "speaks" to your Nginx server in cleartext HTTP. In consequence, your Laravel application will consider that the content was requested in HTTP, which explains why ``asset()`` and ``route()`` functions did not work as expected.
+
+## Solution
+
+The best solution to solve this issue is to use the ``X-Forwarded-Proto`` HTTP header that the reverse proxy set before forwarding the request to your Nginx server. It contains the protocol (HTTP or HTTPS) the client used in the original request.
+
+Laravel contains classes (such as Symfony's ``Request`` class) that are able to check the value of this header and then output correct URLs automatically, but by default it will just ignore it for (again) security reasons because it does not "trust" the proxies and their ``X-Forwarded-*`` HTTP headers.
+To change this behavior, we can use the ``TrustProxies`` middleware that Laravel [includes by default since version 5.5](https://laravel-news.com/trusted-proxy).
+
+All you need to do is to set the ``$proxies`` attribute with the addresses of trusted proxies in ``app/Http/Middleware/TrustProxies.php``. The hasty solution is to trust any proxies:
+
+```php
+// ...
+// Trust any proxies
+protected $proxies = '*';
+// ...
+```
+
+If you want to be more restrictive and only trust the reverse proxy used in the server, you must first obtain its address. The easiest way to get it is to read the Nginx access log (if you take a look at it, you will notice that all requests comes from the same IP address, the reverse proxy's one):
+
+```bash
+$ # Takes the last line of the Nginx access log and
+$ # outputs the "client" address, in our case the reverse proxy's
+$ tail -n 1 ~/www/logs/nginx_access.log | cut -d ' ' -f 1
+```
+
+Then, still in ``app/Http/Middleware/TrustProxies.php``:
+
+```php
+// ...
+// Trust specific proxies
+protected $proxies = [
+    'REVERSE-PROXY-IP-ADDRESS',  // Replace with the address found above
+];
+// ...
+```
+
+That's it, now that Laravel "trusts" the reverse proxy, it will read the value set in the ``X-Forwarded-Proto`` HTTP header. This means it now knows with which protocol the client (your browser) made the request, and will output URLs accordingly.
+No more mixed content issue.
+
 # Advanced topics
 
 Run them at your own risks!
