@@ -188,13 +188,14 @@ protected $proxies = '*';
 // ...
 ```
 
-If you want to be more restrictive and only trust the reverse proxy used in the server, you must first obtain its address. The easiest way to get it is to read the Nginx access log (if you take a look at it, you will notice that all requests comes from the same IP address, the reverse proxy's one):
+If you want to be more restrictive and only trust the reverse proxy used in the server, you must first obtain its IP address. The easiest way to get it is to read the Nginx access log (if you take a look at it, you will notice that all requests comes from the same IP address, the reverse proxy's one):
 
 ```bash
 $ # Takes the last line of the Nginx access log and
-$ # outputs the "client" address, in our case the reverse proxy's
+$ # outputs the "client" IP address, in our case the reverse proxy's
 $ tail -n 1 ~/www/logs/nginx_access.log | cut -d ' ' -f 1
 ```
+This command will output the reverse proxy private IP address. Let us assume that it is ``172.18.0.6`` but make sure to run this command yourself and use its output afterwards, the address may be different on your server for any reason whatsoever.
 
 Then, still in ``app/Http/Middleware/TrustProxies.php``:
 
@@ -202,7 +203,7 @@ Then, still in ``app/Http/Middleware/TrustProxies.php``:
 // ...
 // Trust specific proxies
 protected $proxies = [
-    'REVERSE-PROXY-IP-ADDRESS',  // Replace with the address found above
+    '172.18.0.6',  // Replace with the address found using the command above
 ];
 // ...
 ```
