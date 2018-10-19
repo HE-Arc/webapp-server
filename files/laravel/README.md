@@ -1,10 +1,14 @@
-{# vim: set ft=jinja: -#}
+# README
 
-{%- extends "base/README.md" -%}
+Welcome aboard!
 
-{% block body %} {{ super() }}
+## Files
 
-You may also see how it's currently done in `index.php`.
+`README.md` is this file.
+
+The funny message comes from `~/.bash_profile`.
+
+Feel free to adapt the git configuration in `~/.gitconfig`.
 
 # PHP
 
@@ -18,14 +22,6 @@ But you may have to install the laravel-installer.
 
 ```
 $ composer global require laravel/installer
-```
-
-Make sure to place composer's system-wide vendor bin directory in your $PATH so the laravel executable can be located by your system.
-
-By default the composer's bin directory is in `$HOME/vendor/bin`. More infos with:
-
-```
-$ composer config --list --global
 ```
 
 # Laravel tutorial
@@ -49,7 +45,7 @@ $ sudo setfacl -dR -m g:poweruser:rwx storage bootstrap/cache
 You only have to fix the path into the nginx configuration file to have your application showing up on port 80\. The file is `www/config/nginx.conf`
 
 ```
-#root /var/www/public;
+#root /var/www/app;
 root /var/www/blog/public;
 ```
 
@@ -97,10 +93,13 @@ Modify `blog/config/database.php` as such:
         'database' => env('GROUPNAME', env('DB_DATABASE', 'forge')),
         'username' => env('GROUPNAME', env('DB_USERNAME', 'forge')),
         'password' => env('PASSWORD', env('DB_PASSWORD', '')),
+        'unix_socket' => env('DB_SOCKET', ''),
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => '',
-        'strict' => false
+        'prefix_indexes' => true,
+        'strict' => true,
+        'engine' => null,
     ],
     // ...
 ],
@@ -108,8 +107,6 @@ Modify `blog/config/database.php` as such:
 ```
 
 `env('MYSQL_HOST')` (aka `$_SERVER['MYSQL_HOST']`) is the environment variable containing the host name of the MySQL server. Hence, you don't have to put it in the `.env` file. Keep the `.env` file for you local setup.
-
-What is `utf8mb4`? See: <https://mathiasbynens.be/notes/mysql-utf8mb4>
 
 ## Using Postgres instead of MySQL
 
@@ -127,7 +124,7 @@ In Postgres, it's similar expect that this is done with three schemas within one
 
 # Initializing the models
 
-The models are defined through [migrations](http://laravel.com/docs/5.5/migrations) which enable rollbacks. You should always use them. We will instantiate the default model which creates two tables do deal with users and their password.
+The models are defined through [migrations](http://laravel.com/docs/5.7/migrations) which enable rollbacks. You should always use them. We will instantiate the default model which creates two tables do deal with users and their password.
 
 Now, we are ready to run the migrations:
 
@@ -278,5 +275,3 @@ MAIL_ENCRYPTION=null
 ```
 
 **NB:** this doesn't allow you to send email outside the local network, all mails will be caught by mailhog. If you want to really put your app in production with real email service, you'll need to config another service such as gmail, mailgun, amazon, etc._
-
-{% endblock -%}

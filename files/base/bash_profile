@@ -6,6 +6,7 @@ do
 done
 
 export PATH=$PATH:/usr/games/
+export PATH=$PATH:~/.composer/vendor/bin
 
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
