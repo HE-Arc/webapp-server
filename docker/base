@@ -84,16 +84,25 @@ RUN apt-get update -q \
  && rm -rf /var/lib/apt/lists/*
 
 # NodeSource Apt Repository
-# https://deb.nodesource.com/setup_10.x
+# https://deb.nodesource.com/setup_11.x
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
-  > /etc/apt/sources.list.d/nodesource.list
-RUN wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+        > /etc/apt/sources.list.d/nodesource.list \
+ && echo "deb-src https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
+        >> /etc/apt/sources.list.d/nodesource.list \
+ && wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
   | apt-key add -
+
+# Yarn
+RUN wget --quiet -O - https://dl.yarnpkg.com/debian/pubkey.gpg \
+    | apt-key add - \
+ && echo "deb https://dl.yarnpkg.com/debian/ stable main" \
+        > /etc/apt/sources.list.d/yarn.list
 
 # Installation of external and “experimental” packages
 RUN apt-get update \
  && apt-get install -q -y \
     nodejs \
+    yarn \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
