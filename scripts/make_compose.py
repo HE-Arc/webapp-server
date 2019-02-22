@@ -56,7 +56,7 @@ services:
       - "traefik.port=80"
 
   {{ team.machine }}_redis:
-    image: redis:3.2-alpine
+    image: redis:5-alpine
     volumes:
       - {{ team.machine }}_redis:/data
     labels:
