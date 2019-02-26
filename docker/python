@@ -1,6 +1,7 @@
 FROM hearcch/webapp-server:latest
 
 ARG PYTHON_VERSION
+ARG RUBY_VERSION
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -19,6 +20,8 @@ RUN apt-get update -q -y \
         uwsgi-src \
         uwsgi-plugin-python${PYTHON_VERSION} \
         uwsgi-plugin-asyncio-python${PYTHON_VERSION} \
+        ruby${RUBY_VERSION} \
+        ruby${RUBY_VERSION}-dev \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*

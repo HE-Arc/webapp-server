@@ -48,3 +48,4 @@ services:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
         - PYTHON_VERSION=3
+        - RUBY_VERSION=2.5
