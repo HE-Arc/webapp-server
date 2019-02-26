@@ -196,6 +196,8 @@ RUN chmod +x /etc/service/cron/run \
 COPY files/base /var/templates/base
 
 # Logrotate
+RUN f=/etc/logrotate.conf \
+ && sed -i 's/su root syslog/su root poweruser/' $f
 COPY files/base/vhost.logrotate /etc/logrotate.d/
 
 # Set correct environment variables.
