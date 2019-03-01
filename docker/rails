@@ -1,7 +1,5 @@
 FROM hearcch/webapp-server:latest
 
-ARG RUBY_VERSION
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -q -y \
