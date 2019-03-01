@@ -11,9 +11,6 @@ then
     cp -r /var/templates/python/app /var/www/app
 
     # configure python
-    python3.6 -m venv /var/www/app/venv
+    python3 -m venv /var/www/app/venv
     /var/www/app/venv/bin/pip --no-cache-dir install -U pip setuptools wheel
-
-    # configure ruby
-    gem install bundler
 fi

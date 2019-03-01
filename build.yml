@@ -37,7 +37,6 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - RUBY_VERSION=2.5
 
   python:
     image: hearcch/webapp-server:python
@@ -48,4 +47,3 @@ services:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
         - PYTHON_VERSION=3
-        - RUBY_VERSION=2.5

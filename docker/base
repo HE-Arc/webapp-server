@@ -70,6 +70,8 @@ RUN apt-get update -q \
         postgresql-client-${POSTGRES_VERSION} \
         psmisc \
         pwgen \
+        ruby \
+        ruby-dev \
         runit \
         sqlite3 \
         software-properties-common \
@@ -91,6 +93,9 @@ RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION
         >> /etc/apt/sources.list.d/nodesource.list \
  && wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
   | apt-key add -
+
+# Ruby
+RUN echo "gem: --no-document" > /etc/gemrc
 
 # Yarn
 RUN wget --quiet -O - https://dl.yarnpkg.com/debian/pubkey.gpg \

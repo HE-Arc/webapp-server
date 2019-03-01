@@ -70,5 +70,12 @@ do
         | tee -a /home/$username/.ssh/authorized_keys
 done
 
+# ruby
+USER=`id -nu $username`
+RUBY_VERSION=`ruby --version | ruby -ne 'print /\b\d\.\d+/.match($_)'`
+export GEM_HOME=/home/$USER/.gem/ruby/$RUBY_VERSION.0
+export PATH=$PATH:$GEM_HOME/bin
+
+gem install bundler
 
 exec /usr/bin/runsvdir -P /etc/service

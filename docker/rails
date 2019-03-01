@@ -16,13 +16,10 @@ RUN apt-get update -q -y \
         libyaml-dev \
         libxml2-dev \
         libxslt1-dev \
-        ruby${RUBY_VERSION} \
-        ruby${RUBY_VERSION}-dev \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
-RUN echo "gem: --no-document" > /etc/gemrc
 
 ## Runit
 COPY files/rails/runit/puma.sh /etc/service/puma/run
@@ -30,10 +27,6 @@ RUN chmod +x /etc/service/puma/run
 
 # Templates
 COPY files/rails /var/templates/rails
-# Develop
-#COPY files/base /var/templates/base
-#COPY files/boot.sh /usr/local/bin/boot.sh
-#RUN chmod +x /usr/local/bin/boot.sh
 
 # Config
 ENV CONFIG rails
