@@ -5,31 +5,27 @@ defaultEntryPoints = ["http", "https"]
 traefikLogsFile = "/proc/self/fd/1"
 accessLogsFile = "/proc/self/fd/1"
 
+[api]
+  dashboard = true
+
 [web]
-address = ":8080"
+  address = ":8080"
 
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-watch = true
-exposedbydefault = false
-
-[acme]
-email = "yoan.blanc@he-arc.ch"
-storage = "/etc/traefik/acme/acme.json"
-acmeLogging = true
-onDemand = true
-onHostRule = true
-entryPoint = "https"
-
-# Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
-[acme.httpChallenge]
-entrypoint = "http"
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  watch = true
+  exposedByDefault = true
 
 [entryPoints]
   [entryPoints.http]
   address =":80"
-    [entryPoints.http.redirect]
-    entryPoint = "https"
   [entryPoints.https]
   address = ":443"
-    [entryPoints.https.tls]
+
+[certificatesResolvers.sample.acme]
+  email = "yoan.blanc@he-arc.ch"
+  storage = "acme.json"
+
+# Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
+  [acme.httpChallenge]
+    entryPoint = "https"
