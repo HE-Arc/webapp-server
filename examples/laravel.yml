@@ -19,9 +19,7 @@ services:
     links:
       - eatapp_redis:redis
     labels:
-      - "traefik.frontend.rule=Host:eatapp.srvz-webapp.he-arc.ch"
-      - "traefik.port=80"
-      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`eatapp.srvz-webapp.he-arc.ch`)"
 
   eatapp_redis:
     image: redis:5-alpine

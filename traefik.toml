@@ -1,31 +1,41 @@
-#debug = true
-logLevel = "INFO"
-defaultEntryPoints = ["http", "https"]
-
-traefikLogsFile = "/proc/self/fd/1"
-accessLogsFile = "/proc/self/fd/1"
+[log]
+  level = "DEBUG"
+  filePath = "/proc/self/fd/1"
+  format = "json"
 
 [api]
   dashboard = true
-
-[web]
-  address = ":8080"
+  insecure = true
 
 [providers.docker]
   endpoint = "unix:///var/run/docker.sock"
   watch = true
   exposedByDefault = true
 
-[entryPoints]
-  [entryPoints.http]
-  address =":80"
-  [entryPoints.https]
-  address = ":443"
+[entryPoints.web]
+  address = ":80"
+
+[entryPoints.traefik]
+  address = ":8080"
+
+[http.routers]
+  [http.routers.api]
+    service="api@internal"
+
+  [http.routers.web]
+    entrypoints = ["web"]
+    middlewares = ["redirect"]
+
+  [http.routers.web-secure]
+    entrypoints = ["traefik"]
+    [http.routers.web-secure.tls]
+
+[http.middlewares]
+  [http.middlewares.redirect.redirectScheme]
+    scheme = "https"
 
 [certificatesResolvers.sample.acme]
   email = "yoan.blanc@he-arc.ch"
   storage = "acme.json"
-
-# Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
-  [acme.httpChallenge]
-    entryPoint = "https"
+  [certificatesResolvers.sample.acme.httpChallenge]
+    entryPoint = "web"

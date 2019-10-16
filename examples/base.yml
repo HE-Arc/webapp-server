@@ -17,9 +17,7 @@ services:
       - mysql
       - smtp
     labels:
-      - "traefik.frontend.rule=Host:admin.srvz-webapp.he-arc.ch"
-      - "traefik.port=80"
-      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`admin.srvz-webapp.he-arc.ch`)"
 
   admin_redis:
     image: redis:5-alpine

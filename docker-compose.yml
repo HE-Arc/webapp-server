@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   proxy:
-    image: traefik:2.0-alpine
+    image: traefik:v2.0.2
     hostname: proxy
     domainname: srvz-webapp.he-arc.ch
     volumes:
@@ -13,7 +13,7 @@ services:
       - "8080:8080"
       - "80:80"
       - "443:443"
-    command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
+    command: -c /etc/traefik/traefik.toml --docker.domain=localhost --api.debug
 
   portainer:
     image: portainer/portainer:1.20.1

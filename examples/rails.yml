@@ -19,9 +19,7 @@ services:
     links:
       - capistrano_redis:redis
     labels:
-      - "traefik.frontend.rule=Host:capistrano.srvz-webapp.he-arc.ch"
-      - "traefik.port=80"
-      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
 
   capistrano_redis:
     image: redis:4-alpine

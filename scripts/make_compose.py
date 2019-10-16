@@ -52,8 +52,7 @@ services:
       - {{ team.machine }}_redis:redis
 
     labels:
-      - "traefik.frontend.rule=Host:{{ team.hostname }}.{{ domainname }}"
-      - "traefik.port=80"
+      - "traefik.http.routers.web.rule=Host(`{{ team.hostname }}.{{ domainname }}`)"
 
   {{ team.machine }}_redis:
     image: redis:5-alpine
