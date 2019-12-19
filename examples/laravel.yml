@@ -19,7 +19,11 @@ services:
     links:
       - eatapp_redis:redis
     labels:
-      - "traefik.http.routers.web.rule=Host(`eatapp.srvz-webapp.he-arc.ch`)"
+      - "traefik.enable=true"
+      - "traefik.http.services.eatapp.loadbalancer.server.port=80"
+      - "traefik.http.routers.eatapp.rule=Host(`eatapp.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.eatapp.entrypoints=web-secure"
+      - "traefik.http.routers.eatapp.tls.certresolver=letsencrypt"
 
   eatapp_redis:
     image: redis:5-alpine
@@ -27,9 +31,8 @@ services:
       - eatapp_redis:/data
 
 networks:
-  default:
-    external:
-      name: webapp-net
+  web:
+    external: true
 
 volumes:
   eatapp:
