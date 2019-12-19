@@ -1,0 +1,36 @@
+defaultEntryPoints = ["web", "web-secure"]
+
+[log]
+  level = "DEBUG"
+  filePath = "/proc/self/fd/1"
+  format = "json"
+
+[api]
+  dashboard = true
+  insecure = true
+
+[providers.docker]
+  watch = true
+  exposedByDefault = false
+  network = "web"
+
+[providers.file]
+  filename = "/etc/traefik/dynamic_conf.toml"
+  watch = true
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.web-secure]
+    address = ":443"
+
+[entryPoints.traefik]
+  address = ":8080"
+
+
+[certificatesResolvers.sample.acme]
+  email = "yoan.blanc@he-arc.ch"
+  storage = "/etc/traefik/acme.json"
+[certificatesResolvers.letsencrypt.acme.httpChallenge]
+    entryPoint = "web"
+
