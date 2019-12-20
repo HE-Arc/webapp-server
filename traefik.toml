@@ -2,7 +2,6 @@ defaultEntryPoints = ["http", "https"]
 
 [global]
   sendAnonymousUsage = false
-  debug = true
 
 [log]
   level = "DEBUG"
@@ -31,6 +30,6 @@ defaultEntryPoints = ["http", "https"]
 
 [certificatesResolvers.letsencrypt.acme]
   email = "yoan.blanc@he-arc.ch"
-  storage = "/etc/traefik/acme.json"
+  storage = "/etc/traefik/acme/acme.json"
   [certificatesResolvers.letsencrypt.acme.httpChallenge]
     entryPoint = "http"
