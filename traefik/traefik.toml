@@ -28,7 +28,7 @@ defaultEntryPoints = ["web", "web-secure"]
   address = ":8080"
 
 
-[certificatesResolvers.sample.acme]
+[certificatesResolvers.letsencrypt.acme]
   email = "yoan.blanc@he-arc.ch"
   storage = "/etc/traefik/acme.json"
 [certificatesResolvers.letsencrypt.acme.httpChallenge]
