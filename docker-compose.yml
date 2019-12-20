@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   proxy:
-    image: traefik:v2.0.2
+    image: traefik:v2.1.1
     hostname: proxy
     domainname: srvz-webapp.he-arc.ch
     volumes:
@@ -16,7 +16,7 @@ services:
     command: -c /etc/traefik/traefik.toml --docker.domain=localhost --api.debug
 
   portainer:
-    image: portainer/portainer:1.20.1
+    image: portainer/portainer:1.23.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
@@ -25,9 +25,9 @@ services:
       - "9000:9000"
     # public
     #labels:
-    #  - "traefik.backend=portainer"
-    #  - "traefik.frontend.rule=Host:portainer.srvz-webapp.he-arc.ch"
-    #  - "traefik.port=9000"
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.portainer.rule=Host(`portainer.srvz-webapp.he-arc.ch`)"
+    #  - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # Databases
 
@@ -58,9 +58,9 @@ services:
     image: mailhog/mailhog:latest
     container_name: smtp
     labels:
-      - "traefik.frontend.rule=Host:webmail.srvz-webapp.he-arc.ch"
-      - "traefik.port=8025"
       - "traefik.enable=true"
+      - "traefik.http.routers.smtp.rule=Host(`webmail.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.services.smtp-service.loadbalancer.server.port=8025"
 
 networks:
   default:

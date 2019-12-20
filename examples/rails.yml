@@ -19,7 +19,14 @@ services:
     links:
       - capistrano_redis:redis
     labels:
-      - "traefik.http.routers.web.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.capistrano.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.middlewares.capistrano-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.capistrano.middlewares=capistrano-redirect"
+      - "traefik.http.routers.capistrano-secure.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.capistrano-secure.entrypoints=https"
+      - "traefik.http.routers.capistrano-secure.tls=true"
+      - "traefik.http.services.capistrano.loadbalancer.server.port=80"
 
   capistrano_redis:
     image: redis:4-alpine

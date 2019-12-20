@@ -1,3 +1,9 @@
+defaultEntryPoints = ["http", "https"]
+
+[global]
+  sendAnonymousUsage = false
+  debug = true
+
 [log]
   level = "DEBUG"
   filePath = "/proc/self/fd/1"
@@ -7,35 +13,24 @@
   dashboard = true
   insecure = true
 
-[providers.docker]
-  endpoint = "unix:///var/run/docker.sock"
-  watch = true
-  exposedByDefault = true
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    watch = true
+    exposedByDefault = false
 
-[entryPoints.web]
-  address = ":80"
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
 
-[entryPoints.traefik]
-  address = ":8080"
+  [entryPoints.https]
+    address = ":443"
 
-[http.routers]
-  [http.routers.api]
-    service="api@internal"
+  [entryPoints.traefik]
+    address = ":8080"
 
-  [http.routers.web]
-    entrypoints = ["web"]
-    middlewares = ["redirect"]
-
-  [http.routers.web-secure]
-    entrypoints = ["traefik"]
-    [http.routers.web-secure.tls]
-
-[http.middlewares]
-  [http.middlewares.redirect.redirectScheme]
-    scheme = "https"
-
-[certificatesResolvers.sample.acme]
+[certificatesResolvers.letsencrypt.acme]
   email = "yoan.blanc@he-arc.ch"
-  storage = "acme.json"
-  [certificatesResolvers.sample.acme.httpChallenge]
-    entryPoint = "web"
+  storage = "/etc/traefik/acme.json"
+  [certificatesResolvers.letsencrypt.acme.httpChallenge]
+    entryPoint = "http"
