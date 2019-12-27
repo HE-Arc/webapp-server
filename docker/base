@@ -12,11 +12,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME=poweruser
 
-# Ports
-EXPOSE 22 80
 # Volumes
 VOLUME /var/www
-
 
 # Config
 ENV GROUPNAME unknown

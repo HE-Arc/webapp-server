@@ -26,10 +26,12 @@ services:
     #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.portainer.rule=Host(`portainer.srvz-webapp.he-arc.ch`)"
-    #  - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+    #  - "traefik.http.middlewares.portainer-redirect.redirectscheme.scheme=https"
+    #  - "traefik.http.routers.portainer.middlewares=portainer-redirect"
+    #  - "traefik.http.routers.portainer-secure.rule=Host(`portainer.srvz-webapp.he-arc.ch`)"
     #  - "traefik.http.routers.portainer-secure.entrypoints=https"
     #  - "traefik.http.routers.portainer-secure.tls=true"
-    #  - "traefik.http.services.portainer.loadbalancer.server.port=80"
+    #  - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # Databases
 
@@ -62,10 +64,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.smtp.rule=Host(`webmail.srvz-webapp.he-arc.ch`)"
-      - "traefik.http.services.smtp-service.loadbalancer.server.port=8025"
+      - "traefik.http.middlewares.smtp-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.smtp.middlewares=smtp-redirect"
+      - "traefik.http.routers.smtp-secure.rule=Host(`webmail.srvz-webapp.he-arc.ch`)"
       - "traefik.http.routers.smtp-secure.entrypoints=https"
       - "traefik.http.routers.smtp-secure.tls=true"
-      - "traefik.http.services.smtp.loadbalancer.server.port=80"
+      - "traefik.http.services.smtp-service.loadbalancer.server.port=8025"
 
 networks:
   default:

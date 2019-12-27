@@ -24,7 +24,8 @@ services:
       - "traefik.http.routers.weblog-secure.rule=Host(`weblog.srvz-webapp.he-arc.ch`)"
       - "traefik.http.routers.weblog-secure.entrypoints=https"
       - "traefik.http.routers.weblog-secure.tls=true"
-      - "traefik.http.services.weblog.loadbalancer.server.port=80"
+      - "traefik.http.routers.weblog-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.weblog-service.loadbalancer.server.port=80"
 
   weblog_redis:
     image: redis:5-alpine
