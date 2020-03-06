@@ -35,9 +35,8 @@ services:
       - eatapp_redis:/data
 
 networks:
-  default:
-    external:
-      name: webapp-net
+  web:
+    external: true
 
 volumes:
   eatapp:

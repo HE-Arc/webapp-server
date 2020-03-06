@@ -7,8 +7,7 @@ services:
     domainname: srvz-webapp.he-arc.ch
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.toml:/etc/traefik/traefik.toml
-      - proxy:/etc/traefik/acme
+      - ./traefik:/etc/traefik/
     ports:
       - "80:80"
       - "443:443"

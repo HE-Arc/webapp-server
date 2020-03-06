@@ -1,0 +1,18 @@
+#Dummy service router to redirect everything to HTTPS globally
+[http.routers]
+  [http.routers.redirecttohttps]
+    entryPoints = ["web"]
+    middlewares = ["httpsredirect"]
+    rule = "HostRegexp(`{host:.+}`)"
+    service = "noop"
+
+[http.services]
+  # noop service, the URL will be never called (dummy router)
+  [http.services.noop.loadBalancer]
+    [[http.services.noop.loadBalancer.servers]]
+      url = "http://192.168.200.1"
+
+[http.middlewares]
+  [http.middlewares.httpsredirect.redirectScheme]
+    scheme = "https"
+
