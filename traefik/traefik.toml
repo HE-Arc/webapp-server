@@ -1,4 +1,4 @@
-defaultEntryPoints = ["web", "web-secure"]
+defaultEntryPoints = ["web", "https"]
 
 [log]
   level = "DEBUG"
@@ -21,7 +21,7 @@ defaultEntryPoints = ["web", "web-secure"]
 [entryPoints]
   [entryPoints.web]
     address = ":80"
-  [entryPoints.web-secure]
+  [entryPoints.https]
     address = ":443"
 
 [entryPoints.traefik]
