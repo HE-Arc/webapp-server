@@ -3,6 +3,7 @@ version: '3.2'
 services:
   eatapp:
     image: hearcch/webapp-server:laravel
+    restart: always
     environment:
       - GROUPNAME=eatapp
       - PASSWORD=eatapp  # CHANGE ME
