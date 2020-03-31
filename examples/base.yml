@@ -3,6 +3,7 @@ version: '3.2'
 services:
   admin:
     image: hearcch/webapp-server:latest
+    restart: always
     environment:
       - GROUPNAME=admin
       - PASSWORD=root
