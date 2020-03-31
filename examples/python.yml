@@ -3,6 +3,7 @@ version: '3.2'
 services:
   weblog:
     image: hearcch/webapp-server:python
+    restart: always
     environment:
       - GROUPNAME=weblog
       - PASSWORD=root

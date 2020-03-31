@@ -3,6 +3,7 @@ version: '3.2'
 services:
   capistrano:
     image: hearcch/webapp-server:rails
+    restart: always
     environment:
       - GROUPNAME=capistrano
       - PASSWORD=capistrano  # CHANGE ME
