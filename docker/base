@@ -1,7 +1,8 @@
 # vim: ft=dockerfile:
-FROM ubuntu:bionic
+ARG UBUNTU_VERSION=focal
+FROM ubuntu:${UBUNTU_VERSION}
 
-ARG UBUNTU_VERSION=bionic
+ARG UBUNTU_VERSION
 ARG MYSQL_VERSION
 ARG NODEJS_VERSION
 ARG POSTGRES_VERSION
@@ -21,14 +22,6 @@ VOLUME /var/www
 # Config
 ENV GROUPNAME unknown
 ENV CONFIG base
-
-
-# Add Tini (reaping problem)
-ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
-RUN sig=`b2sum /tini | cut -d " " -f1` \
- && [ "$sig" = "${TINI_SIG}" ] \
- && chmod +x /tini \
- || exit 1
 
 ENTRYPOINT ["/tini", "--"]
 
@@ -63,7 +56,7 @@ RUN apt-get update -q \
         locales \
         lsof \
         man \
-        mysql-client-${MYSQL_VERSION} \
+        mysql-client \
         nano \
         nginx \
         openssh-server \
@@ -71,11 +64,12 @@ RUN apt-get update -q \
         psmisc \
         pwgen \
         runit \
-        sqlite3 \
         software-properties-common \
+        sqlite3 \
         ssmtp \
         sudo \
         syslog-ng \
+        tini \
         unzip \
         vim-tiny \
         wget \
@@ -84,7 +78,7 @@ RUN apt-get update -q \
  && rm -rf /var/lib/apt/lists/*
 
 # NodeSource Apt Repository
-# https://deb.nodesource.com/setup_11.x
+# https://deb.nodesource.com/setup_12.x
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
         > /etc/apt/sources.list.d/nodesource.list \
  && echo "deb-src https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
