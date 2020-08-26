@@ -10,28 +10,29 @@ RUN  apt-get update -q \
  && apt-get upgrade -q -y \
  && apt-get install -q -y \
         composer \
-        php${PHP_VERSION}-apcu \
-        php${PHP_VERSION}-bcmath \
-        php${PHP_VERSION}-bz2 \
-        php${PHP_VERSION}-cli \
-        php${PHP_VERSION}-common \
-        php${PHP_VERSION}-curl \
-        php${PHP_VERSION}-fpm \
-        php${PHP_VERSION}-gd \
-        php${PHP_VERSION}-imagick \
-        php${PHP_VERSION}-imap \
-        php${PHP_VERSION}-intl \
-        php${PHP_VERSION}-mbstring \
-        php${PHP_VERSION}-mysql \
-        php${PHP_VERSION}-pgsql \
-        php${PHP_VERSION}-redis \
-        php${PHP_VERSION}-soap \
-        php${PHP_VERSION}-sqlite3 \
-        php${PHP_VERSION}-tidy \
-        php${PHP_VERSION}-xml \
-        php${PHP_VERSION}-xmlrpc \
-        php${PHP_VERSION}-xsl \
-        php${PHP_VERSION}-zip \
+        php-apcu \
+        php-bcmath \
+        php-bz2 \
+        php-cli \
+        php-common \
+        php-curl \
+        php-fpm \
+        php-gd \
+        php-imagick \
+        php-imap \
+        php-intl \
+        php-mbstring \
+        php-mysql \
+        php-pear \
+        php-pgsql \
+        php-redis \
+        php-soap \
+        php-sqlite3 \
+        php-tidy \
+        php-xml \
+        php-xmlrpc \
+        php-xsl \
+        php-zip \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf \
@@ -66,5 +67,5 @@ ENV CONFIG laravel
 ARG BUILD_DATE
 ARG VCS_REF
 
-LABEL org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.vcs-ref=${VCS_REF}
+LABEL org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.revision=${VCS_REF}

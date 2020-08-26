@@ -16,7 +16,7 @@ services:
     command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
 
   portainer:
-    image: portainer/portainer:1.20.1
+    image: portainer/portainer:1.24.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
@@ -32,7 +32,7 @@ services:
   # Databases
 
   postgres:
-    image: postgres:10-alpine
+    image: postgres:12-alpine
     container_name: postgres
     environment:
       - POSTGRES_PASSWORD=root
@@ -43,7 +43,7 @@ services:
      - postgres:/var/lib/postgresql/data
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     container_name: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
