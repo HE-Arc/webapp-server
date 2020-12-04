@@ -138,7 +138,7 @@ Migrated: 2014_10_12_10000_create_password_resets_table
 Et voilà!
 
 ```
-echo "SHOW TABLES" | mysql -u $GROUPNAME -h mysql -p $GROUPNAME
+echo "SHOW TABLES" | mysql -u $GROUPNAME -h mysql -p$PASSWORD
 Enter password:
 Tables_in_<GROUPNAME>
 migrations
