@@ -8,6 +8,12 @@ done
 export PATH=$PATH:/usr/games/
 export PATH=$PATH:~/.composer/vendor/bin
 
+USER=`id -nu`
+RUBY_VERSION=`ruby --version | ruby -ne 'print /\b\d\.\d+/.match($_)'`
+export GEM_HOME=home/$USER/.gem/ruby/$RUBY_VERSION.0
+export PATH=$PATH:$GEM_HOME/bin
+
+
 # If not running interactively, don't do anything
 [[ $- != *i*  ]] && return
 

@@ -10,9 +10,10 @@ if [ ! -d /var/www/app ]
 then
     cp -r /var/templates/rails/app /var/www/app
 
-    USER=`id -nu`
+    USER=`id -nu $username`
+    RUBY_VERSION=`ruby --version | ruby -ne 'print /\b\d\.\d+/.match($_)'`
     export HOME=/home/$USER
-    export GEM_HOME=$HOME/.gem/ruby/2.5.0
+    export GEM_HOME=/home/$USER/.gem/ruby/$RUBY_VERSION.0
     export PATH=$PATH:$GEM_HOME/bin
 
     gem install bundler puma
