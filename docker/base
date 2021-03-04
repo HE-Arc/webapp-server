@@ -200,6 +200,6 @@ LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>" \
       org.opencontainers.image.source="https://github.com/HE-Arc/webapp-server" \
       org.opencontainers.image.schema-version="1.0"
 
-ENTRYPOINT [ "bash" ]
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD [ "/usr/local/bin/boot.sh" ]
