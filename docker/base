@@ -1,12 +1,11 @@
 # vim: ft=dockerfile:
-FROM ubuntu:bionic
+ARG UBUNTU_VERSION=focal
+FROM ubuntu:${UBUNTU_VERSION}
 
-ARG UBUNTU_VERSION=bionic
-ARG MYSQL_VERSION
+SHELL [ "/bin/sh", "-xe", "-c" ]
+
+ARG UBUNTU_VERSION
 ARG NODEJS_VERSION
-ARG POSTGRES_VERSION
-ARG TINI_VERSION
-ARG TINI_SIG
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -17,22 +16,10 @@ EXPOSE 22 80
 # Volumes
 VOLUME /var/www
 
-
 # Config
 ENV GROUPNAME unknown
 ENV CONFIG base
 
-
-# Add Tini (reaping problem)
-ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini /tini
-RUN sig=`b2sum /tini | cut -d " " -f1` \
- && [ "$sig" = "${TINI_SIG}" ] \
- && chmod +x /tini \
- || exit 1
-
-ENTRYPOINT ["/tini", "--"]
-
-CMD [ "/usr/local/bin/boot.sh" ]
 
 # All the packages.
 RUN apt-get update -q \
@@ -63,19 +50,20 @@ RUN apt-get update -q \
         locales \
         lsof \
         man \
-        mysql-client-${MYSQL_VERSION} \
+        mysql-client \
         nano \
         nginx \
         openssh-server \
-        postgresql-client-${POSTGRES_VERSION} \
+        postgresql-client \
         psmisc \
         pwgen \
         runit \
-        sqlite3 \
         software-properties-common \
+        sqlite3 \
         ssmtp \
         sudo \
         syslog-ng \
+        tini \
         unzip \
         vim-tiny \
         wget \
@@ -84,7 +72,7 @@ RUN apt-get update -q \
  && rm -rf /var/lib/apt/lists/*
 
 # NodeSource Apt Repository
-# https://deb.nodesource.com/setup_11.x
+# https://deb.nodesource.com/setup_14.x
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
         > /etc/apt/sources.list.d/nodesource.list \
  && echo "deb-src https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
@@ -106,14 +94,12 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
 # Locale
 RUN for l in "fr_CH" "de_CH" "it_CH" "en_US"; \
       do locale-gen $l \
       && locale-gen $l.UTF-8; \
     done \
  && update-locale LANG=fr_CH.UTF-8 LC_MESSAGES=POSIX
-
 
 ## NGINX
 # auto worker processes and no daemonize (for runit)
@@ -208,8 +194,12 @@ ARG BUILD_DATE
 ARG VCS_REF
 
 LABEL maintainer="Yoan Blanc <yoan@dosimple.ch>" \
-      org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.vendor="HE-Arc" \
-      org.label-schema.vcs-ref=${VCS_REF} \
-      org.label-schema.vcs-url="https://github.com/HE-Arc/webapp-server" \
-      org.label-schema.schema-version="1.0"
+      org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.vendor="HE-Arc" \
+      org.opencontainers.image.revision=${VCS_REF} \
+      org.opencontainers.image.source="https://github.com/HE-Arc/webapp-server" \
+      org.opencontainers.image.schema-version="1.0"
+
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
+
+CMD [ "/usr/local/bin/boot.sh" ]
