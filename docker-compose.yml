@@ -16,12 +16,13 @@ services:
     command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
 
   portainer:
-    image: portainer/portainer:1.24.1
+    image: portainer/portainer-ce:2.1.1-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer:/data
     # private
     ports:
+      #- "8000:8000"  # TCP tunnel
       - "9000:9000"
     # public
     #labels:

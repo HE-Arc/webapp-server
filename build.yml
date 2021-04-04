@@ -11,10 +11,10 @@ services:
       context: .
       # Set VCS/BUILD manually or use the Makefile.
       args:
-        VCS_REF: $VCS_REF
-        BUILD_DATE: $BUILD_DATE
-        NODEJS_VERSION: "14.x"
-        UBUNTU_VERSION: focal
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - NODEJS_VERSION=14.x
+        - UBUNTU_VERSION=focal
 
   laravel:
     image: hearcch/webapp-server:laravel
@@ -24,6 +24,7 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
+        - PHP_VERSION=7.4
 
   rails:
     image: hearcch/webapp-server:rails

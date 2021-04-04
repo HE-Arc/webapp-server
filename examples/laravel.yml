@@ -24,7 +24,7 @@ services:
       - "traefik.enable=true"
 
   eatapp_redis:
-    image: redis:5-alpine
+    image: redis:6-alpine
     volumes:
       - eatapp_redis:/data
 

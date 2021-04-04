@@ -63,6 +63,7 @@ COPY files/laravel /var/templates/laravel
 
 # Config
 ENV CONFIG laravel
+ENV PHP_VERSION=${PHP_VERSION}
 
 ARG BUILD_DATE
 ARG VCS_REF

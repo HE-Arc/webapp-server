@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
 
   weblog_redis:
-    image: redis:5-alpine
+    image: redis:6-alpine
     volumes:
       - weblog_redis:/data
 

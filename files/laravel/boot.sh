@@ -8,8 +8,8 @@ cp /var/templates/laravel/README.md /var/www/
 [ ! -f /var/www/app ] && cp -r /var/templates/laravel/app /var/www/app
 
 
-if [ ! -L /etc/php/7.2/fpm/pool.d/www.conf ]
+if [ ! -L /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf ]
 then
-    sudo mv /etc/php/7.2/fpm/pool.d/www.conf /etc/php/7.2/fpm/pool.d/www.conf.old
-    sudo ln -s /var/www/config/php-fpm.conf /etc/php/7.2/fpm/pool.d/www.conf
+    sudo mv /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf.old
+    sudo ln -s /var/www/config/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 fi

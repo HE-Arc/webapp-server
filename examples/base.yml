@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
 
   admin_redis:
-    image: redis:5-alpine
+    image: redis:6-alpine
     volumes:
       - admin_redis:/data
 
