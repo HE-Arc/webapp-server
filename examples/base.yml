@@ -3,6 +3,7 @@ version: '3.2'
 services:
   admin:
     image: hearcch/webapp-server:latest
+    restart: always
     environment:
       - GROUPNAME=admin
       - PASSWORD=root
@@ -17,9 +18,15 @@ services:
       - mysql
       - smtp
     labels:
-      - "traefik.frontend.rule=Host:admin.srvz-webapp.he-arc.ch"
-      - "traefik.port=80"
       - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`admin.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.middlewares.admin-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.admin.middlewares=admin-redirect"
+      - "traefik.http.routers.admin-secure.rule=Host(`admin.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.admin-secure.entrypoints=https"
+      - "traefik.http.routers.admin-secure.tls=true"
+      - "traefik.http.routers.admin-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.admin-service.loadbalancer.server.port=80"
 
   admin_redis:
     image: redis:5-alpine

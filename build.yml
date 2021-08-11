@@ -13,6 +13,8 @@ services:
       args:
         VCS_REF: $VCS_REF
         BUILD_DATE: $BUILD_DATE
+        MYSQL_VERSION: "5.7"
+        POSTGRES_VERSION: "10"
         NODEJS_VERSION: "14.x"
         UBUNTU_VERSION: focal
 
