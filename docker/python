@@ -1,27 +1,24 @@
+# vim: ft=dockerfile:
 FROM hearcch/webapp-server:latest
-
-ARG PYTHON_VERSION
-ARG RUBY_VERSION
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -q -y \
  && apt-get install -q -y \
+        bundler \
         libcap-dev \
         libffi-dev \
         libpcre3-dev \
         libssl-dev \
-        python${PYTHON_VERSION} \
-        python${PYTHON_VERSION}-dev \
-        python${PYTHON_VERSION}-venv \
-        python${PYTHON_VERSION}-pip \
+        python3-venv \
+        python3-pip \
         uuid-dev \
         uwsgi \
         uwsgi-src \
-        uwsgi-plugin-python${PYTHON_VERSION} \
-        uwsgi-plugin-asyncio-python${PYTHON_VERSION} \
-        ruby${RUBY_VERSION} \
-        ruby${RUBY_VERSION}-dev \
+        uwsgi-plugin-python3 \
+        uwsgi-plugin-asyncio-python3 \
+        ruby \
+        ruby-dev \
  && apt-get autoremove -q -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/*
@@ -45,7 +42,5 @@ ENV CONFIG python
 ARG BUILD_DATE
 ARG VCS_REF
 
-LABEL org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.vcs-ref=${VCS_REF}
-
-# vim: ft=dockerfile:
+LABEL org.opencontainers.image.created=${BUILD_DATE} \
+      org.opencontainers.image.revision=${VCS_REF}

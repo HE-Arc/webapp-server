@@ -2,14 +2,6 @@
 
 [![Join the chat at https://gitter.im/HE-Arc/webapp-server](https://badges.gitter.im/HE-Arc/webapp-server.svg)](https://gitter.im/HE-Arc/webapp-server)
 
-- [![](https://images.microbadger.com/badges/image/hearcch/webapp-server.svg)](https://microbadger.com/images/hearcch/webapp-server) [![](https://images.microbadger.com/badges/version/hearcch/webapp-server.svg)](https://microbadger.com/images/hearcch/webapp-server)
-
-- [![](https://images.microbadger.com/badges/image/hearcch/webapp-server:laravel.svg)](https://microbadger.com/images/hearcch/webapp-server:laravel) [![](https://images.microbadger.com/badges/version/hearcch/webapp-server:laravel.svg)](https://microbadger.com/images/hearcch/webapp-server:laravel)
-
-- [![](https://images.microbadger.com/badges/image/hearcch/webapp-server:python.svg)](https://microbadger.com/images/hearcch/webapp-server:python) [![](https://images.microbadger.com/badges/version/hearcch/webapp-server:python.svg)](https://microbadger.com/images/hearcch/webapp-server:python)
-
-- [![](https://images.microbadger.com/badges/image/hearcch/webapp-server:rails.svg)](https://microbadger.com/images/hearcch/webapp-server:rails) [![](https://images.microbadger.com/badges/version/hearcch/webapp-server:rails.svg)](https://microbadger.com/images/hearcch/webapp-server:rails)
-
 The setup scripts to create development environments for many groups.
 
 ## Requirements

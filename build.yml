@@ -14,8 +14,9 @@ services:
         VCS_REF: $VCS_REF
         BUILD_DATE: $BUILD_DATE
         MYSQL_VERSION: "5.7"
-        NODEJS_VERSION: "13.x"
         POSTGRES_VERSION: "10"
+        NODEJS_VERSION: "14.x"
+        UBUNTU_VERSION: focal
 
   laravel:
     image: hearcch/webapp-server:laravel
@@ -25,7 +26,6 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - PHP_VERSION=7.2
 
   rails:
     image: hearcch/webapp-server:rails
@@ -35,7 +35,6 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - RUBY_VERSION=2.5
 
   python:
     image: hearcch/webapp-server:python
@@ -45,5 +44,3 @@ services:
       args:
         - VCS_REF=$VCS_REF
         - BUILD_DATE=$BUILD_DATE
-        - PYTHON_VERSION=3
-        - RUBY_VERSION=2.5
