@@ -1,8 +1,6 @@
 # vim: ft=dockerfile:
 FROM hearcch/webapp-server:latest
 
-ARG PHP_VERSION
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LC_ALL=C.UTF-8
 
@@ -41,6 +39,7 @@ RUN  apt-get update -q \
 
 # PHP
 RUN mkdir -p /run/php \
+ && export PHP_VERSION=$(php -r "echo implode('.', array_slice(explode('.', phpversion()), 0, 2));") \
  && sed -i 's/^\(error_log = \).*$/\1syslog/' /etc/php/${PHP_VERSION}/fpm/php-fpm.conf \
  && ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm \
  && for f in "/etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini"; do \

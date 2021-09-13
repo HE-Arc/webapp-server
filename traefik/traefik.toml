@@ -5,6 +5,10 @@ defaultEntryPoints = ["web", "https"]
   filePath = "/proc/self/fd/1"
   format = "json"
 
+#[accessLog]
+#  filePath = "/proc/self/fd/2"
+#  format = "json"
+
 [api]
   dashboard = true
   insecure = true
@@ -12,7 +16,7 @@ defaultEntryPoints = ["web", "https"]
 [providers.docker]
   watch = true
   exposedByDefault = false
-  network = "web"
+  network = "webapp-net"
 
 [providers.file]
   filename = "/etc/traefik/dynamic_conf.toml"
@@ -33,4 +37,3 @@ defaultEntryPoints = ["web", "https"]
   storage = "/etc/traefik/acme.json"
 [certificatesResolvers.letsencrypt.acme.httpChallenge]
     entryPoint = "web"
-

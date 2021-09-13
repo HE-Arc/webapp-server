@@ -10,3 +10,4 @@ config/keys/*.key
 config/roles.json
 config/students.tsv
 files/composer/cache
+traefik/acme.json

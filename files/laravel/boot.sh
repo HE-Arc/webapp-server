@@ -2,14 +2,15 @@
 
 set -xe
 
+PHP_VERSION=$(php -r "echo implode('.', array_slice(explode('.', phpversion()), 0, 2));")
+
 cp /var/templates/laravel/README.md /var/www/
 [ ! -f /var/www/config/nginx.conf ] && cp /var/templates/laravel/config/nginx.conf /var/www/config/nginx.conf
 [ ! -f /var/www/config/php-fpm.conf ] && cp /var/templates/laravel/config/php-fpm.conf /var/www/config/php-fpm.conf
 [ ! -f /var/www/app ] && cp -r /var/templates/laravel/app /var/www/app
 
-
-if [ ! -L /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf ]
+if [ ! -L "/etc/php/$PHP_VERSION/fpm/pool.d/www.conf" ]
 then
-    sudo mv /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf.old
-    sudo ln -s /var/www/config/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+    sudo mv "/etc/php/$PHP_VERSION/fpm/pool.d/www.conf" "/etc/php/$PHP_VERSION/fpm/pool.d/www.conf.old"
+    sudo ln -s "/var/www/config/php-fpm.conf" "/etc/php/$PHP_VERSION/fpm/pool.d/www.conf"
 fi
