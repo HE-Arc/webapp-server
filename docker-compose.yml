@@ -2,18 +2,26 @@ version: '3.2'
 
 services:
   proxy:
-    image: traefik:1.7-alpine
+    image: traefik:v2.1.1
     hostname: proxy
     domainname: srvz-webapp.he-arc.ch
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.toml:/etc/traefik/traefik.toml
-      - proxy:/etc/traefik/acme
+      - ./traefik:/etc/traefik/
     ports:
-      - "8080:8080"
       - "80:80"
       - "443:443"
-    command: -c /etc/traefik/traefik.toml --docker.domain=srvz-webapp.he-arc.ch
+      #- "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy.rule=Host(`proxy.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.middlewares.proxy-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.proxy.middlewares=proxy-redirect"
+      - "traefik.http.routers.proxy-secure.rule=Host(`proxy.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.proxy-secure.entrypoints=https"
+      - "traefik.http.routers.proxy-secure.tls=true"
+      - "traefik.http.routers.proxy-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.proxy.loadbalancer.server.port=8080"
 
   portainer:
     image: portainer/portainer-ce:2.1.1-alpine
@@ -23,12 +31,18 @@ services:
     # private
     ports:
       #- "8000:8000"  # TCP tunnel
-      - "9000:9000"
+      #- "9000:9000"
     # public
-    #labels:
-    #  - "traefik.backend=portainer"
-    #  - "traefik.frontend.rule=Host:portainer.srvz-webapp.he-arc.ch"
-    #  - "traefik.port=9000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.middlewares.portainer-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.portainer.middlewares=portainer-redirect"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.portainer-secure.entrypoints=https"
+      - "traefik.http.routers.portainer-secure.tls=true"
+      - "traefik.http.routers.portainer-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # Databases
 
@@ -59,9 +73,15 @@ services:
     image: mailhog/mailhog:latest
     container_name: smtp
     labels:
-      - "traefik.frontend.rule=Host:webmail.srvz-webapp.he-arc.ch"
-      - "traefik.port=8025"
       - "traefik.enable=true"
+      - "traefik.http.routers.smtp.rule=Host(`webmail.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.middlewares.smtp-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.smtp.middlewares=smtp-redirect"
+      - "traefik.http.routers.smtp-secure.rule=Host(`webmail.srvz-webapp.he-arc.ch`)"
+      - "traefik.http.routers.smtp-secure.entrypoints=https"
+      - "traefik.http.routers.smtp-secure.tls=true"
+      - "traefik.http.routers.smtp-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.smtp-service.loadbalancer.server.port=8025"
 
 networks:
   default:

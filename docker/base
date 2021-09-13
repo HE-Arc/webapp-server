@@ -11,8 +11,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME=poweruser
 
-# Ports
-EXPOSE 22 80
 # Volumes
 VOLUME /var/www
 
@@ -20,6 +18,8 @@ VOLUME /var/www
 ENV GROUPNAME unknown
 ENV CONFIG base
 
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD [ "/usr/local/bin/boot.sh" ]
 
 # All the packages.
 RUN apt-get update -q \
@@ -32,6 +32,7 @@ RUN apt-get update -q \
         cron \
         curl \
         dnsutils \
+        dumb-init \
         fontconfig \
         git \
         htop \
@@ -73,6 +74,7 @@ RUN apt-get update -q \
 
 # NodeSource Apt Repository
 # https://deb.nodesource.com/setup_14.x
+
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
         > /etc/apt/sources.list.d/nodesource.list \
  && echo "deb-src https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \

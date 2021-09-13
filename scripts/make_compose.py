@@ -15,7 +15,7 @@ from jinja2 import Template
 from passgen import passgen
 
 __author__ = "Yoan Blanc <yoan@dosimple.ch>"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 domainname = "srvz-webapp.he-arc.ch"
 admin = "teacher"
@@ -52,8 +52,15 @@ services:
       - {{ team.machine }}_redis:redis
 
     labels:
-      - "traefik.frontend.rule=Host:{{ team.hostname }}.{{ domainname }}"
-      - "traefik.port=80"
+      - "traefik.enable=true"
+      - "traefik.http.routers.{{ team.machine }}.rule=Host(`{{ team.hostname }}.{{ domainname }}`)"
+      - "traefik.http.middlewares.{{ team.machine }}-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.{{ team.machine }}.middlewares={{ team.machine}}-redirect"
+      - "traefik.http.routers.{{ team.machine }}-secure.rule=Host(`{{ team.hostname }}.{{ domainname }}`)"
+      - "traefik.http.routers.{{ team.machine }}-secure.entrypoints=https"
+      - "traefik.http.routers.{{ team.machine }}-secure.tls=true"
+      - "traefik.http.routers.{{ team.machine }}-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.services.{{ team.machine }}-service.loadbalancer.server.port=80"
 
   {{ team.machine }}_redis:
     image: redis:5-alpine
