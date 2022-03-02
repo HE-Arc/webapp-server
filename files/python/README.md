@@ -18,6 +18,13 @@ Connect to MySQL (hint: `echo \$PASSWORD`):
 $ mysql --host $MYSQL_HOST --user $GROUPNAME --password
 ```
 
+> Known issue, when trying to connect to MySQL DB  
+> `ERROR 2026 (HY000): SSL connection error: error:1425F102:SSL routines:ssl_choose_client_version:unsupported protocol`  
+> This documentation was done a while ago and Ubuntu apparently inscread its security level, one solution is to do:  
+> ```
+> mysql --host $MYSQL_HOST --user $GROUPNAME --password --ssl-mode=disabled
+> ```
+
 ## Postgres
 
 Connect to Postgres:
@@ -41,6 +48,15 @@ pkg-resources (0.0.0)
 setuptools (38.2.5)
 wheel (0.30.0)
 ```
+
+> Known issue, when running "source"  
+> `-bash: venv/bin/activate: No such file or directory`  
+> Some times the virtual environment is not correctly initialized, the solution is to initialize it again with:  
+> ```
+> cd /var/www/app
+> python3 -m venv venv
+> ```
+> Source: https://stackoverflow.com/questions/41687841/there-is-no-activate-when-i-am-trying-to-run-my-virtual-env
 
 The WSGI application is defined in the `wsgi.py` file. WSGI is the protocol between the application server and a Python application. The application server used is called uWSGI. A request is handled by Nginx which delegates it to uWSGI that manages various Python processes running you application.
 
