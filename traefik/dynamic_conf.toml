@@ -1,4 +1,4 @@
-#Dummy service router to redirect everything to HTTPS globally
+# Dummy service router to redirect everything to HTTPS globally
 [http.routers]
   [http.routers.redirecttohttps]
     entryPoints = ["web"]

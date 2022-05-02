@@ -22,22 +22,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.eatapp.rule=Host(`eatapp.srvz-webapp.he-arc.ch`)"
-      - "traefik.http.middlewares.eatapp-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.eatapp.middlewares=eatapp-redirect"
-      - "traefik.http.routers.eatapp-secure.rule=Host(`eatapp.srvz-webapp.he-arc.ch`)"
-      - "traefik.http.routers.eatapp-secure.entrypoints=https"
-      - "traefik.http.routers.eatapp-secure.tls=true"
-      - "traefik.http.routers.eatapp-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.eatapp.entrypoints=https"
+      - "traefik.http.routers.eatapp.tls=true"
+      - "traefik.http.routers.eatapp.tls.certresolver=letsencrypt"
       - "traefik.http.services.eatapp-service.loadbalancer.server.port=80"
 
   eatapp_redis:
-    image: redis:5-alpine
+    image: redis:6-alpine
     volumes:
       - eatapp_redis:/data
 
 networks:
-  web:
+  default:
     external: true
+    name: webapp-net
 
 volumes:
   eatapp:

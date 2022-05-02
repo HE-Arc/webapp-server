@@ -26,13 +26,11 @@ RUN apt-get update -q \
  && apt-get upgrade -q -y \
  && apt-get install -q -y \
         acl \
-        apt-transport-https \
         build-essential \
         ca-certificates \
         cron \
         curl \
         dnsutils \
-        dumb-init \
         fontconfig \
         git \
         htop \

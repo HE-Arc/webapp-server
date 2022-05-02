@@ -11,12 +11,10 @@ services:
       context: .
       # Set VCS/BUILD manually or use the Makefile.
       args:
-        VCS_REF: $VCS_REF
-        BUILD_DATE: $BUILD_DATE
-        MYSQL_VERSION: "5.7"
-        POSTGRES_VERSION: "10"
-        NODEJS_VERSION: "14.x"
-        UBUNTU_VERSION: focal
+        - VCS_REF=$VCS_REF
+        - BUILD_DATE=$BUILD_DATE
+        - NODEJS_VERSION=16.x
+        - UBUNTU_VERSION=focal
 
   laravel:
     image: hearcch/webapp-server:laravel

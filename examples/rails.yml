@@ -22,23 +22,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.capistrano.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
-      - "traefik.http.middlewares.capistrano-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.capistrano.middlewares=capistrano-redirect"
-      - "traefik.http.routers.capistrano-secure.rule=Host(`capistrano.srvz-webapp.he-arc.ch`)"
-      - "traefik.http.routers.capistrano-secure.entrypoints=https"
-      - "traefik.http.routers.capistrano-secure.tls=true"
-      - "traefik.http.routers.capistrano-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.capistrano.entrypoints=https"
+      - "traefik.http.routers.capistrano.tls=true"
+      - "traefik.http.routers.capistrano.tls.certresolver=letsencrypt"
       - "traefik.http.services.capistrano.loadbalancer.server.port=80"
 
   capistrano_redis:
-    image: redis:4-alpine
+    image: redis:6-alpine
     volumes:
       - capistrano_redis:/data
 
 networks:
   default:
-    external:
-      name: webapp-net
+    external: true
+    name: webapp-net
 
 volumes:
   capistrano:
