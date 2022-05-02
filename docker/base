@@ -1,8 +1,8 @@
 # vim: ft=dockerfile:
-ARG UBUNTU_VERSION=focal
+ARG UBUNTU_VERSION=jammy
 FROM ubuntu:${UBUNTU_VERSION}
 
-SHELL [ "/bin/sh", "-xe", "-c" ]
+SHELL [ "/bin/sh", "-xe", "-o", "pipefail", "-c" ]
 
 ARG UBUNTU_VERSION
 ARG NODEJS_VERSION
@@ -73,7 +73,7 @@ RUN apt-get update -q \
  && rm -rf /var/lib/apt/lists/*
 
 # NodeSource Apt Repository
-# https://deb.nodesource.com/setup_14.x
+# https://deb.nodesource.com/setup_16.x
 
 RUN echo "deb https://deb.nodesource.com/node_${NODEJS_VERSION} ${UBUNTU_VERSION} main" \
         > /etc/apt/sources.list.d/nodesource.list \

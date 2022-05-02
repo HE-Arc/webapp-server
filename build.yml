@@ -13,10 +13,10 @@ services:
       args:
         VCS_REF: $VCS_REF
         BUILD_DATE: $BUILD_DATE
-        MYSQL_VERSION: "5.7"
-        POSTGRES_VERSION: "10"
-        NODEJS_VERSION: "14.x"
-        UBUNTU_VERSION: focal
+        MYSQL_VERSION: "8.0"
+        POSTGRES_VERSION: "14"
+        NODEJS_VERSION: "16.x"
+        UBUNTU_VERSION: jammy
 
   laravel:
     image: hearcch/webapp-server:laravel
